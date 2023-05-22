@@ -1,15 +1,13 @@
+import "./loadEnv.ts";
+import "./connectToDB.ts";
 import express, { Express } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
 
 app.get("/", (req, res) => {
-    res.send("Heloł");
+    res.send(
+        "You are calling Web Frameworks Project API, simple student project, there is no documentation so you have to guess endpoints yourself, have fun :)"
+    );
 });
 
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-});
+export default app;
