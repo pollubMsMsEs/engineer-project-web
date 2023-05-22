@@ -1,6 +1,7 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const MovieSchema = new Schema({
+    created_by: { type: Schema.Types.ObjectId, ref: "User" },
     title: { type: String, required: true },
     dev: { type: Boolean, default: true },
     description: String,
@@ -25,3 +26,5 @@ const MovieSchema = new Schema({
         },
     ],
 });
+
+export default model("Movie", MovieSchema);
