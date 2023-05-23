@@ -5,4 +5,4 @@ const PersonSchema = new Schema({
     surname: { type: String, required: true },
 });
 
-export default model("Person", PersonSchema, "People");
+export default model("Person", PersonSchema, "people");

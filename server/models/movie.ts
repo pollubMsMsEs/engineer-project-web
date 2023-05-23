@@ -13,6 +13,7 @@ const MovieSchema = new Schema({
     },
     people: [
         {
+            _id: false, //Mongoose by default creates id for subdocuments, this stops it from doing that
             person_id: {
                 type: Schema.Types.ObjectId,
                 ref: "Person",
