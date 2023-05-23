@@ -4,6 +4,7 @@ import express, { Express } from "express";
 import logger from "morgan";
 
 import utilsRouter from "./routes/utils.js";
+import apiRouter from "./routes/api.js";
 
 const app: Express = express();
 
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
     );
 });
 
+app.use("/api", apiRouter);
 app.use("/utils", utilsRouter);
 
 export default app;
