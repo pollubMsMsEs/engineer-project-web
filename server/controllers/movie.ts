@@ -12,11 +12,15 @@ export async function getAllPopulated(req: Request, res: Response) {
     res.json(movies);
 }
 
-export async function getOne(req: Request, res: Response) {
-    const movie = await Movie.findById(req.params.id)
-        .populate("people.person_id")
-        .exec();
-    res.json(movie);
+export async function getOne(req: Request, res: Response, next: NextFunction) {
+    try {
+        const movie = await Movie.findById(req.params.id)
+            .populate("people.person_id")
+            .exec();
+        res.json(movie);
+    } catch (e) {
+        return next(e);
+    }
 }
 
 export const createOne = [
