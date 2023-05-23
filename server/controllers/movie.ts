@@ -1,5 +1,6 @@
 import Movie from "../models/movie.js";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import { body } from "express-validator";
 
 export async function getAllShort(req: Request, res: Response) {
     const movies = await Movie.find({}, { title: 1 });
@@ -18,4 +19,21 @@ export async function getOne(req: Request, res: Response) {
     res.json(movie);
 }
 
-export async function createOne(req: Request, res: Response) {}
+export const createOne = [
+    bodyGenreIntoArray,
+    body("title").trim().isLength({ min: 1 }).escape(),
+    async function (req: Request, res: Response) {
+        console.log(req.body);
+    },
+];
+
+function bodyGenreIntoArray(req: Request, res: Response, next: NextFunction) {
+    if (!(req.body.genre instanceof Array)) {
+        if (typeof req.body.genre === "undefined") {
+            req.body.genre = [];
+        } else {
+            req.body.genre = new Array(req.body.genre);
+        }
+    }
+    next();
+}
