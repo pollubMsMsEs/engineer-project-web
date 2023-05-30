@@ -4,6 +4,8 @@ import {
     getAllPopulated,
     getOne,
     createOne,
+    updateOne,
+    deleteOne,
 } from "../../controllers/movie.js";
 
 const router = Router();
@@ -12,5 +14,7 @@ router.get("/all", getAllPopulated);
 router.get("/all/summary", getAllShort);
 router.get("/:id", getOne);
 router.post("/create", createOne);
+router.put("/:id", updateOne);
+router.delete("/:id", deleteOne);
 
 export default router;

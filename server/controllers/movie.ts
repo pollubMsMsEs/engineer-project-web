@@ -4,6 +4,7 @@ import { ExpressValidator } from "express-validator";
 import { Types } from "mongoose";
 import { inspect } from "util";
 import Debug from "debug";
+import movie from "../models/movie.js";
 const debug = Debug("dev");
 
 const { body, validationResult } = new ExpressValidator({
@@ -52,12 +53,53 @@ export const createOne = [
     body("people.role").trim().isString().isLength({ min: 1 }).escape(),
     body("people.details.*").escape(),
     async function (req: Request, res: Response) {
-        const result = validationResult(req);
-        debug(inspect(req.body, false, null, true));
-        if (result.isEmpty()) return res.send("ok");
-        else return res.json(result.array());
+        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+
+        if (!valResult.isEmpty())
+            return res
+                .status(422)
+                .json({ acknowledged: false, errors: valResult.array() });
+
+        const movie = await Movie.create(req.body);
+        await movie.save();
+
+        return res.json({ acknowledged: true });
     },
 ];
+
+export const updateOne = [
+    bodyGenreIntoArray,
+    body("created_by").trim().isMongoId().escape(),
+    body("title").trim().isLength({ min: 1 }).escape(),
+    body("description").optional().trim().escape(),
+    body("published_at")
+        .exists()
+        .withMessage("Missing published_at date")
+        .isISO8601()
+        .withMessage("Incorrect format of published_at date")
+        .toDate(),
+    body("genres.*").escape(),
+    body("metadata.*").escape(),
+    body("people.person_id").isMongoId(),
+    body("people.role").trim().isString().isLength({ min: 1 }).escape(),
+    body("people.details.*").escape(),
+    async function (req: Request, res: Response) {
+        const valResult = validationResult(req);
+
+        if (!valResult.isEmpty())
+            return res
+                .status(422)
+                .json({ acknowledged: false, errors: valResult.array() });
+
+        await Movie.findByIdAndUpdate(req.params.id, req.body, {});
+        return res.json({ acknowledged: true });
+    },
+];
+
+export async function deleteOne(req: Request, res: Response) {
+    const result = await Movie.findByIdAndRemove(req.params.id);
+    return res.json({ acknowledged: true, deleted: result });
+}
 
 function bodyGenreIntoArray(req: Request, res: Response, next: NextFunction) {
     if (!(req.body.genres instanceof Array)) {
