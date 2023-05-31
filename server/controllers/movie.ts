@@ -25,6 +25,11 @@ export async function getAllPopulated(req: Request, res: Response) {
     res.json(movies);
 }
 
+export async function getCount(req: Request, res: Response) {
+    const count = await Movie.count();
+    res.json({ count });
+}
+
 export async function getOne(req: Request, res: Response, next: NextFunction) {
     try {
         const movie = await Movie.findById(req.params.id)

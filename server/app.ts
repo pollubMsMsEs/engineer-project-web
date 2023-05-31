@@ -3,6 +3,7 @@ import "./bin/connectToDB.js";
 import express, { Express } from "express";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import utilsRouter from "./routes/utils.js";
 import apiRouter from "./routes/api.js";
@@ -13,6 +14,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send(
