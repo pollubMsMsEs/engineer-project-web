@@ -1,13 +1,13 @@
 import Movie from "../models/movie.js";
 import { Request, Response, NextFunction } from "express";
-import { ExpressValidator } from "express-validator";
+import { ExpressValidator, ValidationError } from "express-validator";
 import { Types } from "mongoose";
 import { inspect } from "util";
 import Debug from "debug";
 import movie from "../models/movie.js";
 const debug = Debug("dev");
 
-const { body, validationResult } = new ExpressValidator({
+const { param, body, validationResult } = new ExpressValidator({
     isMongoId: async (value: any) => {
         if (!Types.ObjectId.isValid(value)) {
             throw new Error("This value isn't ObjectID");
@@ -30,16 +30,21 @@ export async function getCount(req: Request, res: Response) {
     res.json({ count });
 }
 
-export async function getOne(req: Request, res: Response, next: NextFunction) {
-    try {
-        const movie = await Movie.findById(req.params.id)
-            .populate("people.person_id")
-            .exec();
-        res.json(movie);
-    } catch (e) {
-        return next(e);
-    }
-}
+export const getOne = [
+    param("id").isMongoId().withMessage("URL contains incorrect id"),
+    async function (req: Request, res: Response, next: NextFunction) {
+        try {
+            validationResult(req).throw();
+            const movie = await Movie.findById(req.params.id)
+                .populate("people.person_id")
+                .exec();
+            res.json({ data: movie });
+        } catch (e: any) {
+            //console.log(res);
+            return next(e);
+        }
+    },
+];
 
 export const createOne = [
     bodyGenreIntoArray,
@@ -88,16 +93,15 @@ export const updateOne = [
     body("people.person_id").isMongoId(),
     body("people.role").trim().isString().isLength({ min: 1 }).escape(),
     body("people.details.*").escape(),
-    async function (req: Request, res: Response) {
-        const valResult = validationResult(req);
+    async function (req: Request, res: Response, next: NextFunction) {
+        try {
+            validationResult(req).throw();
 
-        if (!valResult.isEmpty())
-            return res
-                .status(422)
-                .json({ acknowledged: false, errors: valResult.array() });
-
-        await Movie.findByIdAndUpdate(req.params.id, req.body, {});
-        return res.json({ acknowledged: true });
+            await Movie.findByIdAndUpdate(req.params.id, req.body, {});
+            return res.json({ acknowledged: true });
+        } catch (error) {
+            next(error);
+        }
     },
 ];
 
