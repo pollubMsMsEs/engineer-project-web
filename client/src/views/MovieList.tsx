@@ -44,14 +44,13 @@ export default function MovieList() {
                             }, "")}
                         </td>
                         <td>
-                            <a href="/movie/asdsa">
+                            <a href={`/movie/${movie._id}`}>
                                 <button>Details</button>
                             </a>
                             <Link
                                 to={{
                                     pathname: `/movie/${movie._id}/edit`,
                                 }}
-                                state={movie}
                             >
                                 <button>Edit</button>
                             </Link>

@@ -7,17 +7,15 @@ import {
 } from "react-router-dom";
 
 export default function MovieForm() {
-    const movie = useLocation().state;
     const navigate = useNavigate();
     const { _id } = useParams();
 
-    const [title, setTitle] = useState();
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [publishedAt, setPublishedAt] = useState("");
+    const [genres, setGenres] = useState<string[]>([]);
 
-    useEffect(() => {
-        if ((_id != null && movie == null) || movie._id !== _id) {
-            navigate("/movie/all");
-        }
-    }, []);
+    //useEffect(() => {}, []);
 
-    return <form>{movie?.title ?? ""}</form>;
+    return <form></form>;
 }
