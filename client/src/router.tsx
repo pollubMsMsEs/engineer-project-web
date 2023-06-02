@@ -6,6 +6,8 @@ import Login from "./views/Login.tsx";
 import Signup from "./views/Signup.tsx";
 import Index from "./views/Index.tsx";
 import MovieList from "./views/MovieList.tsx";
+import MovieDetails from "./views/MovieDetails.tsx";
+import MovieForm from "./views/MovieForm.tsx";
 
 const router = createBrowserRouter([
     {
@@ -13,19 +15,27 @@ const router = createBrowserRouter([
         element: <DefaultLayout />,
         children: [
             {
-                path: "/",
+                path: "",
                 element: <Index />,
             },
             {
-                path: "/dev",
+                path: "dev",
                 element: <App />,
             },
             {
-                path: "/movies",
+                path: "movie",
                 children: [
                     {
-                        path: "/movies",
+                        path: "all",
                         element: <MovieList />,
+                    },
+                    {
+                        path: ":_id",
+                        element: <MovieDetails />,
+                    },
+                    {
+                        path: ":_id/edit",
+                        element: <MovieForm />,
                     },
                 ],
             },
