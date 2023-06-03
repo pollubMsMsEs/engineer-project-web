@@ -1,4 +1,4 @@
-.circle-loader {
+.component-circle-loader {
     border-radius: 50%;
     animation: spin 2s linear infinite;
 }

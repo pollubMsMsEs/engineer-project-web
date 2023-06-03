@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App.tsx";
 import DefaultLayout from "./components/layouts/DefaultLayout.tsx";
 import GuestLayout from "./components/layouts/GuestLayout.tsx";
 import Login from "./views/Login.tsx";
@@ -17,10 +16,6 @@ const router = createBrowserRouter([
             {
                 path: "",
                 element: <Index />,
-            },
-            {
-                path: "dev",
-                element: <App />,
             },
             {
                 path: "movie",
