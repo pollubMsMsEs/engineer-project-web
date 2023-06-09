@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingCircle from "../components/LoadingCircle";
 import axios from "axios";
 
@@ -15,9 +15,7 @@ export default function Index() {
     const [moviesCount, setMoviesCount] = useState();
 
     useEffect(() => {
-        getMoviesCount().then((data) => {
-            setMoviesCount(data);
-        });
+        getMoviesCount().then(setMoviesCount);
     }, []);
 
     return (

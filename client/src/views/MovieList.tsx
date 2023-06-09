@@ -1,10 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Movie } from "../types/movieType";
 
 async function getMovies() {
     try {
         const result = await axios.get("http://localhost:7777/api/movie/all");
+        return result.data;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function deleteMovie(_id: string) {
+    try {
+        const result = await axios.delete<{
+            acknowledged: boolean;
+            deleted: Movie | null;
+        }>(`http://localhost:7777/api/movie/${_id}`);
         console.log(result.data);
         return result.data;
     } catch (error) {
@@ -25,6 +38,16 @@ export default function MovieList() {
         //document.title = "Sdafasdf"; Interesting
     }, []);
 
+    async function deleteMovieHandler(_id: string) {
+        const result = await deleteMovie(_id);
+        const deletedMovieId = result && result.deleted?._id;
+        if (deletedMovieId) {
+            setMovieList((previousMovies) => {
+                return previousMovies.filter((m) => m._id !== deletedMovieId);
+            });
+        }
+    }
+
     return (
         <table>
             <thead>
@@ -36,7 +59,7 @@ export default function MovieList() {
             </thead>
             <tbody>
                 {movieList.map((movie) => (
-                    <tr>
+                    <tr key={movie._id}>
                         <td>{movie.title}</td>
                         <td>
                             {movie.genres.reduce((acc, genre) => {
@@ -55,7 +78,13 @@ export default function MovieList() {
                                 <button>Edit</button>
                             </Link>
 
-                            <button>Delete</button>
+                            <button
+                                onClick={() => {
+                                    deleteMovieHandler(movie._id);
+                                }}
+                            >
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 ))}
