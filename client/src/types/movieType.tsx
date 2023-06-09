@@ -5,12 +5,21 @@ export interface Movie {
     description: string;
     published_at: Date;
     genres: string[];
-    metadata: { ["key"]: string[] };
-    people: PersonInMovie[];
+    metadata: MetaObject;
+    people: (PersonInMovie & { person_id?: string | Person })[];
+}
+
+export interface MetaObject {
+    ["key"]: string[];
 }
 
 export interface PersonInMovie {
-    person_id?: string | { name: string; nick?: string; surname: string };
     role: string;
-    details?: { ["key"]: string[] };
+    details?: MetaObject;
+}
+
+export interface Person {
+    name: string;
+    nick?: string;
+    surname: string;
 }
