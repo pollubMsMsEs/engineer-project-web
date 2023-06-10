@@ -3,7 +3,7 @@ import { deleteEverything, populateDB } from "../scripts/dbUtils.js";
 
 const router = Router();
 
-router.get("/repopulateDB", async (req, res) => {
+router.put("/repopulateDB", async (req, res) => {
     await deleteEverything();
     await populateDB();
 

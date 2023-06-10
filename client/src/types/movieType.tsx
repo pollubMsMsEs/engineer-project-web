@@ -6,11 +6,6 @@ export interface Movie {
     published_at: Date;
     genres: string[];
     metadata: MetaObject;
-    people: (PersonInMovie & { person_id?: string | Person })[];
-}
-
-export interface MetaObject {
-    ["key"]: string[];
 }
 
 export interface PersonInMovie {
@@ -22,4 +17,8 @@ export interface Person {
     name: string;
     nick?: string;
     surname: string;
+}
+
+export interface MetaObject {
+    [key: string]: string[];
 }
