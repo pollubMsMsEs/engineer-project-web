@@ -49,46 +49,54 @@ export default function MovieList() {
     }
 
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Genres</th>
-                    <th>Operations</th>
-                </tr>
-            </thead>
-            <tbody>
-                {movieList.map((movie) => (
-                    <tr key={movie._id}>
-                        <td>{movie.title}</td>
-                        <td>
-                            {movie.genres.reduce((acc, genre) => {
-                                return `${acc}${genre}, `;
-                            }, "")}
-                        </td>
-                        <td>
-                            <a href={`/movie/${movie._id}`}>
-                                <button>Details</button>
-                            </a>
-                            <Link
-                                to={{
-                                    pathname: `/movie/${movie._id}/edit`,
-                                }}
-                            >
-                                <button>Edit</button>
-                            </Link>
-
-                            <button
-                                onClick={() => {
-                                    deleteMovieHandler(movie._id);
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </td>
+        <>
+            <a href="/movie/create">
+                <button style={{ width: "100%" }}>Add movie</button>
+            </a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Genres</th>
+                        <th>Operations</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {movieList.map((movie) => (
+                        <tr key={movie._id}>
+                            <td>{movie.title}</td>
+                            <td>
+                                {movie.genres.reduce((acc, genre) => {
+                                    return `${acc}${genre}, `;
+                                }, "")}
+                            </td>
+                            <td>
+                                <a href={`/movie/${movie._id}`}>
+                                    <button>Details</button>
+                                </a>
+                                <Link
+                                    to={{
+                                        pathname: `/movie/${movie._id}/edit`,
+                                    }}
+                                >
+                                    <button>Edit</button>
+                                </Link>
+
+                                <button
+                                    onClick={() => {
+                                        deleteMovieHandler(movie._id);
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <a href="/movie/create">
+                <button style={{ width: "100%" }}>Add movie</button>
+            </a>
+        </>
     );
 }
