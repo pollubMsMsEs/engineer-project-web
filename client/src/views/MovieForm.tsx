@@ -7,8 +7,22 @@ import {
 } from "react-router-dom";
 import { MetaObject, Person as PersonType } from "../types/movieType";
 import PersonInMovieForm, {
+    PeopleList,
     PersonInMovieFormType,
 } from "../components/PersonInMovieForm";
+import axios from "axios";
+import LoadingCircle from "../components/LoadingCircle";
+
+async function getPeopleToPick() {
+    try {
+        const result = await axios.get<(PersonType & { _id: string })[]>(
+            "http://localhost:7777/api/person/all"
+        );
+        return result.data;
+    } catch (error) {
+        return false;
+    }
+}
 
 export default function MovieForm() {
     const navigate = useNavigate();
@@ -22,12 +36,12 @@ export default function MovieForm() {
     const [metadata, setMetadata] = useState<MetaObject>({});
     const [people, setPeople] = useState<PersonInMovieFormType[]>([]);
     const [peopleToPick, setPeopleToPick] = useState<
-        PersonType | null | undefined
+        PeopleList | false | undefined
     >(undefined);
     const [uniqueKey, setUniqueKey] = useState(0);
 
     useEffect(() => {
-        // Set people here
+        getPeopleToPick().then(setPeopleToPick);
     }, []);
 
     const roleSuggestions = people.reduce((roles: string[], person) => {
@@ -122,40 +136,50 @@ export default function MovieForm() {
                 }}
             >
                 <h3>People</h3>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setPeople((prevPeople) => {
-                            return [
-                                ...prevPeople,
-                                {
-                                    react_key: getUniqueKey(),
-                                    role: "",
-                                    person_id: "",
-                                    formDetails: {},
-                                },
-                            ];
-                        });
-                    }}
-                >
-                    +
-                </button>
+                {peopleToPick && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setPeople((prevPeople) => {
+                                return [
+                                    ...prevPeople,
+                                    {
+                                        react_key: getUniqueKey(),
+                                        role: "",
+                                        person_id: "",
+                                        formDetails: {},
+                                    },
+                                ];
+                            });
+                        }}
+                    >
+                        +
+                    </button>
+                )}
             </div>
 
             <div
                 style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px" }}
             >
-                {people.map((p, index) => (
-                    <PersonInMovieForm
-                        key={p.react_key}
-                        person={p}
-                        index={index}
-                        editPersonCallback={editPersonCallback}
-                        deletePersonCallback={deletePersonCallback}
-                        setEditedRoleCallback={setEditedRoleCallback}
-                        getUniqueKey={getUniqueKey}
-                    />
-                ))}
+                {peopleToPick === false && <span>Couldn't load people</span>}
+                {peopleToPick === undefined && <LoadingCircle size="15px" />}
+                {peopleToPick &&
+                    (peopleToPick.length === 0 ? (
+                        <span>No people in database, create some first</span>
+                    ) : (
+                        people.map((p, index) => (
+                            <PersonInMovieForm
+                                key={p.react_key}
+                                person={p}
+                                peopleToPick={peopleToPick}
+                                index={index}
+                                editPersonCallback={editPersonCallback}
+                                deletePersonCallback={deletePersonCallback}
+                                setEditedRoleCallback={setEditedRoleCallback}
+                                getUniqueKey={getUniqueKey}
+                            />
+                        ))
+                    ))}
             </div>
             <datalist id="people-roles">
                 {roleSuggestions.map((r) => (

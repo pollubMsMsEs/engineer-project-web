@@ -1,12 +1,12 @@
-export default function PersonDetailsForm({
+export default function PersonDetailForm({
     uniqueKey,
     data,
-    editDetailsCallback,
+    editDetailCallback,
     deleteDetailCallback,
 }: {
     uniqueKey: number;
     data: { key: string; values: string[] };
-    editDetailsCallback: (
+    editDetailCallback: (
         key: number,
         data: {
             key: string;
@@ -22,7 +22,7 @@ export default function PersonDetailsForm({
                 value={data.key}
                 onChange={(e) => {
                     data.key = e.target.value;
-                    editDetailsCallback(uniqueKey, data);
+                    editDetailCallback(uniqueKey, data);
                 }}
             />
             {data && (
@@ -31,7 +31,7 @@ export default function PersonDetailsForm({
                     value={data.values.join(" ")}
                     onChange={(e) => {
                         data.values = e.target.value.split(" ");
-                        editDetailsCallback(uniqueKey, data);
+                        editDetailCallback(uniqueKey, data);
                     }}
                 />
             )}

@@ -1,5 +1,5 @@
-import { PersonInMovie } from "../types/movieType";
-import PersonDetailsForm from "./PersonDetailsForm";
+import { PersonInMovie, Person as PersonType } from "../types/movieType";
+import PersonDetailForm from "./PersonDetailForm";
 
 export type PersonInMovieFormType = PersonInMovie & {
     react_key: number;
@@ -13,8 +13,11 @@ export type PersonInMovieFormType = PersonInMovie & {
     };
 };
 
+export type PeopleList = (PersonType & { _id: string })[];
+
 export default function PersonInMovieForm({
     person,
+    peopleToPick,
     index,
     editPersonCallback,
     deletePersonCallback,
@@ -23,12 +26,13 @@ export default function PersonInMovieForm({
 }: {
     person: PersonInMovieFormType;
     index: number;
+    peopleToPick: PeopleList;
     editPersonCallback: (person: PersonInMovieFormType) => void;
     deletePersonCallback: (person: PersonInMovieFormType) => void;
     setEditedRoleCallback: (role: string) => void;
     getUniqueKey: () => number;
 }) {
-    function editDetailsCallback(
+    function editDetailCallback(
         key: number,
         data: {
             key: string;
@@ -67,15 +71,23 @@ export default function PersonInMovieForm({
                 -
             </button>
             <label htmlFor={`person${index}`}>Person</label>
-            <input
-                type="text"
+            <select
+                name={`person${index}`}
                 id={`person${index}`}
                 value={person.person_id}
                 onChange={(e) => {
                     person.person_id = e.target.value;
                     editPersonCallback(person);
                 }}
-            />
+            >
+                {peopleToPick.map((personToPick) => (
+                    <option key={personToPick._id} value={personToPick._id}>{`${
+                        personToPick.name
+                    } ${personToPick.nick ? `${personToPick.nick} ` : ""} ${
+                        personToPick.surname
+                    }`}</option>
+                ))}
+            </select>
             <label htmlFor={`role${index}`}>Role</label>
             {person.person_id === "" ? (
                 <span>Pick person to set role</span>
@@ -144,11 +156,11 @@ export default function PersonInMovieForm({
                 {person.formDetails &&
                     Object.entries(person.formDetails).map(
                         ([reactKey, data]) => (
-                            <PersonDetailsForm
+                            <PersonDetailForm
                                 key={reactKey}
                                 uniqueKey={Number.parseInt(reactKey)}
                                 data={data}
-                                editDetailsCallback={editDetailsCallback}
+                                editDetailCallback={editDetailCallback}
                                 deleteDetailCallback={deleteDetailCallback}
                             />
                         )
