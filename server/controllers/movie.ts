@@ -1,19 +1,16 @@
 import Movie from "../models/movie.js";
 import { Request, Response, NextFunction } from "express";
-import { ExpressValidator, ValidationError } from "express-validator";
-import { Types } from "mongoose";
 import { inspect } from "util";
 import Debug from "debug";
-import movie from "../models/movie.js";
+import { ExtendedValidator } from "../scripts/customValidator.js";
 const debug = Debug("dev");
 
-const { param, body, validationResult } = new ExpressValidator({
-    isMongoId: async (value: any) => {
-        if (!Types.ObjectId.isValid(value)) {
-            throw new Error("This value isn't ObjectID");
-        }
-    },
-});
+const { param, body, validationResult } = ExtendedValidator();
+
+export async function getCount(req: Request, res: Response) {
+    const count = await Movie.count();
+    res.json({ count });
+}
 
 export async function getAllShort(req: Request, res: Response) {
     const movies = await Movie.find({}, { title: 1 });
@@ -23,11 +20,6 @@ export async function getAllShort(req: Request, res: Response) {
 export async function getAllPopulated(req: Request, res: Response) {
     const movies = await Movie.find({}).populate("people.person_id").exec();
     res.json(movies);
-}
-
-export async function getCount(req: Request, res: Response) {
-    const count = await Movie.count();
-    res.json({ count });
 }
 
 export const getOne = [
@@ -48,7 +40,7 @@ export const getOne = [
 
 export const createOne = [
     bodyGenreIntoArray,
-    body("created_by").trim().isMongoId().escape(),
+    body("created_by").optional().trim().isMongoId().escape(), //DEVTEMP: optional
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
@@ -79,6 +71,7 @@ export const createOne = [
 
 export const updateOne = [
     bodyGenreIntoArray,
+    param("id").isMongoId().withMessage("URL contains incorrect id"),
     body("created_by").trim().isMongoId().escape(),
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
@@ -105,10 +98,18 @@ export const updateOne = [
     },
 ];
 
-export async function deleteOne(req: Request, res: Response) {
-    const result = await Movie.findByIdAndRemove(req.params.id);
-    return res.json({ acknowledged: true, deleted: result });
-}
+export const deleteOne = [
+    param("id").isMongoId().withMessage("URL contains incorrect id"),
+    async function (req: Request, res: Response, next: NextFunction) {
+        try {
+            validationResult(req).throw();
+            const result = await Movie.findByIdAndRemove(req.params.id);
+            return res.json({ acknowledged: true, deleted: result });
+        } catch (error) {
+            return next(error);
+        }
+    },
+];
 
 function bodyGenreIntoArray(req: Request, res: Response, next: NextFunction) {
     if (!(req.body.genres instanceof Array)) {
