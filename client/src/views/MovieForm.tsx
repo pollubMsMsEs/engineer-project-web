@@ -5,11 +5,7 @@ import {
     useNavigate,
     useParams,
 } from "react-router-dom";
-import {
-    MetaObject,
-    Person as PersonType,
-    PersonInMovie,
-} from "../types/movieType";
+import { MetaObject, Person as PersonType } from "../types/movieType";
 import PersonInMovieForm, {
     PersonInMovieFormType,
 } from "../components/PersonInMovieForm";
@@ -136,6 +132,7 @@ export default function MovieForm() {
                                     react_key: getUniqueKey(),
                                     role: "",
                                     person_id: "",
+                                    formDetails: {},
                                 },
                             ];
                         });

@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { PersonInMovie } from "../types/movieType";
+import PersonDetailsForm from "./PersonDetailsForm";
 
 export type PersonInMovieFormType = PersonInMovie & {
     react_key: number;
     person_id: string;
 } & {
-    formDetails?: {
+    formDetails: {
         [reactKey: number]: {
             key: string;
             values: string[];
@@ -28,6 +28,23 @@ export default function PersonInMovieForm({
     setEditedRoleCallback: (role: string) => void;
     getUniqueKey: () => number;
 }) {
+    function editDetailsCallback(
+        key: number,
+        data: {
+            key: string;
+            values: string[];
+        }
+    ) {
+        person.formDetails[key] = data;
+
+        editPersonCallback(person);
+    }
+
+    function deleteDetailCallback(key: number) {
+        delete person.formDetails[key];
+        editPersonCallback(person);
+    }
+
     return (
         <div
             style={{
@@ -127,49 +144,13 @@ export default function PersonInMovieForm({
                 {person.formDetails &&
                     Object.entries(person.formDetails).map(
                         ([reactKey, data]) => (
-                            <div key={reactKey}>
-                                <input
-                                    type="text"
-                                    value={data.key}
-                                    onChange={(e) => {
-                                        person.formDetails![
-                                            Number.parseInt(reactKey)
-                                        ].key = e.target.value;
-
-                                        editPersonCallback(person);
-                                    }}
-                                />
-                                {data && (
-                                    <input
-                                        type="text"
-                                        value={data.values.join(" ")}
-                                        onChange={(e) => {
-                                            person.formDetails![
-                                                Number.parseInt(reactKey)
-                                            ].values =
-                                                e.target.value.split(" ");
-
-                                            editPersonCallback(person);
-                                        }}
-                                    />
-                                )}
-                                <button
-                                    style={{
-                                        padding: "5px",
-                                        aspectRatio: "1/1",
-                                    }}
-                                    type="button"
-                                    onClick={() => {
-                                        delete person.formDetails![
-                                            Number.parseInt(reactKey)
-                                        ];
-
-                                        editPersonCallback(person);
-                                    }}
-                                >
-                                    -
-                                </button>
-                            </div>
+                            <PersonDetailsForm
+                                key={reactKey}
+                                uniqueKey={Number.parseInt(reactKey)}
+                                data={data}
+                                editDetailsCallback={editDetailsCallback}
+                                deleteDetailCallback={deleteDetailCallback}
+                            />
                         )
                     )}
             </div>
