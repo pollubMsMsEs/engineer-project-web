@@ -2,8 +2,12 @@ import { Request, Response, NextFunction, Router } from "express";
 import movieRouter from "./api/movie.js";
 import personRouter from "./api/person.js";
 import { validationResult } from "express-validator";
+import { login, register } from "../controllers/user.js";
 
 const router = Router();
+
+router.get("/login", login);
+router.get("/register", register);
 
 router.use("/movie", movieRouter);
 router.use("/person", personRouter);
