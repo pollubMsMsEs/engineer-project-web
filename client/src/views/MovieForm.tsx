@@ -33,7 +33,12 @@ export default function MovieForm() {
     const [description, setDescription] = useState("");
     const [publishedAt, setPublishedAt] = useState("");
     const [genres, setGenres] = useState<string[]>([]);
-    const [metadata, setMetadata] = useState<MetaObject>({});
+    const [metadata, setMetadata] = useState<{
+        [reactKey: number]: {
+            key: string;
+            values: string[];
+        };
+    }>({});
     const [people, setPeople] = useState<PersonInMovieFormType[]>([]);
     const [peopleToPick, setPeopleToPick] = useState<
         PeopleList | false | undefined
@@ -180,6 +185,50 @@ export default function MovieForm() {
                             />
                         ))
                     ))}
+            </div>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <h3>Metadata</h3>
+                <button
+                    type="button"
+                    onClick={() => {
+                        const uniqueKey = getUniqueKey();
+                        metadata[uniqueKey] = { key: "", values: [] };
+
+                        setMetadata(metadata);
+                    }}
+                >
+                    +
+                </button>
+            </div>
+            <div>
+                {metadata &&
+                    Object.entries(metadata).map(
+                        ([reactKey, metadata], index) => (
+                            <div key={reactKey}>
+                                <input
+                                    type="text"
+                                    name={`metakey${index}`}
+                                    value={metadata.key}
+                                    onChange={(e) => {
+                                        setMetadata((prev) => {
+                                            return {
+                                                ...prev,
+                                                react_key: {
+                                                    key: e.target.value,
+                                                    value: metadata.values,
+                                                },
+                                            };
+                                        });
+                                    }}
+                                />
+                            </div>
+                        )
+                    )}
             </div>
             <datalist id="people-roles">
                 {roleSuggestions.map((r) => (
