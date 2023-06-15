@@ -52,8 +52,8 @@ export const createOne = [
     body("genres.*").escape(),
     body("metadata[*].*").escape(),
     body("people").optional().isArray(),
-    body("people.person_id").optional().isMongoId(),
-    body("people.role")
+    body("people[*].person_id").optional().isMongoId(),
+    body("people[*].role")
         .trim()
         .optional()
         .isString()
@@ -88,10 +88,16 @@ export const updateOne = [
         .withMessage("Incorrect format of published_at date")
         .toDate(),
     body("genres.*").escape(),
-    body("metadata.*").escape(),
-    body("people.person_id").isMongoId(),
-    body("people.role").trim().isString().isLength({ min: 1 }).escape(),
-    body("people.details.*").escape(),
+    body("metadata[*].*").escape(),
+    body("people").optional().isArray(),
+    body("people[*].person_id").optional().isMongoId(),
+    body("people[*].role")
+        .trim()
+        .optional()
+        .isString()
+        .isLength({ min: 1 })
+        .escape(),
+    body("people.*.details.*").optional().escape(),
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();

@@ -17,6 +17,8 @@ import PersonInMovieForm, {
 } from "../components/PersonInMovieForm";
 import axios from "axios";
 import LoadingCircle from "../components/LoadingCircle";
+import dayjs from "dayjs";
+import { Person } from "../types/movieType";
 
 async function getPeopleToPick() {
     try {
@@ -29,7 +31,37 @@ async function getPeopleToPick() {
     }
 }
 
+type MovieToDB = Movie & {
+    created_by: string;
+    people: (PersonInMovie & { person_id: string })[];
+};
+
+type MovieFromDB = Movie & {
+    people: (PersonInMovie & { person_id: Person & { _id: string } })[];
+};
+
+type MetadataInForm = {
+    [reactKey: number]: {
+        key: string;
+        values: string[];
+    };
+};
+
+const map = new WeakMap();
+let index = 0;
+
+function weakKey(obj: any) {
+    let key = map.get(obj);
+    if (!key) {
+        key = "weak-key-" + index++;
+        map.set(obj, key);
+    }
+    return key;
+}
+
 export default function MovieForm() {
+    const createdBy = "648af4c41d8735e360cfd2af"; //TODO: Very temp
+
     const navigate = useNavigate();
     const { _id } = useParams();
     const [editedRole, setEditedRole] = useState("");
@@ -38,21 +70,21 @@ export default function MovieForm() {
     const [description, setDescription] = useState("");
     const [publishedAt, setPublishedAt] = useState("");
     const [genres, setGenres] = useState<string[]>([]);
-    const [metadata, setMetadata] = useState<{
-        [reactKey: number]: {
-            key: string;
-            values: string[];
-        };
-    }>({});
+    const [metadata, setMetadata] = useState<MetadataInForm>({});
     const [people, setPeople] = useState<PersonInMovieFormType[]>([]);
+
     const [peopleToPick, setPeopleToPick] = useState<
         PeopleList | false | undefined
     >(undefined);
-    const [uniqueKey, setUniqueKey] = useState(0);
+    let uniqueKey = 0;
 
     useEffect(() => {
         getPeopleToPick().then(setPeopleToPick);
-    }, []);
+
+        if (_id) {
+            getMovie(_id);
+        }
+    }, [_id]);
 
     const roleSuggestions = people.reduce((roles: string[], person) => {
         if (
@@ -91,17 +123,66 @@ export default function MovieForm() {
     }
 
     function getUniqueKey() {
-        setUniqueKey((v) => v + 1);
+        uniqueKey++;
+
         console.log(uniqueKey);
         return uniqueKey;
     }
 
-    async function submitForm() {
-        type MovieInDB = Movie & {
-            people: (PersonInMovie & { person_id: string })[];
-        };
+    async function getMovie(_id: string) {
+        try {
+            const result = await axios.get(
+                `http://localhost:7777/api/movie/${_id}`
+            );
+            const loadedMovie: MovieFromDB = result.data.data;
 
-        const movie: MovieInDB = {
+            setTitle(loadedMovie.title);
+            setDescription(loadedMovie.description);
+            setPublishedAt(
+                dayjs(loadedMovie.published_at).format("YYYY-MM-DD")
+            );
+            setGenres(loadedMovie.genres);
+            setMetadata(
+                Object.entries(loadedMovie.metadata).reduce<MetadataInForm>(
+                    (acc, [key, values]) => {
+                        acc[getUniqueKey()] = { key, values };
+                        return acc;
+                    },
+                    {}
+                )
+            );
+            setPeople(
+                loadedMovie.people.map<PersonInMovieFormType>((p) => {
+                    const newPerson: PersonInMovieFormType = {
+                        ...p,
+                        person_id: p.person_id._id,
+                        react_key: getUniqueKey(),
+                        formDetails: {},
+                    };
+                    if (p.details) {
+                        newPerson.formDetails = Object.entries(
+                            p.details
+                        ).reduce((acc, [key, values]) => {
+                            return {
+                                ...acc,
+                                [getUniqueKey()]: {
+                                    key,
+                                    values,
+                                },
+                            };
+                        }, {});
+                    }
+                    return newPerson;
+                })
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function submitForm() {
+        const movie: MovieToDB = {
+            created_by: createdBy,
             _id,
             title,
             dev: true,
@@ -124,7 +205,19 @@ export default function MovieForm() {
         console.log(movie);
 
         try {
-            await axios.post("http://localhost:7777/api/movie/create", movie);
+            if (_id) {
+                //Update
+                await axios.put(
+                    `http://localhost:7777/api/movie/${_id}`,
+                    movie
+                );
+            } else {
+                //Create
+                await axios.post(
+                    "http://localhost:7777/api/movie/create",
+                    movie
+                );
+            }
 
             navigate("/movie/all");
         } catch (error: any) {
@@ -318,7 +411,7 @@ export default function MovieForm() {
                     </option>
                 ))}
             </datalist>
-            <button type="submit">Add</button>
+            <button type="submit">{_id ? "Update" : "Add"}</button>
         </form>
     );
 }
