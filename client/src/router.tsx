@@ -10,6 +10,7 @@ import MovieForm from "./views/MovieForm.tsx";
 import PeopleList from "./views/PersonList.tsx";
 import PersonDetails from "./views/PersonDetails.tsx";
 import PersonForm from "./views/PersonForm.tsx";
+import All from "./views/All.tsx";
 
 const router = createBrowserRouter([
     {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
                         element: <PersonForm />,
                     },
                 ],
+            },
+            {
+                path: "all",
+                element: <All />,
             },
         ],
     },

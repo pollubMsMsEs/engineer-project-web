@@ -11,8 +11,7 @@
    Delete). Preferowaną bazą danych jest MongoDB, ale można też użyć MySQL albo MariaDB. Baza
    danych powinna zawierać przynajmniej 2 encje połączone związkiem jeden do wielu, na których
    aplikacja będzie wykonywać operacje CRUD. Użytkownik powinien mieć dostęp do tych operacji za
-   pomocą odpowiedniego graficznego interfejsu użytkownika. Należy zadbać o informowanie
-   użytkownika o powodzeniu albo niepowodzeniu operacji z wykorzystaniem tego interfejsu.
+   pomocą odpowiedniego graficznego interfejsu użytkownika. `Należy zadbać o informowanie użytkownika o powodzeniu albo niepowodzeniu operacji z wykorzystaniem tego interfejsu.`
 3. Strona główna powinna zawierać linki wyświetlające:
     - podstawowe dane z przynajmniej dwóch encji w formie tabel (2 linki, dwie ścieżki do obsługi, 2
       tabele) z przyciskami do dodawania nowego rekordu (pod i nad tabelą), przyciski do
@@ -27,12 +26,12 @@
       odpowiadającego rekordu tabeli nadrzędnej.
     - w formularzu dodawania rekordu do tabeli podrzędnej zamiast pola do wprowadzenia klucza
       obcego użyć pola select wyświetlającego najważniejsze pola z tabeli nadrzędnej.
-4. Funkcje aplikacji powinny być dostępne dla zalogowanych użytkowników i zabezpieczone przed
-   nieuprawnionym dostępem. Do uwierzytelniania i autoryzacji należy wykorzystać mechanizm oparty na
-   tokenach JWT (JSON Web Token).
-5. Formularze powinny być walidowane zarówno po stronie klienta jak i serwera za pomocą odpowiednich
-   filtrów i wyrażeń regularnych.
-6. Przy ocenie pod uwagę będzie brana jakość kodu i jego organizacja.
+4. `Funkcje aplikacji powinny być dostępne dla zalogowanych użytkowników i zabezpieczone przed
+nieuprawnionym dostępem. Do uwierzytelniania i autoryzacji należy wykorzystać mechanizm oparty na
+tokenach JWT (JSON Web Token).`
+5. `Formularze powinny być walidowane zarówno po stronie klienta jak i serwera za pomocą odpowiednich
+filtrów i wyrażeń regularnych.`
+6. `Przy ocenie pod uwagę będzie brana jakość kodu i jego organizacja.`
 7. Termin oddania projektu – przedostatnie laboratorium w semestrze (na ostatnich zajęciach planowane
    jest omówienie prac i rozmowa z każdym studentem o jego projekcie, która jest warunkiem konieczym
    do otrzymania zaliczenia z zajęć).
