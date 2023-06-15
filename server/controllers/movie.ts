@@ -50,10 +50,16 @@ export const createOne = [
         .withMessage("Incorrect format of published_at date")
         .toDate(),
     body("genres.*").escape(),
-    body("metadata.*").escape(),
-    body("people.person_id").isMongoId(),
-    body("people.role").trim().isString().isLength({ min: 1 }).escape(),
-    body("people.details.*").escape(),
+    body("metadata[*].*").escape(),
+    body("people").optional().isArray(),
+    body("people.person_id").optional().isMongoId(),
+    body("people.role")
+        .trim()
+        .optional()
+        .isString()
+        .isLength({ min: 1 })
+        .escape(),
+    body("people.*.details.*").optional().escape(),
     async function (req: Request, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 

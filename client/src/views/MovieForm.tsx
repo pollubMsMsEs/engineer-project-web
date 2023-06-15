@@ -5,7 +5,12 @@ import {
     useNavigate,
     useParams,
 } from "react-router-dom";
-import { MetaObject, Person as PersonType } from "../types/movieType";
+import {
+    MetaObject,
+    Movie,
+    PersonInMovie,
+    Person as PersonType,
+} from "../types/movieType";
 import PersonInMovieForm, {
     PeopleList,
     PersonInMovieFormType,
@@ -91,8 +96,54 @@ export default function MovieForm() {
         return uniqueKey;
     }
 
+    async function submitForm() {
+        type MovieInDB = Movie & {
+            people: (PersonInMovie & { person_id: string })[];
+        };
+
+        const movie: MovieInDB = {
+            _id,
+            title,
+            dev: true,
+            description,
+            published_at: new Date(publishedAt),
+            genres,
+            metadata: Object.entries(metadata).reduce<MetaObject>(
+                (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
+                {}
+            ),
+            people: people.map((p) => {
+                p.details = Object.entries(p.formDetails).reduce<MetaObject>(
+                    (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
+                    {}
+                );
+                return p;
+            }),
+        };
+
+        console.log(movie);
+
+        try {
+            await axios.post("http://localhost:7777/api/movie/create", movie);
+
+            navigate("/movie/all");
+        } catch (error: any) {
+            if (error.response?.data?.errors) {
+                console.error("Validation failed:", error.response.data.errors);
+            } else {
+                console.error("Undefined error", error);
+            }
+        }
+    }
+
     return (
-        <form style={{ display: "grid", justifyContent: "start" }}>
+        <form
+            style={{ display: "grid", justifyContent: "start" }}
+            onSubmit={(e) => {
+                e.preventDefault();
+                submitForm();
+            }}
+        >
             {_id && <input type="hidden" name="_id" value={_id} />}
             <label htmlFor="title">Title: </label>
             <input
@@ -196,10 +247,15 @@ export default function MovieForm() {
                 <button
                     type="button"
                     onClick={() => {
-                        const uniqueKey = getUniqueKey();
-                        metadata[uniqueKey] = { key: "", values: [] };
-
-                        setMetadata(metadata);
+                        setMetadata((prev) => {
+                            return {
+                                ...prev,
+                                [getUniqueKey()]: {
+                                    key: "",
+                                    values: [],
+                                },
+                            };
+                        });
                     }}
                 >
                     +
@@ -218,9 +274,27 @@ export default function MovieForm() {
                                         setMetadata((prev) => {
                                             return {
                                                 ...prev,
-                                                react_key: {
+                                                [reactKey]: {
                                                     key: e.target.value,
-                                                    value: metadata.values,
+                                                    values: metadata.values,
+                                                },
+                                            };
+                                        });
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    name={`metavalue${index}`}
+                                    value={metadata.values.join(" ")}
+                                    onChange={(e) => {
+                                        setMetadata((prev) => {
+                                            return {
+                                                ...prev,
+                                                [reactKey]: {
+                                                    key: metadata.key,
+                                                    values: e.target.value.split(
+                                                        " "
+                                                    ),
                                                 },
                                             };
                                         });
@@ -244,6 +318,7 @@ export default function MovieForm() {
                     </option>
                 ))}
             </datalist>
+            <button type="submit">Add</button>
         </form>
     );
 }

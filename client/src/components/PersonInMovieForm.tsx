@@ -124,19 +124,11 @@ export default function PersonInMovieForm({
                     type="button"
                     onClick={() => {
                         const uniqueKey = getUniqueKey();
-                        if (person.formDetails == undefined) {
-                            person.formDetails = {
-                                [uniqueKey]: {
-                                    key: "",
-                                    values: [""],
-                                },
-                            };
-                        } else {
-                            person.formDetails[uniqueKey] = {
-                                key: "",
-                                values: [""],
-                            };
-                        }
+
+                        person.formDetails[uniqueKey] = {
+                            key: "",
+                            values: [""],
+                        };
 
                         editPersonCallback(person);
                     }}

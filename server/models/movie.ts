@@ -22,7 +22,7 @@ const MovieSchema = new Schema({
             role: { type: String, required: true },
             details: {
                 type: Map,
-                of: String,
+                of: [String],
             },
         },
     ],
