@@ -7,6 +7,7 @@ import Index from "./views/Index.tsx";
 import MovieList from "./views/MovieList.tsx";
 import MovieDetails from "./views/MovieDetails.tsx";
 import MovieForm from "./views/MovieForm.tsx";
+import PeopleList from "./views/PeopleList.tsx";
 
 const router = createBrowserRouter([
     {
@@ -35,6 +36,15 @@ const router = createBrowserRouter([
                     {
                         path: ":_id/edit",
                         element: <MovieForm />,
+                    },
+                ],
+            },
+            {
+                path: "person",
+                children: [
+                    {
+                        path: "all",
+                        element: <PeopleList />,
                     },
                 ],
             },

@@ -1,80 +1,80 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axiosClient from "../axiosClient";
+import { Person } from "../types/movieType";
 import { Link } from "react-router-dom";
-import { Movie } from "../types/movieType";
 
-async function getMovies() {
+async function getPeople() {
     try {
-        const result = await axios.get("http://localhost:7777/api/movie/all");
+        const result = await axiosClient.get("/person/all");
         return result.data;
     } catch (error) {
+        console.error("People", error);
         return false;
     }
 }
 
-async function deleteMovie(_id: string) {
+async function deletePerson(_id: string) {
     try {
-        const result = await axios.delete<{
+        const result = await axiosClient.delete<{
             acknowledged: boolean;
-            deleted: Movie | null;
-        }>(`http://localhost:7777/api/movie/${_id}`);
+            deleted: (Person & { _id: string }) | null;
+        }>(`/person/${_id}`);
         console.log(result.data);
         return result.data;
     } catch (error) {
+        console.error(error);
         return false;
     }
 }
 
-export default function MovieList() {
-    const [movieList, setMovieList] = useState<
-        { title: string; genres: string[]; _id: string }[]
-    >([]);
+export default function PeopleList() {
+    const [peopleList, setPeopleList] = useState<(Person & { _id: string })[]>(
+        []
+    );
 
     useEffect(() => {
-        getMovies().then((movies) => {
-            setMovieList(movies);
+        getPeople().then((people) => {
+            setPeopleList(people);
         });
     }, []);
 
-    async function deleteMovieHandler(_id: string) {
-        const result = await deleteMovie(_id);
-        const deletedMovieId = result && result.deleted?._id;
-        if (deletedMovieId) {
-            setMovieList((previousMovies) => {
-                return previousMovies.filter((m) => m._id !== deletedMovieId);
+    async function deletePersonHandler(_id: string) {
+        const result = await deletePerson(_id);
+        const deletedPersonId = result && result.deleted?._id;
+        if (deletedPersonId) {
+            setPeopleList((previousPeople) => {
+                return previousPeople.filter((m) => m._id !== deletedPersonId);
             });
         }
     }
 
     return (
         <>
-            <a href="/movie/create">
+            <a href="/person/create">
                 <button style={{ width: "100%" }}>Add movie</button>
             </a>
             <table>
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Genres</th>
+                        <th>Name</th>
+                        <th>Nick</th>
+                        <th>Surname</th>
                         <th>Operations</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {movieList.map((movie) => (
-                        <tr key={movie._id}>
-                            <td>{movie.title}</td>
+                    {peopleList.map((person) => (
+                        <tr key={person._id}>
+                            <td>{person.name}</td>
+                            <td>{person.nick}</td>
+                            <td>{person.surname}</td>
                             <td>
-                                {movie.genres.reduce((acc, genre) => {
-                                    return `${acc}${genre}, `;
-                                }, "")}
-                            </td>
-                            <td>
-                                <a href={`/movie/${movie._id}`}>
+                                <a href={`/person/${person._id}`}>
                                     <button>Details</button>
                                 </a>
                                 <Link
                                     to={{
-                                        pathname: `/movie/${movie._id}/edit`,
+                                        pathname: `/person/${person._id}/edit`,
                                     }}
                                 >
                                     <button>Edit</button>
@@ -82,7 +82,7 @@ export default function MovieList() {
 
                                 <button
                                     onClick={() => {
-                                        deleteMovieHandler(movie._id);
+                                        deletePersonHandler(person._id);
                                     }}
                                 >
                                     Delete
