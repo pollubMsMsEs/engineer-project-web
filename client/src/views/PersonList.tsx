@@ -51,7 +51,7 @@ export default function PeopleList() {
     return (
         <>
             <a href="/person/create">
-                <button style={{ width: "100%" }}>Add movie</button>
+                <button style={{ width: "100%" }}>Add person</button>
             </a>
             <table>
                 <thead>
@@ -92,8 +92,8 @@ export default function PeopleList() {
                     ))}
                 </tbody>
             </table>
-            <a href="/movie/create">
-                <button style={{ width: "100%" }}>Add movie</button>
+            <a href="/person/create">
+                <button style={{ width: "100%" }}>Add person</button>
             </a>
         </>
     );

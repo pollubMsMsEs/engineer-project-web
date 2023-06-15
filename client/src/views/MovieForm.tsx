@@ -47,18 +47,6 @@ type MetadataInForm = {
     };
 };
 
-const map = new WeakMap();
-let index = 0;
-
-function weakKey(obj: any) {
-    let key = map.get(obj);
-    if (!key) {
-        key = "weak-key-" + index++;
-        map.set(obj, key);
-    }
-    return key;
-}
-
 export default function MovieForm() {
     const createdBy = "648af4c41d8735e360cfd2af"; //TODO: Very temp
 
@@ -240,7 +228,7 @@ export default function MovieForm() {
             {_id && <input type="hidden" name="_id" value={_id} />}
             <label htmlFor="title">Title: </label>
             <input
-                type="title"
+                type="text"
                 name="title"
                 id="title"
                 value={title}

@@ -7,7 +7,9 @@ import Index from "./views/Index.tsx";
 import MovieList from "./views/MovieList.tsx";
 import MovieDetails from "./views/MovieDetails.tsx";
 import MovieForm from "./views/MovieForm.tsx";
-import PeopleList from "./views/PeopleList.tsx";
+import PeopleList from "./views/PersonList.tsx";
+import PersonDetails from "./views/PersonDetails.tsx";
+import PersonForm from "./views/PersonForm.tsx";
 
 const router = createBrowserRouter([
     {
@@ -45,6 +47,18 @@ const router = createBrowserRouter([
                     {
                         path: "all",
                         element: <PeopleList />,
+                    },
+                    {
+                        path: "create",
+                        element: <PersonForm />,
+                    },
+                    {
+                        path: ":_id",
+                        element: <PersonDetails />,
+                    },
+                    {
+                        path: ":_id/edit",
+                        element: <PersonForm />,
                     },
                 ],
             },

@@ -64,6 +64,10 @@ export const updateOne = [
     body("surname").trim().isLength({ min: 1 }).escape(),
     async function (req: Request, res: Response, next: NextFunction) {
         try {
+            if (req.body.nick === undefined) {
+                req.body.nick = null;
+            }
+            console.log(req.body);
             validationResult(req).throw();
 
             await Person.findByIdAndUpdate(req.params.id, req.body, {});
