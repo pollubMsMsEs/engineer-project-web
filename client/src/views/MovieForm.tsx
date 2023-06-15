@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     redirect,
     useLocation,
@@ -76,7 +76,7 @@ export default function MovieForm() {
     const [peopleToPick, setPeopleToPick] = useState<
         PeopleList | false | undefined
     >(undefined);
-    let uniqueKey = 0;
+    const uniqueKey = useRef(0);
 
     useEffect(() => {
         getPeopleToPick().then(setPeopleToPick);
@@ -123,10 +123,10 @@ export default function MovieForm() {
     }
 
     function getUniqueKey() {
-        uniqueKey++;
+        uniqueKey.current++;
 
         console.log(uniqueKey);
-        return uniqueKey;
+        return uniqueKey.current;
     }
 
     async function getMovie(_id: string) {
