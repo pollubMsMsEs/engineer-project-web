@@ -3,6 +3,8 @@ import "./css/DefaultLayout.css";
 import Icon from "@mdi/react";
 import { mdiMovieOpen } from "@mdi/js";
 import { useAuthenticationContext } from "../../stateContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function DefaultLayout() {
     const { token } = useAuthenticationContext();
@@ -34,6 +36,10 @@ export default function DefaultLayout() {
             <main className="content">
                 <Outlet />
             </main>
+            <ToastContainer
+                position={toast.POSITION.BOTTOM_CENTER}
+                theme="dark"
+            />
         </div>
     );
 }

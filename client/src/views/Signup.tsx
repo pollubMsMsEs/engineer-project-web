@@ -29,11 +29,8 @@ export default function Register() {
             context.setToken(result.data.token);
             context.setUser(returnedUser);
         } catch (error: any) {
-            if (error.response.status === 422) {
-                setErrors(error.response.data.errors);
-            } else if (error.response.status === 401) {
-                setErrors({ login: ["Bad credentials"] });
-            }
+            setErrors(error.response.data.errors);
+
             console.error(error.response);
         }
     }

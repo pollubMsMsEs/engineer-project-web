@@ -4,13 +4,15 @@ import { useParams } from "react-router-dom";
 import { Person as PersonType } from "../types/movieType";
 import Person from "../components/Person";
 import LoadingCircle from "../components/LoadingCircle";
+import { ToastContainer, toast } from "react-toastify";
 
 async function getPersonById(id: string) {
     try {
         const result = await axiosClient.get(`/person/${id}`);
 
         return result.data.data;
-    } catch (error) {
+    } catch (error: any) {
+        toast.error(error.data.errors[0].msg);
         return false;
     }
 }
@@ -27,6 +29,7 @@ export default function PersonDetails() {
 
     return (
         <div>
+            <h2>Person</h2>
             {person !== false ? (
                 person !== null ? (
                     <Person person={person} />
@@ -34,7 +37,7 @@ export default function PersonDetails() {
                     <LoadingCircle size="15px" />
                 )
             ) : (
-                <p>Couldn't load movie</p>
+                <p>Couldn't load person</p>
             )}
         </div>
     );

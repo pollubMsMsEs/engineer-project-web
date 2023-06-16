@@ -20,6 +20,7 @@ export default function PersonDetailForm({
             <input
                 type="text"
                 value={data.key}
+                required
                 onChange={(e) => {
                     data.key = e.target.value;
                     editDetailCallback(uniqueKey, data);
@@ -29,7 +30,16 @@ export default function PersonDetailForm({
                 <input
                     type="text"
                     value={data.values.join(" ")}
+                    required
                     onChange={(e) => {
+                        if (e.target.value.includes(",")) {
+                            e.target.setCustomValidity(
+                                "Seperate values with space, not colon"
+                            );
+                        } else {
+                            e.target.setCustomValidity("");
+                        }
+
                         data.values = e.target.value.split(" ");
                         editDetailCallback(uniqueKey, data);
                     }}

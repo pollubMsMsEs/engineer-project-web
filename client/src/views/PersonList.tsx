@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Person } from "../types/movieType";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 async function getPeople() {
     try {
@@ -19,10 +20,17 @@ async function deletePerson(_id: string) {
             acknowledged: boolean;
             deleted: (Person & { _id: string }) | null;
         }>(`/person/${_id}`);
-        console.log(result.data);
+
         return result.data;
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        const msg = error?.response?.data?.errors[0]?.msg;
+        if (msg) {
+            toast.error(msg);
+        } else {
+            console.error(error);
+            toast.error(error);
+        }
+
         return false;
     }
 }

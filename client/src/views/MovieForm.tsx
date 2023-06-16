@@ -14,6 +14,7 @@ import LoadingCircle from "../components/LoadingCircle";
 import dayjs from "dayjs";
 import { Person } from "../types/movieType";
 import axiosClient from "../axiosClient";
+import ErrorsDisplay from "../components/ErrorsDisplay";
 
 async function getPeopleToPick() {
     try {
@@ -52,6 +53,7 @@ export default function MovieForm() {
     const [genres, setGenres] = useState<string[]>([]);
     const [metadata, setMetadata] = useState<MetadataInForm>({});
     const [people, setPeople] = useState<PersonInMovieFormType[]>([]);
+    const [errors, setErrors] = useState([]);
 
     const [peopleToPick, setPeopleToPick] = useState<
         PeopleList | false | undefined
@@ -192,196 +194,236 @@ export default function MovieForm() {
 
             navigate("/movie/all");
         } catch (error: any) {
-            if (error.response?.data?.errors) {
-                console.error("Validation failed:", error.response.data.errors);
+            const msgErrors = error?.response?.data?.errors;
+            if (msgErrors) {
+                setErrors(msgErrors);
             } else {
-                console.error("Undefined error", error);
+                console.error(error);
             }
         }
     }
 
     return (
-        <form
-            style={{ display: "grid", justifyContent: "start" }}
-            onSubmit={(e) => {
-                e.preventDefault();
-                submitForm();
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "1fr max(200px,10%)",
             }}
         >
-            {_id && <input type="hidden" name="_id" value={_id} />}
-            <label htmlFor="title">Title: </label>
-            <input
-                type="text"
-                name="title"
-                id="title"
-                value={title}
-                onChange={(e) => {
-                    setTitle(e.target.value);
-                }}
-            />
-            <label htmlFor="description">Description: </label>
-            <textarea
-                name="description"
-                id="description"
-                value={description}
-                onChange={(e) => {
-                    setDescription(e.target.value);
-                }}
-            />
-            <label htmlFor="published_at">Published at: </label>
-            <input
-                type="date"
-                name="published_at"
-                id="published_at"
-                value={publishedAt}
-                onChange={(e) => {
-                    setPublishedAt(e.target.value);
-                }}
-            />
-            <label htmlFor="genres">Genres (space seperated):</label>
-            <input
-                type="input"
-                name="genres"
-                id="genres"
-                value={genres.join(" ")}
-                onChange={(e) => {
-                    setGenres(e.target.value.split(" "));
-                }}
-            />
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
+            <form
+                style={{ display: "grid", justifyContent: "start" }}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    submitForm();
                 }}
             >
-                <h3>People</h3>
-                {peopleToPick && (
+                {_id && <input type="hidden" name="_id" value={_id} />}
+                <label htmlFor="title">Title: </label>
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    required
+                    value={title}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                    }}
+                />
+                <label htmlFor="description">Description: </label>
+                <textarea
+                    name="description"
+                    id="description"
+                    value={description}
+                    onChange={(e) => {
+                        setDescription(e.target.value);
+                    }}
+                />
+                <label htmlFor="published_at">Published at: </label>
+                <input
+                    type="date"
+                    name="published_at"
+                    id="published_at"
+                    required
+                    value={publishedAt}
+                    onChange={(e) => {
+                        setPublishedAt(e.target.value);
+                    }}
+                />
+                <label htmlFor="genres">Genres (space seperated):</label>
+                <input
+                    type="input"
+                    name="genres"
+                    id="genres"
+                    value={genres.join(" ")}
+                    onChange={(e) => {
+                        if (e.target.value.includes(",")) {
+                            e.target.setCustomValidity(
+                                "Seperate values with space, not colon"
+                            );
+                        } else {
+                            e.target.setCustomValidity("");
+                        }
+                        setGenres(e.target.value.split(" "));
+                    }}
+                />
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <h3>People</h3>
+                    {peopleToPick && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setPeople((prevPeople) => {
+                                    return [
+                                        ...prevPeople,
+                                        {
+                                            react_key: getUniqueKey(),
+                                            role: "",
+                                            person_id: peopleToPick[0]._id,
+                                            formDetails: {},
+                                        },
+                                    ];
+                                });
+                            }}
+                        >
+                            +
+                        </button>
+                    )}
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "10px 20px",
+                    }}
+                >
+                    {peopleToPick === false && (
+                        <span>Couldn't load people</span>
+                    )}
+                    {peopleToPick === undefined && (
+                        <LoadingCircle size="15px" />
+                    )}
+                    {peopleToPick &&
+                        (peopleToPick.length === 0 ? (
+                            <span>
+                                No people in database, create some first
+                            </span>
+                        ) : (
+                            people.map((p, index) => (
+                                <PersonInMovieForm
+                                    key={p.react_key}
+                                    person={p}
+                                    peopleToPick={peopleToPick}
+                                    index={index}
+                                    editPersonCallback={editPersonCallback}
+                                    deletePersonCallback={deletePersonCallback}
+                                    setEditedRoleCallback={
+                                        setEditedRoleCallback
+                                    }
+                                    getUniqueKey={getUniqueKey}
+                                />
+                            ))
+                        ))}
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <h3>Metadata</h3>
                     <button
                         type="button"
                         onClick={() => {
-                            setPeople((prevPeople) => {
-                                return [
-                                    ...prevPeople,
-                                    {
-                                        react_key: getUniqueKey(),
-                                        role: "",
-                                        person_id: "",
-                                        formDetails: {},
+                            setMetadata((prev) => {
+                                return {
+                                    ...prev,
+                                    [getUniqueKey()]: {
+                                        key: "",
+                                        values: [],
                                     },
-                                ];
+                                };
                             });
                         }}
                     >
                         +
                     </button>
-                )}
-            </div>
+                </div>
+                <div>
+                    {metadata &&
+                        Object.entries(metadata).map(
+                            ([reactKey, metadata], index) => (
+                                <div key={reactKey}>
+                                    <input
+                                        type="text"
+                                        name={`metakey${index}`}
+                                        value={metadata.key}
+                                        required
+                                        onChange={(e) => {
+                                            setMetadata((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    [reactKey]: {
+                                                        key: e.target.value,
+                                                        values: metadata.values,
+                                                    },
+                                                };
+                                            });
+                                        }}
+                                    />
+                                    <input
+                                        type="text"
+                                        name={`metavalue${index}`}
+                                        value={metadata.values.join(" ")}
+                                        required
+                                        onChange={(e) => {
+                                            if (e.target.value.includes(",")) {
+                                                e.target.setCustomValidity(
+                                                    "Seperate values with space, not colon"
+                                                );
+                                            } else {
+                                                e.target.setCustomValidity("");
+                                            }
 
-            <div
-                style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px" }}
-            >
-                {peopleToPick === false && <span>Couldn't load people</span>}
-                {peopleToPick === undefined && <LoadingCircle size="15px" />}
-                {peopleToPick &&
-                    (peopleToPick.length === 0 ? (
-                        <span>No people in database, create some first</span>
-                    ) : (
-                        people.map((p, index) => (
-                            <PersonInMovieForm
-                                key={p.react_key}
-                                person={p}
-                                peopleToPick={peopleToPick}
-                                index={index}
-                                editPersonCallback={editPersonCallback}
-                                deletePersonCallback={deletePersonCallback}
-                                setEditedRoleCallback={setEditedRoleCallback}
-                                getUniqueKey={getUniqueKey}
-                            />
-                        ))
+                                            setMetadata((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    [reactKey]: {
+                                                        key: metadata.key,
+                                                        values: e.target.value.split(
+                                                            " "
+                                                        ),
+                                                    },
+                                                };
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            )
+                        )}
+                </div>
+                <datalist id="people-roles">
+                    {roleSuggestions.map((r) => (
+                        <option key={r} value={r}>
+                            {r}
+                        </option>
                     ))}
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                }}
-            >
-                <h3>Metadata</h3>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setMetadata((prev) => {
-                            return {
-                                ...prev,
-                                [getUniqueKey()]: {
-                                    key: "",
-                                    values: [],
-                                },
-                            };
-                        });
-                    }}
-                >
-                    +
-                </button>
-            </div>
-            <div>
-                {metadata &&
-                    Object.entries(metadata).map(
-                        ([reactKey, metadata], index) => (
-                            <div key={reactKey}>
-                                <input
-                                    type="text"
-                                    name={`metakey${index}`}
-                                    value={metadata.key}
-                                    onChange={(e) => {
-                                        setMetadata((prev) => {
-                                            return {
-                                                ...prev,
-                                                [reactKey]: {
-                                                    key: e.target.value,
-                                                    values: metadata.values,
-                                                },
-                                            };
-                                        });
-                                    }}
-                                />
-                                <input
-                                    type="text"
-                                    name={`metavalue${index}`}
-                                    value={metadata.values.join(" ")}
-                                    onChange={(e) => {
-                                        setMetadata((prev) => {
-                                            return {
-                                                ...prev,
-                                                [reactKey]: {
-                                                    key: metadata.key,
-                                                    values: e.target.value.split(
-                                                        " "
-                                                    ),
-                                                },
-                                            };
-                                        });
-                                    }}
-                                />
-                            </div>
-                        )
-                    )}
-            </div>
-            <datalist id="people-roles">
-                {roleSuggestions.map((r) => (
-                    <option key={r} value={r}>
-                        {r}
-                    </option>
-                ))}
-            </datalist>
-            <datalist id="people-details">
-                {peopleDetailSuggestions.map((r) => (
-                    <option key={r} value={r}>
-                        {r}
-                    </option>
-                ))}
-            </datalist>
-            <button type="submit">{_id ? "Update" : "Add"}</button>
-        </form>
+                </datalist>
+                <datalist id="people-details">
+                    {peopleDetailSuggestions.map((r) => (
+                        <option key={r} value={r}>
+                            {r}
+                        </option>
+                    ))}
+                </datalist>
+                <button type="submit">{_id ? "Update" : "Add"}</button>
+            </form>
+            <ErrorsDisplay errors={errors} />
+        </div>
     );
 }

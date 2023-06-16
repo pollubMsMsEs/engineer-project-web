@@ -3,20 +3,24 @@ export default function ErrorsDisplay({
     containerStyle,
     errorsStyle,
 }: {
-    errors: any[];
+    errors?: any[];
     containerStyle?: React.CSSProperties;
     errorsStyle?: React.CSSProperties;
 }) {
     return (
-        <div style={containerStyle}>
-            {errors.map((error) => (
-                <div
-                    key={`${error.path ?? ""} ${error.msg}`}
-                    style={errorsStyle}
-                >
-                    {`${error.path ?? ""}: ${error.msg}`}
+        <>
+            {errors && (
+                <div style={containerStyle ?? { color: "#ef4444" }}>
+                    {errors.map((error) => (
+                        <div
+                            key={`${error.path ?? ""} ${error.msg}`}
+                            style={errorsStyle}
+                        >
+                            {`${error.path ?? ""}: ${error.msg}`}
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
+            )}
+        </>
     );
 }

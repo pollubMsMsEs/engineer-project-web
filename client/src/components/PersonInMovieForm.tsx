@@ -54,40 +54,49 @@ export default function PersonInMovieForm({
             style={{
                 display: "grid",
                 gridTemplateColumns: "min-content 1fr",
+                alignContent: "start",
                 gap: "5px",
+                backgroundColor: "#27272a",
+                padding: "10px",
+                borderRadius: "10px",
             }}
         >
-            <button
-                type="button"
-                style={{
-                    gridColumn: "2",
-                    justifySelf: "end",
-                    padding: "0 10px",
-                }}
-                onClick={() => {
-                    deletePersonCallback(person);
-                }}
-            >
-                -
-            </button>
             <label htmlFor={`person${index}`}>Person</label>
-            <select
-                name={`person${index}`}
-                id={`person${index}`}
-                value={person.person_id}
-                onChange={(e) => {
-                    person.person_id = e.target.value;
-                    editPersonCallback(person);
-                }}
-            >
-                {peopleToPick.map((personToPick) => (
-                    <option key={personToPick._id} value={personToPick._id}>{`${
-                        personToPick.name
-                    } ${personToPick.nick ? `${personToPick.nick} ` : ""} ${
-                        personToPick.surname
-                    }`}</option>
-                ))}
-            </select>
+            <div>
+                <select
+                    name={`person${index}`}
+                    id={`person${index}`}
+                    value={person.person_id}
+                    required
+                    onChange={(e) => {
+                        person.person_id = e.target.value;
+                        editPersonCallback(person);
+                    }}
+                >
+                    {peopleToPick.map((personToPick) => (
+                        <option
+                            key={personToPick._id}
+                            value={personToPick._id}
+                        >{`${personToPick.name} ${
+                            personToPick.nick ? `${personToPick.nick} ` : ""
+                        } ${personToPick.surname}`}</option>
+                    ))}
+                </select>
+                <button
+                    type="button"
+                    style={{
+                        gridColumn: "2",
+                        justifySelf: "end",
+                        padding: "0 10px",
+                    }}
+                    onClick={() => {
+                        deletePersonCallback(person);
+                    }}
+                >
+                    -
+                </button>
+            </div>
+
             <label htmlFor={`role${index}`}>Role</label>
             {person.person_id === "" ? (
                 <span>Pick person to set role</span>
@@ -97,6 +106,7 @@ export default function PersonInMovieForm({
                     id={`role${index}`}
                     list="people-roles"
                     value={person.role}
+                    required
                     onChange={(e) => {
                         person.role = e.target.value;
                         setEditedRoleCallback(e.target.value);

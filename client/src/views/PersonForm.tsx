@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { Person } from "../types/movieType";
+import ErrorsDisplay from "../components/ErrorsDisplay";
 
 export default function PersonForm() {
     const navigate = useNavigate();
     const { _id } = useParams();
 
     const [name, setName] = useState("");
-    const [nick, setNick] = useState<string | undefined>(undefined);
+    const [nick, setNick] = useState<string>("");
     const [surname, setSurname] = useState("");
+
+    const [errors, setErrors] = useState([]);
 
     useEffect(() => {
         if (_id) {
@@ -23,10 +26,17 @@ export default function PersonForm() {
             const loadedPerson: Person = result.data.data;
 
             setName(loadedPerson.name);
-            setNick(loadedPerson.nick);
+            setNick(loadedPerson.nick ?? "");
             setSurname(loadedPerson.surname);
-        } catch (error) {
-            console.error(error);
+
+            setErrors([]);
+        } catch (error: any) {
+            const msgErrors = error?.response?.data?.errors;
+            if (msgErrors) {
+                setErrors(msgErrors);
+            } else {
+                console.error(error);
+            }
         }
     }
 
@@ -34,7 +44,7 @@ export default function PersonForm() {
         const person: Person & { _id: string | undefined } = {
             _id,
             name,
-            nick,
+            nick: nick === "" ? undefined : nick,
             surname,
         };
 
@@ -51,56 +61,66 @@ export default function PersonForm() {
 
             navigate("/person/all");
         } catch (error: any) {
-            if (error.response?.data?.errors) {
-                console.error("Validation failed:", error.response.data.errors);
+            const msgErrors = error?.response?.data?.errors;
+            if (msgErrors) {
+                setErrors(msgErrors);
             } else {
-                console.error("Undefined error", error);
+                console.error(error);
             }
         }
     }
 
     return (
-        <form
-            style={{ display: "grid", justifyContent: "start" }}
-            onSubmit={(e) => {
-                e.preventDefault();
-                submitForm();
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "1fr max(200px,10%)",
             }}
         >
-            {_id && <input type="hidden" name="_id" value={_id} />}
-            <label htmlFor="name">Name: </label>
-            <input
-                type="text"
-                name="name"
-                id="name"
-                value={name}
-                onChange={(e) => {
-                    setName(e.target.value);
+            <form
+                style={{ display: "grid", justifyContent: "start" }}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.reportValidity();
+                    submitForm();
                 }}
-            />
-            <label htmlFor="nick">Nick: </label>
-            <input
-                type="text"
-                name="nick"
-                id="nick"
-                value={nick}
-                onChange={(e) => {
-                    const value =
-                        e.target.value === "" ? undefined : e.target.value;
-                    setNick(value);
-                }}
-            />
-            <label htmlFor="surname">Surname: </label>
-            <input
-                type="text"
-                name="surname"
-                id="surname"
-                value={surname}
-                onChange={(e) => {
-                    setSurname(e.target.value);
-                }}
-            />
-            <button type="submit">{_id ? "Update" : "Add"}</button>
-        </form>
+            >
+                {_id && <input type="hidden" name="_id" value={_id} />}
+                <label htmlFor="name">Name: </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={name}
+                    required
+                    onChange={(e) => {
+                        setName(e.target.value);
+                    }}
+                />
+                <label htmlFor="nick">Nick: </label>
+                <input
+                    type="text"
+                    name="nick"
+                    id="nick"
+                    value={nick}
+                    onChange={(e) => {
+                        setNick(e.target.value);
+                    }}
+                />
+                <label htmlFor="surname">Surname: </label>
+                <input
+                    type="text"
+                    name="surname"
+                    id="surname"
+                    required
+                    value={surname}
+                    onChange={(e) => {
+                        setSurname(e.target.value);
+                    }}
+                />
+                <button type="submit">{_id ? "Update" : "Add"}</button>
+            </form>
+            <ErrorsDisplay errors={errors} />
+        </div>
     );
 }
