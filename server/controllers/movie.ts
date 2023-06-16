@@ -40,7 +40,6 @@ export const getOne = [
 
 export const createOne = [
     bodyGenreIntoArray,
-    body("created_by").optional().trim().isMongoId().escape(), //DEVTEMP: optional
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
@@ -60,7 +59,7 @@ export const createOne = [
         .isLength({ min: 1 })
         .escape(),
     body("people.*.details.*").optional().escape(),
-    async function (req: Request, res: Response) {
+    async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
         if (!valResult.isEmpty())
@@ -68,7 +67,10 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const movie = await Movie.create(req.body);
+        const movie = await Movie.create({
+            ...req.body,
+            created_by: req.auth._id,
+        });
         await movie.save();
 
         return res.json({ acknowledged: true });
@@ -78,7 +80,6 @@ export const createOne = [
 export const updateOne = [
     bodyGenreIntoArray,
     param("id").isMongoId().withMessage("URL contains incorrect id"),
-    body("created_by").trim().isMongoId().escape(),
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
