@@ -3,23 +3,17 @@ import movieRouter from "./api/movie.js";
 import personRouter from "./api/person.js";
 import { validationResult } from "express-validator";
 import { login, register } from "../controllers/user.js";
-import { expressjwt as jwt } from "express-jwt";
+
 import { error } from "console";
+import { jwtMiddleware } from "../middlewares.js";
 
 const router = Router();
 
-router.get("/login", login);
-router.get("/register", register);
+router.post("/login", login);
+router.post("/register", register);
 
-router.use(
-    jwt({ secret: process.env.JWT_KEY!, algorithms: ["HS256"] }),
-    (req: Request | any, res: Response, next: NextFunction) => {
-        console.log(req.auth);
-        next();
-    }
-);
-router.use("/movie", movieRouter);
-router.use("/person", personRouter);
+router.use("/movie", jwtMiddleware, movieRouter);
+router.use("/person", jwtMiddleware, personRouter);
 
 router.use((err: any, req: Request, res: Response, next: NextFunction) => {
     const valResult = validationResult(req);

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import LoadingCircle from "../components/LoadingCircle";
-import axios from "axios";
+import axiosClient from "../axiosClient";
 
 async function getMoviesCount() {
     try {
-        const result = await axios.get("http://localhost:7777/api/movie/count");
+        const result = await axiosClient.get("/movie/count");
         return result.data.count;
     } catch (error) {
         return false;
@@ -13,9 +13,7 @@ async function getMoviesCount() {
 
 async function getPeopleCount() {
     try {
-        const result = await axios.get(
-            "http://localhost:7777/api/person/count"
-        );
+        const result = await axiosClient.get("/person/count");
         return result.data.count;
     } catch (error) {
         return false;

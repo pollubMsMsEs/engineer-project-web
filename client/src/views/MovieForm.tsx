@@ -1,10 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {
-    redirect,
-    useLocation,
-    useNavigate,
-    useParams,
-} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     MetaObject,
     Movie,
@@ -15,15 +10,15 @@ import PersonInMovieForm, {
     PeopleList,
     PersonInMovieFormType,
 } from "../components/PersonInMovieForm";
-import axios from "axios";
 import LoadingCircle from "../components/LoadingCircle";
 import dayjs from "dayjs";
 import { Person } from "../types/movieType";
+import axiosClient from "../axiosClient";
 
 async function getPeopleToPick() {
     try {
-        const result = await axios.get<(PersonType & { _id: string })[]>(
-            "http://localhost:7777/api/person/all"
+        const result = await axiosClient.get<(PersonType & { _id: string })[]>(
+            "/person/all"
         );
         return result.data;
     } catch (error) {
@@ -32,7 +27,6 @@ async function getPeopleToPick() {
 }
 
 type MovieToDB = Movie & {
-    created_by: string;
     people: (PersonInMovie & { person_id: string })[];
 };
 
@@ -48,8 +42,6 @@ type MetadataInForm = {
 };
 
 export default function MovieForm() {
-    const createdBy = "648af4c41d8735e360cfd2af"; //TODO: Very temp
-
     const navigate = useNavigate();
     const { _id } = useParams();
     const [editedRole, setEditedRole] = useState("");
@@ -119,9 +111,7 @@ export default function MovieForm() {
 
     async function getMovie(_id: string) {
         try {
-            const result = await axios.get(
-                `http://localhost:7777/api/movie/${_id}`
-            );
+            const result = await axiosClient.get(`/movie/${_id}`);
             const loadedMovie: MovieFromDB = result.data.data;
 
             setTitle(loadedMovie.title);
@@ -170,7 +160,6 @@ export default function MovieForm() {
 
     async function submitForm() {
         const movie: MovieToDB = {
-            created_by: createdBy,
             _id,
             title,
             dev: true,
@@ -195,16 +184,10 @@ export default function MovieForm() {
         try {
             if (_id) {
                 //Update
-                await axios.put(
-                    `http://localhost:7777/api/movie/${_id}`,
-                    movie
-                );
+                await axiosClient.put(`/movie/${_id}`, movie);
             } else {
                 //Create
-                await axios.post(
-                    "http://localhost:7777/api/movie/create",
-                    movie
-                );
+                await axiosClient.post("/movie/create", movie);
             }
 
             navigate("/movie/all");
@@ -262,7 +245,6 @@ export default function MovieForm() {
                 id="genres"
                 value={genres.join(" ")}
                 onChange={(e) => {
-                    console.log(genres);
                     setGenres(e.target.value.split(" "));
                 }}
             />

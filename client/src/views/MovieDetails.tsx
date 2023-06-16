@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Movie, Person, PersonInMovie } from "../types/movieType";
-import axios from "axios";
 import LoadingCircle from "../components/LoadingCircle";
 import MovieWithPeople from "../components/MovieWithPeople";
+import axiosClient from "../axiosClient";
 
 async function getMovieById(id: string) {
     try {
-        const result = await axios.get(`http://localhost:7777/api/movie/${id}`);
+        const result = await axiosClient.get(`/movie/${id}`);
 
         result.data.data.published_at = new Date(result.data.data.published_at);
         return result.data.data;
