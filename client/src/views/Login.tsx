@@ -62,6 +62,7 @@ export default function Login() {
                 }}
                 onSubmit={(e) => {
                     e.preventDefault();
+                    e.currentTarget.reportValidity();
                     onSubmit();
                 }}
             >
@@ -92,6 +93,7 @@ export default function Login() {
                     <input
                         type="email"
                         placeholder="Enter your email"
+                        required
                         value={user.email}
                         onChange={(e) =>
                             setUser({ ...user, email: e.target.value })
@@ -105,6 +107,7 @@ export default function Login() {
                     <input
                         type="password"
                         placeholder="Enter your password"
+                        required
                         value={user.password}
                         onChange={(e) =>
                             setUser({ ...user, password: e.target.value })

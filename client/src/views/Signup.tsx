@@ -64,6 +64,7 @@ export default function Register() {
                 }}
                 onSubmit={(e) => {
                     e.preventDefault();
+                    e.currentTarget.reportValidity();
                     onSubmit();
                 }}
             >
@@ -93,6 +94,7 @@ export default function Register() {
                     <input
                         type="text"
                         placeholder="Enter your username"
+                        required
                         value={user.name}
                         onChange={(e) =>
                             setUser({ ...user, name: e.target.value })
@@ -106,6 +108,7 @@ export default function Register() {
                     <input
                         type="email"
                         placeholder="Enter your email"
+                        required
                         value={user.email}
                         onChange={(e) =>
                             setUser({ ...user, email: e.target.value })
@@ -119,6 +122,7 @@ export default function Register() {
                     <input
                         type="password"
                         placeholder="Enter your password"
+                        required
                         value={user.password}
                         onChange={(e) =>
                             setUser({ ...user, password: e.target.value })

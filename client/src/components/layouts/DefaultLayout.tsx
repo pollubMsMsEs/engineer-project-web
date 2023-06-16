@@ -1,13 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import "./css/DefaultLayout.css";
-import Icon from "@mdi/react";
-import { mdiMovieOpen } from "@mdi/js";
 import { useAuthenticationContext } from "../../stateContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Logo from "../Logo";
 
 export default function DefaultLayout() {
-    const { token } = useAuthenticationContext();
+    const { token, username } = useAuthenticationContext();
 
     if (!token) {
         return <Navigate to="/login" />;
@@ -15,17 +14,26 @@ export default function DefaultLayout() {
 
     return (
         <div className="component-default-layout">
-            <header>
-                <h1
+            <header style={{ display: "flex" }}>
+                <Logo />
+                <div
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "10px",
+                        marginLeft: "auto",
                     }}
                 >
-                    <span>Movie Database</span>
-                    <Icon path={mdiMovieOpen} color={"#f87171"} size={"3rem"} />
-                </h1>
+                    <div>{username}</div>
+                    <button
+                        style={{}}
+                        onClick={() => {
+                            localStorage.removeItem("JWT_TOKEN");
+                            location.reload();
+                        }}
+                    >
+                        Logout
+                    </button>
+                </div>
             </header>
             <aside>
                 <a href="/">Home</a>

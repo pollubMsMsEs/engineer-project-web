@@ -22,7 +22,7 @@ export function AuthenticationContextProvider({
 
     const setUser = (username: string) => {
         _setUser(username);
-        localStorage.setItem("USERNAME", JSON.stringify(username));
+        localStorage.setItem("USERNAME", username);
     };
 
     return (
