@@ -1,6 +1,6 @@
 import app from "../app.js";
 import Debug from "debug";
-const debug = Debug("www");
+const debug = Debug("project:www");
 
 const port = process.env.PORT;
 

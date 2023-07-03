@@ -4,8 +4,8 @@ import getPiecesOfWork from "./piecesOfWork.mjs";
 import { inspect } from "util";
 import Debug from "debug";
 import { Types } from "mongoose";
-const debug = Debug("db");
-const debugDev = Debug("dev");
+const debug = Debug("project:db");
+const debugDev = Debug("project:dev");
 
 type MovieMetadata = {
     _id?: Types.ObjectId;

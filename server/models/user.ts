@@ -8,7 +8,7 @@ const UserSchema = new Schema({
 });
 
 UserSchema.methods.generateAuthToken = function () {
-    if (!process.env.JWT_KEY) throw new Error("Missing JWT KEY");
+    if (!process.env.JWT_KEY) throw new Error("Missing JWT_KEY in env");
 
     const token = jwt.sign(
         { _id: this._id, name: this.name },

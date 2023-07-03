@@ -16,10 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
 
-app.get("/", (req, res) => {
-    res.send(
-        "You are calling Web Frameworks Project API, simple student project, there is no documentation so you have to guess endpoints yourself, have fun :)"
-    );
+app.get("/healthz", (req, res) => {
+    res.send("ok");
 });
 
 app.use("/api", apiRouter);

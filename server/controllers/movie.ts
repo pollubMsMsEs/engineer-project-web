@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-const debug = Debug("dev");
+const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Debug from "debug";
-const debug = Debug("db");
+const debug = Debug("project:db");
 
 mongoose.set("strictQuery", false); // Prepare for Mongoose 7
 mongoose

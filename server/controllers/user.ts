@@ -4,7 +4,7 @@ import { inspect } from "util";
 import bcrypt from "bcrypt";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-const debug = Debug("dev");
+const debug = Debug("project:dev");
 
 const { body, validationResult } = ExtendedValidator({
     emailTaken: async (value: any) => {
@@ -29,6 +29,7 @@ export const register = [
         try {
             validationResult(req).throw();
 
+            if (!process.env.SALT) throw new Error("Missing SALT in env");
             const salt = await bcrypt.genSalt(Number(process.env.SALT));
             const hashPassword = await bcrypt.hash(req.body.password, salt);
             const user: any = await new User({

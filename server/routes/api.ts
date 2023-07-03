@@ -3,8 +3,6 @@ import movieRouter from "./api/movie.js";
 import personRouter from "./api/person.js";
 import { validationResult } from "express-validator";
 import { login, register } from "../controllers/user.js";
-
-import { error } from "console";
 import { jwtMiddleware } from "../middlewares.js";
 
 const router = Router();
