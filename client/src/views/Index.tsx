@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import LoadingCircle from "../components/LoadingCircle";
 import axiosClient from "../axiosClient";
+import LoadedDataHolder from "../components/LoadedDataHolder";
 
 async function getMoviesCount() {
     try {
@@ -36,16 +36,10 @@ export default function Index() {
             </aside>
             <h1>Index</h1>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                Movies count:{" "}
-                {moviesCount !== false
-                    ? moviesCount ?? <LoadingCircle size="15px" />
-                    : "-"}
+                Movies count: <LoadedDataHolder>{moviesCount}</LoadedDataHolder>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                People count:{" "}
-                {peopleCount !== false
-                    ? peopleCount ?? <LoadingCircle size="15px" />
-                    : "-"}
+                People count: <LoadedDataHolder>{peopleCount}</LoadedDataHolder>
             </div>
         </div>
     );

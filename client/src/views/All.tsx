@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Person as PersonType } from "../types/movieType";
-import LoadingCircle from "../components/LoadingCircle";
+import fetchedData from "../scripts/fetchedData";
 
 async function getMovies() {
     try {
@@ -34,35 +34,39 @@ export default function All() {
 
     return (
         <ul>
-            {movieList === undefined ? (
-                <LoadingCircle size="15px" />
-            ) : (
-                movieList.map((m) => (
-                    <li key={m._id}>
-                        <a href={`/movie/${m._id}`}>{m.title}</a>
-                        <ul>
-                            {m.people.map((p) => {
-                                return (
-                                    p.person_id && (
-                                        <li
-                                            key={
-                                                p.person_id._id + m._id + p.role
-                                            }
-                                        >
-                                            <a
-                                                href={`/person/${p.person_id._id}`}
-                                            >{`${p.person_id.name} ${
-                                                p.person_id.nick
-                                                    ? `"${p.person_id.nick}" `
-                                                    : ""
-                                            } ${p.person_id.surname}`}</a>
-                                        </li>
-                                    )
-                                );
-                            })}
-                        </ul>
-                    </li>
-                ))
+            {fetchedData(
+                movieList,
+                (movieList) => {
+                    return movieList!.map((m) => (
+                        <li key={m._id}>
+                            <a href={`/movie/${m._id}`}>{m.title}</a>
+                            <ul>
+                                {m.people.map((p) => {
+                                    return (
+                                        p.person_id && (
+                                            <li
+                                                key={
+                                                    p.person_id._id +
+                                                    m._id +
+                                                    p.role
+                                                }
+                                            >
+                                                <a
+                                                    href={`/person/${p.person_id._id}`}
+                                                >{`${p.person_id.name} ${
+                                                    p.person_id.nick
+                                                        ? `"${p.person_id.nick}" `
+                                                        : ""
+                                                } ${p.person_id.surname}`}</a>
+                                            </li>
+                                        )
+                                    );
+                                })}
+                            </ul>
+                        </li>
+                    ));
+                },
+                "Couldn't load movies"
             )}
         </ul>
     );
