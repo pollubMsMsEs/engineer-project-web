@@ -1,11 +1,19 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-    useEffect(() => {
-        fetch("https://httpbin.org/get").then((result) => console.log(result));
-    }, []);
+    const router = useRouter();
 
-    return <div>login</div>;
+    return (
+        <button
+            onClick={async () => {
+                await fetch("/api/login");
+                router.back();
+            }}
+        >
+            Login
+        </button>
+    );
 }
