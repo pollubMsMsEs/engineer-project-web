@@ -1,17 +1,33 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-    const hasJWTCookie = request.cookies.has("jwt");
+export async function middleware(request: NextRequest) {
+    const jwtCookie = request.cookies.get("jwt");
     const isOnAuthPage = request.nextUrl.pathname.startsWith("/auth");
 
-    if (!hasJWTCookie && !isOnAuthPage) {
-        return NextResponse.redirect(new URL("/auth/login", request.url));
-    } else if (hasJWTCookie && isOnAuthPage) {
-        return NextResponse.redirect(new URL("/", request.url));
+    const isJWTValid =
+        !!jwtCookie &&
+        (
+            await fetch(`${process.env.API_ADDRESS}/movie/count`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${jwtCookie?.value}`,
+                },
+            })
+        ).status !== 401;
+
+    let response;
+
+    if (!isJWTValid && !isOnAuthPage) {
+        response = NextResponse.redirect(new URL("/auth/login", request.url));
+        response.cookies.delete("jwt");
+    } else if (isJWTValid && isOnAuthPage) {
+        response = NextResponse.redirect(new URL("/", request.url));
+    } else {
+        response = NextResponse.next();
     }
 
-    return NextResponse.next();
+    return response;
 }
 
 export const config = {
