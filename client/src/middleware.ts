@@ -4,19 +4,23 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
     const jwtCookie = request.cookies.get("jwt");
     const isOnAuthPage = request.nextUrl.pathname.startsWith("/auth");
-
-    const isJWTValid =
-        !!jwtCookie &&
-        (
-            await fetch(`${process.env.API_ADDRESS}/movie/count`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${jwtCookie?.value}`,
-                },
-            })
-        ).status !== 401;
-
+    let isJWTValid;
     let response;
+
+    try {
+        isJWTValid =
+            !!jwtCookie &&
+            (
+                await fetch(`${process.env.API_ADDRESS}/movie/count`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwtCookie?.value}`,
+                    },
+                })
+            ).status !== 401;
+    } catch (e) {
+        return NextResponse.redirect(new URL("/error", request.url));
+    }
 
     if (!isJWTValid && !isOnAuthPage) {
         response = NextResponse.redirect(new URL("/auth/login", request.url));
@@ -31,5 +35,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+    matcher: ["/((?!api|error|_next/static|_next/image|favicon.ico).*)"],
 };
