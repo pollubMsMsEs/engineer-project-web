@@ -1,17 +1,17 @@
 import { Router } from "express";
 import {
     getAll,
-    getAllForUser,
+    getAllByType,
     getOne,
     createOne,
     updateOne,
     deleteOne,
-} from "../../controllers/movieInstance.js";
+} from "../../controllers/piecesOfAPI.js";
 
 const router = Router();
 
 router.get("/all", getAll);
-router.get("/all/:id", getAllForUser);
+router.get("/all/:type", getAllByType);
 router.post("/create", createOne);
 router.get("/:id", getOne);
 router.put("/:id", updateOne);

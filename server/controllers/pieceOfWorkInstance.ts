@@ -1,15 +1,16 @@
-import MovieInstance from "../models/movieInstance.js";
+import PieceOfWorkInstance from "../models/pieceOfWorkInstance.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
+import mongoose from 'mongoose';
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const movieInstances = await MovieInstance.find({});
-    res.json(movieInstances);
+    const pieceOfWorkInstances = await PieceOfWorkInstance.find({});
+    res.json(pieceOfWorkInstances);
 }
 
 export const getAllForUser = [
@@ -17,8 +18,8 @@ export const getAllForUser = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const movieInstances = await MovieInstance.find({ user_id: req.params.id }).exec();
-            res.json({ data: movieInstances });
+            const pieceOfWorkInstances = await PieceOfWorkInstance.find({ user_id: req.params.id }).exec();
+            res.json({ data: pieceOfWorkInstances });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -31,9 +32,9 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const movieInstance = await MovieInstance.findById(req.params.id)
+            const pieceOfWorkInstance = await PieceOfWorkInstance.findById(req.params.id)
                 .exec();
-            res.json({ data: movieInstance });
+            res.json({ data: pieceOfWorkInstance });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -42,7 +43,15 @@ export const getOne = [
 ];
 
 export const createOne = [
-    body("movie_id").isMongoId(),
+    body("piece_of_work_id").isMongoId(),
+    body("onModel")
+        .exists()
+        .withMessage("Missing onModel string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['Movie', 'PiecesOfAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Movie' or 'PiecesOfAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -79,11 +88,21 @@ export const createOne = [
             return false;
         })
         .withMessage("Number_of_viewings must match the length of the viewings array"),
-    body("completed")
+    body("status").optional().trim().escape(),
+    body("type")
         .exists()
-        .withMessage("Missing completed boolean")
+        .withMessage("Missing type string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+    body("from_api")
+        .exists()
+        .withMessage("Missing from_api boolean")
+        .bail()
         .isBoolean()
-        .withMessage("Completed must be a boolean"),
+        .withMessage("From_api must be a boolean"),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -92,18 +111,33 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const movieInstance = await MovieInstance.create({
+        const Model = mongoose.model(req.body.onModel);
+        const exists = await Model.exists({ _id: req.body.piece_of_work_id });
+
+        if (!exists) {
+            return res.status(400).json({ acknowledged: false, errors: 'Invalid piece_of_work_id for the given onModel' });
+        }
+
+        const pieceOfWorkInstance = await PieceOfWorkInstance.create({
             ...req.body,
             user_id: req.auth._id,
         });
-        await movieInstance.save();
+        await pieceOfWorkInstance.save();
 
         return res.json({ acknowledged: true });
     },
 ];
 
 export const updateOne = [
-    body("movie_id").isMongoId(),
+    body("piece_of_work_id").isMongoId(),
+    body("onModel")
+        .exists()
+        .withMessage("Missing onModel string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['Movie', 'PiecesOfAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Movie' or 'PiecesOfAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -140,22 +174,39 @@ export const updateOne = [
             return false;
         })
         .withMessage("Number_of_viewings must match the length of the viewings array"),
-    body("completed")
+    body("status").optional().trim().escape(),
+    body("type")
         .exists()
-        .withMessage("Missing completed boolean")
+        .withMessage("Missing type string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+    body("from_api")
+        .exists()
+        .withMessage("Missing from_api boolean")
+        .bail()
         .isBoolean()
-        .withMessage("Completed must be a boolean"),
+        .withMessage("From_api must be a boolean"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
-            const instance = await MovieInstance.findById(req.params.id);
+            const instance = await PieceOfWorkInstance.findById(req.params.id);
 
             if (!instance || String(instance.user_id) !== req.auth._id) {
-                return res.status(403).json({ error: "You do not have permission to update this movie instance." });
+                return res.status(403).json({ error: "You do not have permission to update this piece of work instance." });
             }
 
-            await MovieInstance.findByIdAndUpdate(req.params.id, req.body, {});
+            const Model = mongoose.model(req.body.onModel);
+            const exists = await Model.exists({ _id: req.body.piece_of_work_id });
+
+            if (!exists) {
+                return res.status(400).json({ acknowledged: false, errors: 'Invalid piece_of_work_id for the given onModel' });
+            }
+
+            await PieceOfWorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
             return res.json({ acknowledged: true });
         } catch (error) {
             next(error);
@@ -169,13 +220,13 @@ export const deleteOne = [
         try {
             validationResult(req).throw();
 
-            const instance = await MovieInstance.findById(req.params.id);
+            const instance = await PieceOfWorkInstance.findById(req.params.id);
 
             if (!instance || String(instance.user_id) !== req.auth._id) {
-                return res.status(403).json({ error: "You do not have permission to delete this movie instance." });
+                return res.status(403).json({ error: "You do not have permission to delete this piece of work instance." });
             }
 
-            const result = await MovieInstance.findByIdAndRemove(req.params.id);
+            const result = await PieceOfWorkInstance.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);
