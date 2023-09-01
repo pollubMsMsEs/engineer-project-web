@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
     const jwtCookie = request.cookies.get("jwt");
     const isOnAuthPage = request.nextUrl.pathname.startsWith("/auth");
-    let isJWTValid;
+    let isJWTValid = false;
     let response;
 
     try {
