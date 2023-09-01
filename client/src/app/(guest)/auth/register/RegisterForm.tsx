@@ -18,10 +18,6 @@ export default function RegisterForm() {
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        document.title = "Register | Covid Visualizer";
-    }, []);
-
     async function onSubmit() {
         try {
             const response = await fetch(`/api${pathname}`, {
