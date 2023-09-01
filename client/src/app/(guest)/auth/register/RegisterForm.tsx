@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
-import ErrorsDisplay from "../ErrorsDisplay";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import styles from "./loginForm.module.scss";
+import ErrorsDisplay from "../ErrorsDisplay";
+import styles from "./registerForm.module.scss";
 
-export default function LoginForm() {
+export default function RegisterForm() {
     const [user, setUser] = useState({
+        name: "",
         email: "",
         password: "",
     });
@@ -16,6 +17,10 @@ export default function LoginForm() {
     const [errors, setErrors] = useState<{ msg: string }[]>([]);
     const router = useRouter();
     const pathname = usePathname();
+
+    useEffect(() => {
+        document.title = "Register | Covid Visualizer";
+    }, []);
 
     async function onSubmit() {
         try {
@@ -34,22 +39,30 @@ export default function LoginForm() {
                 router.refresh();
             }
         } catch (error: any) {
-            console.error({ error });
+            setErrors(error.response.data.errors);
+
+            console.error(error.response);
         }
     }
 
     return (
         <form
-            className={styles.loginFormContaier}
+            className={styles.registerFormContainer}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();
                 onSubmit();
             }}
         >
-            <h2>Login</h2>
-
+            <h2>Register</h2>
             <ErrorsDisplay errors={errors} />
+            <input
+                type="text"
+                placeholder="Enter your username"
+                required
+                value={user.name}
+                onChange={(e) => setUser({ ...user, name: e.target.value })}
+            />
             <input
                 type="email"
                 placeholder="Enter your email"
@@ -64,10 +77,20 @@ export default function LoginForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
-            <button>Login</button>
-            <Link href="/auth/register">
-                Don&apos;t have an account? Register
-            </Link>
+            <button
+                style={{
+                    padding: "10px",
+                    borderRadius: "4px",
+                    backgroundColor: "#ef4444",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                }}
+            >
+                Register
+            </button>
+
+            <Link href="/auth/login">Already have an account? Login</Link>
         </form>
     );
 }

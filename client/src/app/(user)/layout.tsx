@@ -2,8 +2,12 @@ import React from "react";
 import Logo from "@/components/Logo";
 import styles from "./layout.module.scss";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import jwtDecode from "jwt-decode";
 
 export default function Layout({ children }: React.PropsWithChildren) {
+    const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
+
     return (
         <div className={styles.componentDefaultLayout}>
             <header style={{ display: "flex" }}>
@@ -15,7 +19,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                         marginLeft: "auto",
                     }}
                 >
-                    <div>Temp username</div>
+                    <div className={styles.username}>{username}</div>
                     <Link href={"/api/auth/logout"}>Logout</Link>
                 </div>
             </header>
