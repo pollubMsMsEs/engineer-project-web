@@ -1,11 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TryAgainButton() {
     const router = useRouter();
     const [attempts, setAttempts] = useState(0);
+
+    useEffect(() => {
+        router.push("/");
+        router.refresh();
+    }, [router]);
 
     return (
         <button
