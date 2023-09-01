@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "@/components/Logo";
-import LogoutButton from "@/components/LogoutButton";
 import styles from "./layout.module.scss";
+import Link from "next/link";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     return (
@@ -16,7 +16,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                     }}
                 >
                     <div>Temp username</div>
-                    <LogoutButton />
+                    <Link href={"/api/auth/logout"}>Logout</Link>
                 </div>
             </header>
             <aside>

@@ -1,20 +1,20 @@
 export default function ErrorsDisplay({
     errors,
-    containerStyle,
-    errorsStyle,
+    containerClass,
+    errorsClass,
 }: {
     errors?: any[];
-    containerStyle?: React.CSSProperties;
-    errorsStyle?: React.CSSProperties;
+    containerClass?: string;
+    errorsClass?: string;
 }) {
     return (
         <>
             {errors && (
-                <div style={containerStyle ?? { color: "#ef4444" }}>
+                <div className={containerClass}>
                     {errors.map((error) => (
                         <div
                             key={`${error.path ?? ""} ${error.msg}`}
-                            style={errorsStyle}
+                            className={errorsClass}
                         >
                             {`${error.path ?? ""}: ${error.msg}`}
                         </div>

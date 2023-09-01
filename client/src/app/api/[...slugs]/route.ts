@@ -22,8 +22,6 @@ async function handler(
         body: request.body,
     });
 
-    console.log(apiResponse);
-
     if (apiResponse.status === 401) {
         const response = NextResponse.redirect(
             new URL("/auth/login", request.url)
