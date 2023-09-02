@@ -1,14 +1,14 @@
 .container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     min-height: 100vh;
 
-    .logoContainer {
+    .logo-container {
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         margin-bottom: 20px;
     }
 }

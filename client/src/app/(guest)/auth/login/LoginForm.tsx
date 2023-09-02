@@ -44,7 +44,7 @@ export default function LoginForm() {
 
     return (
         <form
-            className={styles.loginFormContaier}
+            className={styles[`login-form-contaier`]}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();

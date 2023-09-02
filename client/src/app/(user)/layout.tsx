@@ -9,7 +9,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
 
     return (
-        <div className={styles.componentDefaultLayout}>
+        <div className={styles["component-default-layout"]}>
             <header style={{ display: "flex" }}>
                 <Logo />
                 <div

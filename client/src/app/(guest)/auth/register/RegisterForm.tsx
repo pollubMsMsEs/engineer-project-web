@@ -47,7 +47,7 @@ export default function RegisterForm() {
 
     return (
         <form
-            className={styles.registerFormContainer}
+            className={styles["register-form-container"]}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();
