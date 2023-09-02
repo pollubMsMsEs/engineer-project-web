@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ErrorsDisplay from "../ErrorsDisplay";
 import styles from "./registerForm.module.scss";
+import LoadingCircle from "@/components/LoadingCircle";
 
 export default function RegisterForm() {
     const [user, setUser] = useState({
@@ -13,6 +14,7 @@ export default function RegisterForm() {
         email: "",
         password: "",
     });
+    const [isFetching, setIsFetching] = useState(false);
 
     const [errors, setErrors] = useState<{ msg: string }[]>([]);
     const router = useRouter();
@@ -20,6 +22,7 @@ export default function RegisterForm() {
 
     async function onSubmit() {
         try {
+            setIsFetching(true);
             const response = await fetch(`/api${pathname}`, {
                 method: "POST",
                 headers: {
@@ -34,6 +37,7 @@ export default function RegisterForm() {
             } else {
                 router.refresh();
             }
+            setIsFetching(false);
         } catch (error: any) {
             setErrors(error.response.data.errors);
 
@@ -73,17 +77,8 @@ export default function RegisterForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
-            <button
-                style={{
-                    padding: "10px",
-                    borderRadius: "4px",
-                    backgroundColor: "#ef4444",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                }}
-            >
-                Register
+            <button>
+                {isFetching ? <LoadingCircle size="15px" /> : "Register"}
             </button>
 
             <Link href="/auth/login">Already have an account? Login</Link>

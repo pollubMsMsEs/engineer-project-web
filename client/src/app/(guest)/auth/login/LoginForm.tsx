@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./loginForm.module.scss";
+import LoadingCircle from "@/components/LoadingCircle";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
+    const [isFetching, setIsFetching] = useState(false);
 
     const [errors, setErrors] = useState<{ msg: string }[]>([]);
     const router = useRouter();
@@ -19,6 +21,7 @@ export default function LoginForm() {
 
     async function onSubmit() {
         try {
+            setIsFetching(true);
             const response = await fetch(`/api${pathname}`, {
                 method: "POST",
                 headers: {
@@ -33,6 +36,7 @@ export default function LoginForm() {
             } else {
                 router.refresh();
             }
+            setIsFetching(false);
         } catch (error: any) {
             console.error({ error });
         }
@@ -64,7 +68,9 @@ export default function LoginForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
-            <button>Login</button>
+            <button>
+                {isFetching ? <LoadingCircle size="15px" /> : "Login"}
+            </button>
             <Link href="/auth/register">
                 Don&apos;t have an account? Register
             </Link>
