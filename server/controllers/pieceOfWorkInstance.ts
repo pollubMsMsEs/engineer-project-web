@@ -95,8 +95,8 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ['Movie', 'Book', 'ComputerGame'].includes(value);
+        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -181,8 +181,8 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ['Movie', 'Book', 'ComputerGame'].includes(value);
+        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")

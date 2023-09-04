@@ -9,7 +9,7 @@ const PieceOfWorkInstanceSchema = new Schema({
     number_of_viewings: { type: Number, min: 0 },
     viewings: { type: [Date] },
     status: { type: String },
-    type: { type: String },
+    type: { type: String, enum: ['Movie', 'Book', 'ComputerGame'] },
     from_api: { type: Boolean, default: false },
 });
 
