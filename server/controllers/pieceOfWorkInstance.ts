@@ -27,6 +27,19 @@ export const getAllForUser = [
     },
 ];
 
+export const getAllForCurrentUser = [
+    async function (req: Request | any, res: Response, next: NextFunction) {
+        try {
+            validationResult(req).throw();
+            const pieceOfWorkInstances = await PieceOfWorkInstance.find({ user_id: req.auth._id }).exec();
+            res.json({ data: pieceOfWorkInstances });
+        } catch (e: any) {
+            //console.log(res);
+            return next(e);
+        }
+    },
+];
+
 export const getOne = [
     param("id").isMongoId().withMessage("URL contains incorrect id"),
     async function (req: Request, res: Response, next: NextFunction) {
@@ -83,11 +96,11 @@ export const createOne = [
     body("number_of_viewings")
         .custom((value, { req }) => {
             if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length.toString() === value;
+                return req.body.viewings.length <= parseInt(value);
             }
             return false;
         })
-        .withMessage("Number_of_viewings must match the length of the viewings array"),
+        .withMessage("Number_of_viewings must match or be greater than the length of the viewings array"),
     body("status").optional().trim().escape(),
     body("type")
         .exists()
@@ -169,11 +182,11 @@ export const updateOne = [
     body("number_of_viewings")
         .custom((value, { req }) => {
             if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length.toString() === value;
+                return req.body.viewings.length <= parseInt(value);
             }
             return false;
         })
-        .withMessage("Number_of_viewings must match the length of the viewings array"),
+        .withMessage("Number_of_viewings must match or be greater than the length of the viewings array"),
     body("status").optional().trim().escape(),
     body("type")
         .exists()
