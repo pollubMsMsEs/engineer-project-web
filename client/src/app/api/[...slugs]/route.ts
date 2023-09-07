@@ -10,16 +10,20 @@ async function handler(
     request: NextRequest,
     { params }: { params: { slugs: string[] } }
 ) {
-    const jwt = request.cookies.get("jwt");
+    const jwt = request.cookies.get("jwt")?.value;
 
     if (!jwt) return NextResponse.redirect(new URL("/auth/login", request.url));
 
     const apiResponse = await fetch(convertParamsToURL(params.slugs), {
+        method: request.method,
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${jwt}`,
         },
-        body: request.body,
+        body:
+            request.method !== "GET" && request.method !== "HEAD"
+                ? await request.text()
+                : undefined,
     });
 
     if (apiResponse.status === 401) {
@@ -33,4 +37,4 @@ async function handler(
     return apiResponse;
 }
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, handler as PUT };

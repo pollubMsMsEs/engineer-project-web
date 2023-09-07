@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ErrorsDisplay from "../ErrorsDisplay";
+import ErrorsDisplay from "@/components/ErrorsDisplay";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";

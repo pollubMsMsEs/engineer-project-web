@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import ErrorsDisplay from "../ErrorsDisplay";
+import ErrorsDisplay from "@/components/ErrorsDisplay";
 import styles from "./registerForm.module.scss";
 import LoadingCircle from "@/components/LoadingCircle";
 
