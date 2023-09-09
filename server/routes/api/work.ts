@@ -7,7 +7,7 @@ import {
     updateOne,
     deleteOne,
     getCount,
-} from "../../controllers/movie.js";
+} from "../../controllers/work.js";
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-import PiecesOfAPI from "../models/piecesOfAPI.js";
+import WorksFromAPI from "../models/worksFromAPI.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -8,8 +8,8 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const piecesOfAPI = await PiecesOfAPI.find({});
-    res.json(piecesOfAPI);
+    const worksFromAPI = await WorksFromAPI.find({});
+    res.json(worksFromAPI);
 }
 
 export const getAllByType = [
@@ -17,8 +17,8 @@ export const getAllByType = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const piecesOfAPI = await PiecesOfAPI.find({ type: req.params.type }).exec();
-            res.json({ data: piecesOfAPI });
+            const worksFromAPI = await WorksFromAPI.find({ type: req.params.type }).exec();
+            res.json({ data: worksFromAPI });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -31,9 +31,9 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const piecesOfAPI = await PiecesOfAPI.findById(req.params.id)
+            const worksFromAPI = await WorksFromAPI.findById(req.params.id)
                 .exec();
-            res.json({ data: piecesOfAPI });
+            res.json({ data: worksFromAPI });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -53,8 +53,8 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'Book', 'ComputerGame'].includes(value);
-        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -63,10 +63,10 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const piecesOfAPI = await PiecesOfAPI.create({
+        const worksFromAPI = await WorksFromAPI.create({
             ...req.body,
         });
-        await piecesOfAPI.save();
+        await worksFromAPI.save();
 
         return res.json({ acknowledged: true });
     },
@@ -87,13 +87,13 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'Book', 'ComputerGame'].includes(value);
-        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
-            await PiecesOfAPI.findByIdAndUpdate(req.params.id, req.body, {});
+            await WorksFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
             return res.json({ acknowledged: true });
         } catch (error) {
             next(error);
@@ -107,7 +107,7 @@ export const deleteOne = [
         try {
             validationResult(req).throw();
 
-            const result = await PiecesOfAPI.findByIdAndRemove(req.params.id);
+            const result = await WorksFromAPI.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);
