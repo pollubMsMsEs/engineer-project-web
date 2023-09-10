@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const MovieSchema = new Schema({
+const WorkSchema = new Schema({
     created_by: { type: Schema.Types.ObjectId, ref: "User" },
     title: { type: String, required: true },
     dev: { type: Boolean, default: true },
@@ -26,6 +26,7 @@ const MovieSchema = new Schema({
             },
         },
     ],
+    type: { type: String, enum: ['movie', 'book', 'computerGame'] },
 });
 
-export default model("Movie", MovieSchema);
+export default model("Work", WorkSchema, "works");

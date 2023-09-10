@@ -1,5 +1,5 @@
 import Person from "../models/person.js";
-import Movie from "../models/movie.js";
+import Work from "../models/work.js";
 import { Request, Response, NextFunction } from "express";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
@@ -7,7 +7,7 @@ const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator({
     isReferenced: async (value: any) => {
-        const found = await Movie.findOne({ "people.person_id": value }).exec();
+        const found = await Work.findOne({ "people.person_id": value }).exec();
         if (found != null) {
             throw new Error(
                 "Remove all references to this person before deleting"

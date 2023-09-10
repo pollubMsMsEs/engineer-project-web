@@ -1,4 +1,4 @@
-import Movie from "../models/movie.js";
+import Work from "../models/work.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -8,18 +8,18 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getCount(req: Request, res: Response) {
-    const count = await Movie.count();
+    const count = await Work.count();
     res.json({ count });
 }
 
 export async function getAllShort(req: Request, res: Response) {
-    const movies = await Movie.find({}, { title: 1 });
-    res.json(movies);
+    const works = await Work.find({}, { title: 1 });
+    res.json(works);
 }
 
 export async function getAllPopulated(req: Request, res: Response) {
-    const movies = await Movie.find({}).populate("people.person_id").exec();
-    res.json(movies);
+    const works = await Work.find({}).populate("people.person_id").exec();
+    res.json(works);
 }
 
 export const getOne = [
@@ -27,10 +27,10 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const movie = await Movie.findById(req.params.id)
+            const work = await Work.findById(req.params.id)
                 .populate("people.person_id")
                 .exec();
-            res.json({ data: movie });
+            res.json({ data: work });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -59,6 +59,14 @@ export const createOne = [
         .isLength({ min: 1 })
         .escape(),
     body("people.*.details.*").optional().escape(),
+    body("type")
+        .exists()
+        .withMessage("Missing type string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -67,11 +75,11 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const movie = await Movie.create({
+        const work = await Work.create({
             ...req.body,
             created_by: req.auth._id,
         });
-        await movie.save();
+        await work.save();
 
         return res.json({ acknowledged: true });
     },
@@ -99,11 +107,19 @@ export const updateOne = [
         .isLength({ min: 1 })
         .escape(),
     body("people.*.details.*").optional().escape(),
+    body("type")
+        .exists()
+        .withMessage("Missing type string")
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
-            await Movie.findByIdAndUpdate(req.params.id, req.body, {});
+            await Work.findByIdAndUpdate(req.params.id, req.body, {});
             return res.json({ acknowledged: true });
         } catch (error) {
             next(error);
@@ -116,7 +132,7 @@ export const deleteOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const result = await Movie.findByIdAndRemove(req.params.id);
+            const result = await Work.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);

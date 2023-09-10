@@ -7,7 +7,7 @@ import {
     updateOne,
     deleteOne,
     getAllForCurrentUser,
-} from "../../controllers/pieceOfWorkInstance.js";
+} from "../../controllers/workInstance.js";
 
 const router = Router();
 

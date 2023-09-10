@@ -1,13 +1,13 @@
-import Movie from "../models/movie.js";
+import Work from "../models/work.js";
 import Person from "../models/person.js";
-import getPiecesOfWork from "./piecesOfWork.mjs";
+import getWork from "./piecesOfWork.mjs";
 import { inspect } from "util";
 import Debug from "debug";
 import { Types } from "mongoose";
 const debug = Debug("project:db");
 const debugDev = Debug("project:dev");
 
-type MovieMetadata = {
+type WorkMetadata = {
     _id?: Types.ObjectId;
     title: string;
     dev: boolean;
@@ -15,10 +15,10 @@ type MovieMetadata = {
     published_at: Date;
     genres: String[];
     metadata: Map<string, string[]>;
-    people: PersonInMovie[];
+    people: PersonInWork[];
 };
 
-type PersonInMovie = {
+type PersonInWork = {
     person_id?: Types.ObjectId;
     person?: { name: string; surname: string };
     role: string;
@@ -26,30 +26,30 @@ type PersonInMovie = {
 };
 
 export async function deleteEverything() {
-    await Movie.deleteMany({});
+    await Work.deleteMany({});
     await Person.deleteMany({});
     debug("Deleted all documents");
 }
 
 export async function populateDB() {
-    const movies = transformPiecesOfWork();
+    const works = transformWork();
 
-    const moviesWithPeopleIds = await Promise.all(
-        movies.map(async (m) => {
+    const worksWithPeopleIds = await Promise.all(
+        works.map(async (m) => {
             m.people = await Promise.all(
-                m.people.map(async (personInMovie) => {
+                m.people.map(async (personInWork) => {
                     const id = (
                         await Person.findOneAndUpdate(
-                            personInMovie.person!,
-                            personInMovie.person!,
+                            personInWork.person!,
+                            personInWork.person!,
                             {
                                 new: true,
                                 upsert: true,
                             }
                         )
                     )._id;
-                    personInMovie.person_id = id;
-                    return personInMovie;
+                    personInWork.person_id = id;
+                    return personInWork;
                 })
             );
 
@@ -58,17 +58,17 @@ export async function populateDB() {
     );
     debug("Inserted people documents");
 
-    Movie.insertMany(moviesWithPeopleIds);
+    Work.insertMany(worksWithPeopleIds);
 
-    debug("Inserted movies documents");
+    debug("Inserted works documents");
 }
 
-function transformPiecesOfWork(): MovieMetadata[] {
-    const piecesOfWork = getPiecesOfWork((date) => new Date(date));
-    const movies = piecesOfWork
+function transformWork(): WorkMetadata[] {
+    const piecesOfWork = getWork((date) => new Date(date));
+    const works = piecesOfWork
         .filter((p) => p.type === "movie")
         .map((p) => {
-            const transformedPeople: PersonInMovie[] = [];
+            const transformedPeople: PersonInWork[] = [];
             for (const [role, people] of Object.entries(p.people)) {
                 for (const person of people) {
                     transformedPeople.push({
@@ -82,8 +82,8 @@ function transformPiecesOfWork(): MovieMetadata[] {
             p.dev = true;
             delete p.type;
 
-            return p as unknown as MovieMetadata;
+            return p as unknown as WorkMetadata;
         });
 
-    return movies;
+    return works;
 }

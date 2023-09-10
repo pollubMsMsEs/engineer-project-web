@@ -6,7 +6,7 @@ import {
     createOne,
     updateOne,
     deleteOne,
-} from "../../controllers/piecesOfAPI.js";
+} from "../../controllers/worksFromAPI.js";
 
 const router = Router();
 

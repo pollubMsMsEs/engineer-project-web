@@ -1,4 +1,4 @@
-import PieceOfWorkInstance from "../models/pieceOfWorkInstance.js";
+import WorkInstance from "../models/workInstance.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -9,8 +9,8 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const pieceOfWorkInstances = await PieceOfWorkInstance.find({});
-    res.json(pieceOfWorkInstances);
+    const workInstances = await WorkInstance.find({});
+    res.json(workInstances);
 }
 
 export const getAllForUser = [
@@ -18,8 +18,8 @@ export const getAllForUser = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const pieceOfWorkInstances = await PieceOfWorkInstance.find({ user_id: req.params.id }).exec();
-            res.json({ data: pieceOfWorkInstances });
+            const workInstances = await WorkInstance.find({ user_id: req.params.id }).exec();
+            res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -31,8 +31,8 @@ export const getAllForCurrentUser = [
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const pieceOfWorkInstances = await PieceOfWorkInstance.find({ user_id: req.auth._id }).exec();
-            res.json({ data: pieceOfWorkInstances });
+            const workInstances = await WorkInstance.find({ user_id: req.auth._id }).exec();
+            res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -45,9 +45,9 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const pieceOfWorkInstance = await PieceOfWorkInstance.findById(req.params.id)
+            const workInstance = await WorkInstance.findById(req.params.id)
                 .exec();
-            res.json({ data: pieceOfWorkInstance });
+            res.json({ data: workInstance });
         } catch (e: any) {
             //console.log(res);
             return next(e);
@@ -56,15 +56,15 @@ export const getOne = [
 ];
 
 export const createOne = [
-    body("piece_of_work_id").isMongoId(),
+    body("work_id").isMongoId(),
     body("onModel")
         .exists()
         .withMessage("Missing onModel string")
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'PiecesOfAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Movie' or 'PiecesOfAPI'"),
+            return ['Works', 'WorksFromAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Works' or 'WorksFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -108,8 +108,8 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'Book', 'ComputerGame'].includes(value);
-        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -125,32 +125,32 @@ export const createOne = [
                 .json({ acknowledged: false, errors: valResult.array() });
 
         const Model = mongoose.model(req.body.onModel);
-        const exists = await Model.exists({ _id: req.body.piece_of_work_id });
+        const exists = await Model.exists({ _id: req.body.work_id });
 
         if (!exists) {
-            return res.status(400).json({ acknowledged: false, errors: 'Invalid piece_of_work_id for the given onModel' });
+            return res.status(400).json({ acknowledged: false, errors: 'Invalid work_id for the given onModel' });
         }
 
-        const pieceOfWorkInstance = await PieceOfWorkInstance.create({
+        const workInstance = await WorkInstance.create({
             ...req.body,
             user_id: req.auth._id,
         });
-        await pieceOfWorkInstance.save();
+        await workInstance.save();
 
         return res.json({ acknowledged: true });
     },
 ];
 
 export const updateOne = [
-    body("piece_of_work_id").isMongoId(),
+    body("work_id").isMongoId(),
     body("onModel")
         .exists()
         .withMessage("Missing onModel string")
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'PiecesOfAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Movie' or 'PiecesOfAPI'"),
+            return ['Works', 'WorksFromAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Work' or 'WorksFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -194,8 +194,8 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Movie', 'Book', 'ComputerGame'].includes(value);
-        }).withMessage("Type must be one of 'Movie', 'Book' or 'ComputerGame'"),
+            return ['movie', 'book', 'computerGame'].includes(value);
+        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -206,20 +206,20 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            const instance = await PieceOfWorkInstance.findById(req.params.id);
+            const instance = await WorkInstance.findById(req.params.id);
 
             if (!instance || String(instance.user_id) !== req.auth._id) {
                 return res.status(403).json({ error: "You do not have permission to update this piece of work instance." });
             }
 
             const Model = mongoose.model(req.body.onModel);
-            const exists = await Model.exists({ _id: req.body.piece_of_work_id });
+            const exists = await Model.exists({ _id: req.body.work_id });
 
             if (!exists) {
-                return res.status(400).json({ acknowledged: false, errors: 'Invalid piece_of_work_id for the given onModel' });
+                return res.status(400).json({ acknowledged: false, errors: 'Invalid work_id for the given onModel' });
             }
 
-            await PieceOfWorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
+            await WorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
             return res.json({ acknowledged: true });
         } catch (error) {
             next(error);
@@ -233,13 +233,13 @@ export const deleteOne = [
         try {
             validationResult(req).throw();
 
-            const instance = await PieceOfWorkInstance.findById(req.params.id);
+            const instance = await WorkInstance.findById(req.params.id);
 
             if (!instance || String(instance.user_id) !== req.auth._id) {
                 return res.status(403).json({ error: "You do not have permission to delete this piece of work instance." });
             }
 
-            const result = await PieceOfWorkInstance.findByIdAndRemove(req.params.id);
+            const result = await WorkInstance.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);
