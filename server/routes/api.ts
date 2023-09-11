@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction, Router } from "express";
-import movieRouter from "./api/movie.js";
+import workRouter from "./api/work.js";
+import workInstanceRouter from "./api/workInstance.js";
+import worksFromAPIRouter from "./api/worksFromAPI.js";
 import personRouter from "./api/person.js";
 import { validationResult } from "express-validator";
 import { login, register } from "../controllers/user.js";
+import { isValid } from "../controllers/validate.js";
 import { jwtMiddleware } from "../middlewares.js";
 
 const router = Router();
@@ -10,7 +13,11 @@ const router = Router();
 router.post("/login", login);
 router.post("/register", register);
 
-router.use("/movie", jwtMiddleware, movieRouter);
+router.get("/validate", jwtMiddleware, isValid);
+
+router.use("/work", jwtMiddleware, workRouter);
+router.use("/workInstance", jwtMiddleware, workInstanceRouter);
+router.use("/worksFromAPI", jwtMiddleware, worksFromAPIRouter);
 router.use("/person", jwtMiddleware, personRouter);
 
 router.use((err: any, req: Request, res: Response, next: NextFunction) => {

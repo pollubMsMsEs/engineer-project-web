@@ -1,21 +1,19 @@
 import { Router } from "express";
 import {
-    getAllShort,
-    getAllPopulated,
+    getAll,
+    getAllByType,
     getOne,
     createOne,
     updateOne,
     deleteOne,
-    getCount,
-} from "../../controllers/movie.js";
+} from "../../controllers/worksFromAPI.js";
 
 const router = Router();
 
-router.get("/all", getAllPopulated);
-router.get("/all/summary", getAllShort);
-router.get("/count", getCount);
-router.get("/:id", getOne);
+router.get("/all", getAll);
+router.get("/all/:type", getAllByType);
 router.post("/create", createOne);
+router.get("/:id", getOne);
 router.put("/:id", updateOne);
 router.delete("/:id", deleteOne);
 
