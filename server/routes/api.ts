@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, Router } from "express";
 import workRouter from "./api/work.js";
 import workInstanceRouter from "./api/workInstance.js";
-import worksFromAPIRouter from "./api/worksFromAPI.js";
+import workFromAPIRouter from "./api/workFromAPI.js";
 import personRouter from "./api/person.js";
 import { validationResult } from "express-validator";
 import { login, register } from "../controllers/user.js";
@@ -17,7 +17,7 @@ router.get("/validate", jwtMiddleware, isValid);
 
 router.use("/work", jwtMiddleware, workRouter);
 router.use("/workInstance", jwtMiddleware, workInstanceRouter);
-router.use("/worksFromAPI", jwtMiddleware, worksFromAPIRouter);
+router.use("/workFromAPI", jwtMiddleware, workFromAPIRouter);
 router.use("/person", jwtMiddleware, personRouter);
 
 router.use((err: any, req: Request, res: Response, next: NextFunction) => {

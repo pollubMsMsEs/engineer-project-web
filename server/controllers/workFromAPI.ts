@@ -1,4 +1,4 @@
-import WorksFromAPI from "../models/worksFromAPI.js";
+import WorkFromAPI from "../models/workFromAPI.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -8,7 +8,7 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const worksFromAPI = await WorksFromAPI.find({});
+    const worksFromAPI = await WorkFromAPI.find({});
     res.json(worksFromAPI);
 }
 
@@ -17,7 +17,7 @@ export const getAllByType = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const worksFromAPI = await WorksFromAPI.find({ type: req.params.type }).exec();
+            const worksFromAPI = await WorkFromAPI.find({ type: req.params.type }).exec();
             res.json({ data: worksFromAPI });
         } catch (e: any) {
             //console.log(res);
@@ -31,7 +31,7 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const worksFromAPI = await WorksFromAPI.findById(req.params.id)
+            const worksFromAPI = await WorkFromAPI.findById(req.params.id)
                 .exec();
             res.json({ data: worksFromAPI });
         } catch (e: any) {
@@ -63,7 +63,7 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const worksFromAPI = await WorksFromAPI.create({
+        const worksFromAPI = await WorkFromAPI.create({
             ...req.body,
         });
         await worksFromAPI.save();
@@ -93,7 +93,7 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            await WorksFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
+            await WorkFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
             return res.json({ acknowledged: true });
         } catch (error) {
             next(error);
@@ -107,7 +107,7 @@ export const deleteOne = [
         try {
             validationResult(req).throw();
 
-            const result = await WorksFromAPI.findByIdAndRemove(req.params.id);
+            const result = await WorkFromAPI.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);
