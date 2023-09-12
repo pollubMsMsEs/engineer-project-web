@@ -19,10 +19,12 @@ export interface Person {
     surname: string;
 }
 
+export type PersonFromAPI = Person & { _id: string };
+
 export interface MetaObject {
     [key: string]: string[];
 }
 
 export type PopulatedMovieFromAPI = Movie & {
-    people: (PersonInMovie & { person_id: Person & { _id: string } })[];
+    people: (PersonInMovie & { person_id: PersonFromAPI })[];
 };

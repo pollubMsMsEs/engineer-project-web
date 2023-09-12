@@ -41,7 +41,10 @@ export default function MovieList({ movies }: { movies: Movie[] }) {
                         <a href={`/movie/${movie._id}`}>
                             <button>Details</button>
                         </a>
-                        <Link href={`/movie/${movie._id}/edit`}>
+                        <Link
+                            href={`/movie/${movie._id}/edit`}
+                            prefetch={false}
+                        >
                             <button>Edit</button>
                         </Link>
 
