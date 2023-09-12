@@ -44,18 +44,54 @@ export default function MovieForm({
     movie?: PopulatedMovieFromAPI;
 }) {
     const router = useRouter();
-    const [editedRole, setEditedRole] = useState("");
+    const uniqueKey = useRef(0);
+    const [editedRole, setEditedRole] = useState<string | undefined>();
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [publishedAt, setPublishedAt] = useState("");
-    const [genres, setGenres] = useState<string[]>([]);
-    const [metadata, setMetadata] = useState<MetadataInForm>({});
-    const [people, setPeople] = useState<PersonInMovieFormType[]>([]);
+    const [title, setTitle] = useState(movie?.title ?? "");
+    const [description, setDescription] = useState(movie?.description ?? "");
+    const [publishedAt, setPublishedAt] = useState(
+        movie ? dayjs(movie.published_at).format("YYYY-MM-DD") : ""
+    );
+    const [genres, setGenres] = useState<string[]>(movie?.genres ?? []);
+    const [metadata, setMetadata] = useState<MetadataInForm>(
+        movie
+            ? Object.entries(movie.metadata).reduce<MetadataInForm>(
+                  (acc, [key, values]) => {
+                      acc[getUniqueKey()] = { key, values };
+                      return acc;
+                  },
+                  {}
+              )
+            : {}
+    );
+    const [people, setPeople] = useState<PersonInMovieFormType[]>(
+        movie?.people.map<PersonInMovieFormType>((p) => {
+            const newPerson: PersonInMovieFormType = {
+                ...p,
+                person_id: p.person_id._id,
+                react_key: getUniqueKey(),
+                formDetails: {},
+            };
+            if (p.details) {
+                newPerson.formDetails = Object.entries(p.details).reduce(
+                    (acc, [key, values]) => {
+                        return {
+                            ...acc,
+                            [getUniqueKey()]: {
+                                key,
+                                values,
+                            },
+                        };
+                    },
+                    {}
+                );
+            }
+            return newPerson;
+        }) ?? []
+    );
     const [errors, setErrors] = useState([]);
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
-    const uniqueKey = useRef(0);
 
     useEffect(() => {
         getPeopleToPick().then(setPeopleToPick);
@@ -102,47 +138,6 @@ export default function MovieForm({
 
         console.log(uniqueKey);
         return uniqueKey.current;
-    }
-
-    if (movie) {
-        setTitle(movie.title);
-        setDescription(movie.description);
-        setPublishedAt(dayjs(movie.published_at).format("YYYY-MM-DD"));
-        setGenres(movie.genres);
-        setMetadata(
-            Object.entries(movie.metadata).reduce<MetadataInForm>(
-                (acc, [key, values]) => {
-                    acc[getUniqueKey()] = { key, values };
-                    return acc;
-                },
-                {}
-            )
-        );
-        setPeople(
-            movie.people.map<PersonInMovieFormType>((p) => {
-                const newPerson: PersonInMovieFormType = {
-                    ...p,
-                    person_id: p.person_id._id,
-                    react_key: getUniqueKey(),
-                    formDetails: {},
-                };
-                if (p.details) {
-                    newPerson.formDetails = Object.entries(p.details).reduce(
-                        (acc, [key, values]) => {
-                            return {
-                                ...acc,
-                                [getUniqueKey()]: {
-                                    key,
-                                    values,
-                                },
-                            };
-                        },
-                        {}
-                    );
-                }
-                return newPerson;
-            })
-        );
     }
 
     async function submitForm() {
