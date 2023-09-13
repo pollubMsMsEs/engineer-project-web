@@ -4,6 +4,7 @@ import styles from "./layout.module.scss";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import jwtDecode from "jwt-decode";
+import ToastContainerWrapper from "@/components/ToastContainerWrapper";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
@@ -30,12 +31,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 <a href="/person/all">People table</a>
             </aside>
             <main className="content">{children}</main>
+            <ToastContainerWrapper />
         </div>
     );
-    /*
-  <ToastContainer
-                position={toast.POSITION.BOTTOM_CENTER}
-                theme="dark"
-            />
-            */
 }

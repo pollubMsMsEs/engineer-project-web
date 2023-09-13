@@ -3,6 +3,7 @@
 import { PersonFromAPI } from "@/types/movieType";
 import Link from "next/link";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
@@ -12,7 +13,7 @@ async function deletePerson(_id: string) {
 
     const msg = result?.errors?.[0]?.msg;
     if (msg) {
-        console.error(msg); // toast here
+        toast.error(msg);
         return false;
     }
 
