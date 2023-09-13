@@ -9,7 +9,7 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const workInstances = await WorkInstance.find({});
+    const workInstances = await WorkInstance.find({}).populate("work_id").exec();
     res.json(workInstances);
 }
 
@@ -18,7 +18,7 @@ export const getAllForUser = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstances = await WorkInstance.find({ user_id: req.params.id }).exec();
+            const workInstances = await WorkInstance.find({ user_id: req.params.id }).populate("work_id").exec();
             res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
@@ -31,7 +31,7 @@ export const getAllForCurrentUser = [
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstances = await WorkInstance.find({ user_id: req.auth._id }).exec();
+            const workInstances = await WorkInstance.find({ user_id: req.auth._id }).populate("work_id").exec();
             res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
@@ -45,8 +45,7 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstance = await WorkInstance.findById(req.params.id)
-                .exec();
+            const workInstance = await WorkInstance.findById(req.params.id).populate("work_id").exec();
             res.json({ data: workInstance });
         } catch (e: any) {
             //console.log(res);
