@@ -65,29 +65,31 @@ export default function MovieForm({
             : {}
     );
     const [people, setPeople] = useState<PersonInMovieFormType[]>(
-        movie?.people.map<PersonInMovieFormType>((p) => {
-            const newPerson: PersonInMovieFormType = {
-                ...p,
-                person_id: p.person_id._id,
-                react_key: getUniqueKey(),
-                formDetails: {},
-            };
-            if (p.details) {
-                newPerson.formDetails = Object.entries(p.details).reduce(
-                    (acc, [key, values]) => {
-                        return {
-                            ...acc,
-                            [getUniqueKey()]: {
-                                key,
-                                values,
-                            },
-                        };
-                    },
-                    {}
-                );
-            }
-            return newPerson;
-        }) ?? []
+        movie?.people
+            .filter((p) => p?.person_id?._id)
+            .map<PersonInMovieFormType>((p) => {
+                const newPerson: PersonInMovieFormType = {
+                    ...p,
+                    person_id: p.person_id._id,
+                    react_key: getUniqueKey(),
+                    formDetails: {},
+                };
+                if (p.details) {
+                    newPerson.formDetails = Object.entries(p.details).reduce(
+                        (acc, [key, values]) => {
+                            return {
+                                ...acc,
+                                [getUniqueKey()]: {
+                                    key,
+                                    values,
+                                },
+                            };
+                        },
+                        {}
+                    );
+                }
+                return newPerson;
+            }) ?? []
     );
     const [errors, setErrors] = useState([]);
 

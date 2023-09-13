@@ -20,20 +20,22 @@ type PersonInMovieFromAPI = PersonInMovie & {
 
 function groupPeopleInMovieByRole(people: PersonInMovieFromAPI[]) {
     return Object.entries(
-        people.reduce((peopleByRole: PeopleByRole, person) => {
-            const newPerson = {
-                ...person.person_id,
-                details: person.details,
-            };
+        people
+            .filter((p) => p?.person_id?._id)
+            .reduce((peopleByRole: PeopleByRole, person) => {
+                const newPerson = {
+                    ...person.person_id,
+                    details: person.details,
+                };
 
-            if (person.role in peopleByRole) {
-                peopleByRole[person.role].push(newPerson);
-            } else {
-                peopleByRole[person.role] = [newPerson];
-            }
+                if (person.role in peopleByRole) {
+                    peopleByRole[person.role].push(newPerson);
+                } else {
+                    peopleByRole[person.role] = [newPerson];
+                }
 
-            return peopleByRole;
-        }, {})
+                return peopleByRole;
+            }, {})
     );
 }
 
