@@ -234,8 +234,12 @@ export const deleteOne = [
 
             const instance = await WorkInstance.findById(req.params.id);
 
-            if (!instance || String(instance.user_id) !== req.auth._id) {
-                return res.status(403).json({ error: "You do not have permission to delete this piece of work instance." });
+            if (!instance) {
+                return res.status(404).json({ error: "This work instance does not exist." });
+            }
+
+            if (String(instance.user_id) !== req.auth._id) {
+                return res.status(403).json({ error: "You do not have permission to delete this work instance." });
             }
 
             const result = await WorkInstance.findByIdAndRemove(req.params.id);
