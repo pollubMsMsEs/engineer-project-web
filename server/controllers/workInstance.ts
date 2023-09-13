@@ -63,8 +63,8 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Works', 'WorksFromAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Works' or 'WorksFromAPI'"),
+            return ['Work', 'WorkFromAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -149,8 +149,8 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Works', 'WorksFromAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Work' or 'WorksFromAPI'"),
+            return ['Work', 'WorkFromAPI'].includes(value);
+        }).withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
