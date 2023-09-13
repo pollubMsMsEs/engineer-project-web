@@ -1,0 +1,15 @@
+import Person from "@/components/Person";
+import { fetchAPIFromServerComponent } from "@/modules/serverSide";
+import React from "react";
+
+export default async function PersonDetails({
+    params,
+}: {
+    params: { _id: string };
+}) {
+    const response = await fetchAPIFromServerComponent(`/person/${params._id}`);
+    const result = await response.json();
+    console.log(response, result);
+
+    return <Person person={result.data} />;
+}
