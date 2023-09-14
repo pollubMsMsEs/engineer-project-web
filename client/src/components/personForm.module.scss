@@ -1,0 +1,9 @@
+.person-form-container {
+    display: grid;
+    grid-template-columns: 1fr max(200px, 10%);
+
+    form {
+        display: grid;
+        justify-content: start;
+    }
+}

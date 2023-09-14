@@ -1,0 +1,28 @@
+.movie-container {
+    .label {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .roles {
+        display: flex;
+        flex-direction: column;
+
+        .people {
+            display: flex;
+            gap: 10px;
+
+            .person {
+                display: grid;
+                place-items: center;
+            }
+        }
+    }
+
+    .metadata {
+        display: flex;
+        flex-flow: column wrap;
+        gap: 5px;
+        margin-top: 30px;
+    }
+}

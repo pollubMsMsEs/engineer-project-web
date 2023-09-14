@@ -2,10 +2,11 @@ import {
     MetaObject,
     Person as PersonType,
     PersonInMovie,
-    PopulatedMovieFromAPI,
+    MovieFromAPIPopulated,
 } from "../types/movieType";
 import dayjs from "dayjs";
 import Person from "./Person";
+import styles from "./movie.module.scss";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -39,59 +40,29 @@ function groupPeopleInMovieByRole(people: PersonInMovieFromAPI[]) {
     );
 }
 
-export default function MovieWithPeople({
-    movie,
-}: {
-    movie: PopulatedMovieFromAPI;
-}) {
+export default function Movie({ movie }: { movie: MovieFromAPIPopulated }) {
     const peopleByRole = groupPeopleInMovieByRole(movie.people);
 
     return (
-        <div>
+        <div className={styles["movie-container"]}>
             <h2>{movie.title}</h2>
             <div>
-                <span
-                    style={{
-                        fontSize: "1.1rem",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Description:{" "}
-                </span>
+                <span className={styles["label"]}>Description: </span>
                 <span>{movie?.description ?? ""}</span>
             </div>
             <div>
-                <span
-                    style={{
-                        fontSize: "1.1rem",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Published at:{" "}
-                </span>
+                <span className={styles["label"]}>Published at: </span>
                 {dayjs(movie?.published_at).format("YYYY-MM-DD") ?? ""}
             </div>
             <div>
-                <span
-                    style={{
-                        fontSize: "1.1rem",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Genres:{" "}
-                </span>
+                <span className={styles["label"]}>Genres: </span>
                 <span>
                     {movie?.genres.reduce((acc, genre) => {
                         return `${acc}${genre}, `;
                     }, "") ?? ""}
                 </span>
             </div>
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                }}
-            >
+            <div className={styles["roles"]}>
                 {peopleByRole.map(([role, people]) => (
                     <div key={role}>
                         <h3>
@@ -99,15 +70,9 @@ export default function MovieWithPeople({
                                 role.substring(1) +
                                 "(s)"}
                         </h3>
-                        <div style={{ display: "flex", gap: "10px" }}>
+                        <div className={styles["people"]}>
                             {people.map((p) => (
-                                <div
-                                    key={p._id}
-                                    style={{
-                                        display: "grid",
-                                        placeItems: "center",
-                                    }}
-                                >
+                                <div key={p._id} className={styles["person"]}>
                                     <Person person={p} details={p.details} />
                                 </div>
                             ))}
@@ -116,15 +81,7 @@ export default function MovieWithPeople({
                 ))}
             </div>
             <h3>Metadata</h3>
-            <div
-                style={{
-                    marginTop: "30px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "5px",
-                    flexWrap: "wrap",
-                }}
-            >
+            <div className={styles["metadata"]}>
                 {Object.entries(movie.metadata).map(([key, values]) => (
                     <div key={key}>
                         <span>

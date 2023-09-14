@@ -1,7 +1,12 @@
 "use client";
 
-import { PersonInMovie, Person as PersonType } from "../types/movieType";
+import {
+    PersonFromAPI,
+    PersonInMovie,
+    Person as PersonType,
+} from "../types/movieType";
 import PersonDetailForm from "./PersonDetailForm";
+import styles from "./personInMovieForm.module.scss";
 
 export type PersonInMovieFormType = PersonInMovie & {
     react_key: number;
@@ -15,8 +20,6 @@ export type PersonInMovieFormType = PersonInMovie & {
     };
 };
 
-export type PeopleList = (PersonType & { _id: string })[];
-
 export default function PersonInMovieForm({
     person,
     peopleToPick,
@@ -28,7 +31,7 @@ export default function PersonInMovieForm({
 }: {
     person: PersonInMovieFormType;
     index: number;
-    peopleToPick: PeopleList;
+    peopleToPick: PersonFromAPI[];
     editPersonCallback: (person: PersonInMovieFormType) => void;
     deletePersonCallback: (person: PersonInMovieFormType) => void;
     setEditedRoleCallback: (role: string) => void;
@@ -52,17 +55,7 @@ export default function PersonInMovieForm({
     }
 
     return (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateColumns: "min-content 1fr",
-                alignContent: "start",
-                gap: "5px",
-                backgroundColor: "#27272a",
-                padding: "10px",
-                borderRadius: "10px",
-            }}
-        >
+        <div className={styles["person-in-movie-container"]}>
             <label htmlFor={`person${index}`}>Person</label>
             <div>
                 <select
@@ -86,11 +79,7 @@ export default function PersonInMovieForm({
                 </select>
                 <button
                     type="button"
-                    style={{
-                        gridColumn: "2",
-                        justifySelf: "end",
-                        padding: "0 10px",
-                    }}
+                    className={styles["delete-person-button"]}
                     onClick={() => {
                         deletePersonCallback(person);
                     }}
@@ -122,17 +111,9 @@ export default function PersonInMovieForm({
                     }}
                 />
             )}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    gridColumn: "1 / -1",
-                }}
-            >
-                <h4 style={{ margin: "0" }}>Details</h4>
+            <header className={styles["details"]}>
+                <h4>Details</h4>
                 <button
-                    style={{ padding: "5px", aspectRatio: "1/1" }}
                     type="button"
                     onClick={() => {
                         const uniqueKey = getUniqueKey();
@@ -147,16 +128,8 @@ export default function PersonInMovieForm({
                 >
                     +
                 </button>
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "stretch",
-                    gap: "5px",
-                    gridColumn: "1 / -1",
-                }}
-            >
+            </header>
+            <div className={styles["details-container"]}>
                 {person.formDetails &&
                     Object.entries(person.formDetails).map(
                         ([reactKey, data]) => (

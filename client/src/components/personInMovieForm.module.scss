@@ -1,0 +1,36 @@
+.person-in-movie-container {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    gap: 5px;
+    align-content: start;
+    padding: 10px;
+    background-color: #27272a;
+    border-radius: 10px;
+
+    .delete-person-button {
+        padding: 0 10px;
+    }
+
+    header.details {
+        display: flex;
+        grid-column: 1 / -1;
+        gap: 5px;
+        align-items: center;
+
+        h4 {
+            margin: 0;
+        }
+
+        button {
+            padding: 5px;
+        }
+    }
+
+    .details-container {
+        display: flex;
+        flex-direction: column;
+        grid-column: 1 / -1;
+        gap: 5px;
+        align-items: stretch;
+    }
+}

@@ -1,3 +1,5 @@
+import styles from "./personDetailForm.module.scss";
+
 export default function PersonDetailForm({
     uniqueKey,
     data,
@@ -46,10 +48,7 @@ export default function PersonDetailForm({
                 />
             )}
             <button
-                style={{
-                    padding: "5px",
-                    aspectRatio: "1/1",
-                }}
+                className={styles["delete-button"]}
                 type="button"
                 onClick={() => {
                     deleteDetailCallback(uniqueKey);

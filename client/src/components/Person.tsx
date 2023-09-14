@@ -1,4 +1,5 @@
 import { MetaObject, Person } from "../types/movieType";
+import styles from "./person.module.scss";
 
 export default function Person({
     person,
@@ -13,13 +14,7 @@ export default function Person({
             <div>{person.nick && `"${person.nick}"`}</div>
             <div>{person.surname}</div>
             {details && (
-                <div
-                    style={{
-                        marginTop: "10px",
-                        display: "grid",
-                        placeItems: "center",
-                    }}
-                >
+                <div className={styles["person-details"]}>
                     {Object.entries(details).map(([key, values]) => (
                         <div key={key}>
                             <span>

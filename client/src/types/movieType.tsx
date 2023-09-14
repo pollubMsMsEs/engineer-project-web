@@ -25,6 +25,6 @@ export interface MetaObject {
     [key: string]: string[];
 }
 
-export type PopulatedMovieFromAPI = Movie & {
+export type MovieFromAPIPopulated = Movie & {
     people: (PersonInMovie & { person_id: PersonFromAPI })[];
 };

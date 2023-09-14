@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Person, PersonFromAPI } from "../types/movieType";
 import ErrorsDisplay from "../components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
+import styles from "./personForm.module.scss";
 
 export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const router = useRouter();
@@ -50,14 +51,8 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     }
 
     return (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateColumns: "1fr max(200px,10%)",
-            }}
-        >
+        <div className={styles["person-form-container"]}>
             <form
-                style={{ display: "grid", justifyContent: "start" }}
                 onSubmit={(e) => {
                     e.preventDefault();
                     e.currentTarget.reportValidity();
