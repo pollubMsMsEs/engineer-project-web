@@ -107,6 +107,12 @@ export const deleteOne = [
         try {
             validationResult(req).throw();
 
+            const instance = await WorkFromAPI.findById(req.params.id);
+
+            if (!instance) {
+                return res.status(404).json({ error: "This work does not exist." });
+            }
+
             const result = await WorkFromAPI.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {

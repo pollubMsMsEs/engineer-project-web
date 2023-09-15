@@ -22,6 +22,20 @@ export async function getAllPopulated(req: Request, res: Response) {
     res.json(works);
 }
 
+export const getAllByType = [
+    param("type").isString().withMessage("Type must be a string"),
+    async function (req: Request, res: Response, next: NextFunction) {
+        try {
+            validationResult(req).throw();
+            const works = await Work.find({ type: req.params.type }).exec();
+            res.json({ data: works });
+        } catch (e: any) {
+            //console.log(res);
+            return next(e);
+        }
+    },
+];
+
 export const getOne = [
     param("id").isMongoId().withMessage("URL contains incorrect id"),
     async function (req: Request, res: Response, next: NextFunction) {
@@ -132,6 +146,13 @@ export const deleteOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
+            const instance = await Work.findById(req.params.id);
+
+            if (!instance) {
+                return res.status(404).json({ error: "This work does not exist." });
+            }
+
             const result = await Work.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
