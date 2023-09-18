@@ -32,11 +32,11 @@ export default function LoginForm() {
             const result = await response.json();
 
             if (result.errors) {
+                setIsFetching(false);
                 setErrors(result.errors);
             } else {
                 router.refresh();
             }
-            setIsFetching(false);
         } catch (error: any) {
             console.error({ error });
         }
