@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Register() {
     return (
-        <div className={styles.container}>
+        <div className={styles["container"]}>
             <div className={styles["logo-container"]}>
                 <Logo />
             </div>

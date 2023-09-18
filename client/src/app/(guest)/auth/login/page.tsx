@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Login() {
     return (
-        <div className={styles.container}>
+        <div className={styles["container"]}>
             <div className={styles["logo-container"]}>
                 <Logo />
             </div>
