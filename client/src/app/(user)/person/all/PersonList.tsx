@@ -34,52 +34,34 @@ export default function PersonList({ people }: { people: PersonFromAPI[] }) {
     }
 
     return (
-        <>
-            <a href="/person/create">
-                <button style={{ width: "100%" }}>Add person</button>
-            </a>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Nick</th>
-                        <th>Surname</th>
-                        <th>Operations</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {peopleList.map((person) => (
-                        <tr key={person._id}>
-                            <td>{person.name}</td>
-                            <td>{person.nick}</td>
-                            <td>{person.surname}</td>
-                            <td>
-                                <a href={`/person/${person._id}`}>
-                                    <button>Details</button>
-                                </a>
-                                <Link
-                                    href={{
-                                        pathname: `/person/${person._id}/edit`,
-                                    }}
-                                >
-                                    <button>Edit</button>
-                                </Link>
+        <tbody>
+            {peopleList.map((person) => (
+                <tr key={person._id}>
+                    <td>{person.name}</td>
+                    <td>{person.nick}</td>
+                    <td>{person.surname}</td>
+                    <td>
+                        <a href={`/person/${person._id}`}>
+                            <button>Details</button>
+                        </a>
+                        <Link
+                            href={{
+                                pathname: `/person/${person._id}/edit`,
+                            }}
+                        >
+                            <button>Edit</button>
+                        </Link>
 
-                                <button
-                                    onClick={() => {
-                                        deletePersonHandler(person._id);
-                                    }}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <a href="/person/create">
-                <button style={{ width: "100%" }}>Add person</button>
-            </a>
-        </>
+                        <button
+                            onClick={() => {
+                                deletePersonHandler(person._id);
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            ))}
+        </tbody>
     );
 }

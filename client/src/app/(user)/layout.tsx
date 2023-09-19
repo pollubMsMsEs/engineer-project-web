@@ -10,27 +10,25 @@ export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
 
     return (
-        <div className={styles["component-default-layout"]}>
-            <header style={{ display: "flex" }}>
+        <div className={styles["default-layout"]}>
+            <header className={styles["default-layout-header"]}>
                 <Logo />
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginLeft: "auto",
-                    }}
-                >
-                    <div className={styles.username}>{username}</div>
+                <div className={styles["default-layout-header__user"]}>
+                    <span
+                        className={styles["default-layout-header__user-name"]}
+                    >
+                        {username}
+                    </span>
                     <Link href={"/api/auth/logout"}>Logout</Link>
                 </div>
             </header>
-            <aside>
+            <aside className={styles["default-layout-aside"]}>
                 <a href="/">Home</a>
                 <a href="/all">Everything list</a>
                 <a href="/movie/all">Movies table</a>
                 <a href="/person/all">People table</a>
             </aside>
-            <main className="content">{children}</main>
+            <main className={styles["default-layout-main"]}>{children}</main>
             <ToastContainerWrapper />
         </div>
     );

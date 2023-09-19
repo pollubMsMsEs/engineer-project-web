@@ -13,8 +13,8 @@ export default async function CountDisplay({
     const result = await response.json();
 
     return (
-        <div className={styles["count-display"]}>
+        <span className={styles["count-display"]}>
             {title} {result.count}
-        </div>
+        </span>
     );
 }

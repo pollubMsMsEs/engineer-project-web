@@ -2,6 +2,7 @@ import { Movie } from "@/types/movieType";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import MovieList from "./MovieList";
 import { wait5secPromise } from "@/scripts/devUtils";
+import styles from "./page.module.scss";
 
 export default async function MovieAll() {
     const response = await fetchAPIFromServerComponent("/movie/all");
@@ -10,7 +11,7 @@ export default async function MovieAll() {
     return (
         <>
             <a href="/movie/create">
-                <button style={{ width: "100%" }}>Add movie</button>
+                <button className={styles["button"]}>Add movie</button>
             </a>
             <table>
                 <thead>
@@ -23,7 +24,7 @@ export default async function MovieAll() {
                 <MovieList movies={result} />
             </table>
             <a href="/movie/create">
-                <button style={{ width: "100%" }}>Add movie</button>
+                <button className={styles["button"]}>Add movie</button>
             </a>
         </>
     );
