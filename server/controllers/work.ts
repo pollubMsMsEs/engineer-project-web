@@ -1,4 +1,6 @@
 import Work from "../models/work.js";
+import Image from "../models/image.js";
+import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -81,6 +83,31 @@ export const createOne = [
         .custom((value) => {
             return ['movie', 'book', 'computerGame'].includes(value);
         }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+    body("cover")
+        .optional()
+        .isString()
+        .trim()
+        .isURL({
+            protocols: ['http', 'https'],
+            require_tld: false,
+            require_protocol: false,
+        })
+        .withMessage("Invalid URL format for cover")
+        .bail()
+        .custom(async (value) => {
+            const imageId = value.split('/').pop();
+
+            if (!mongoose.Types.ObjectId.isValid(imageId)) {
+                return Promise.reject('Invalid ObjectId format');
+            }
+
+            const imageExists = await Image.findById(imageId);
+            if (!imageExists) {
+                return Promise.reject('Image does not exist');
+            }
+
+            return true;
+        }),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -129,6 +156,31 @@ export const updateOne = [
         .custom((value) => {
             return ['movie', 'book', 'computerGame'].includes(value);
         }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+    body("cover")
+        .optional()
+        .isString()
+        .trim()
+        .isURL({
+            protocols: ['http', 'https'],
+            require_tld: false,
+            require_protocol: false,
+        })
+        .withMessage("Invalid URL format for cover")
+        .bail()
+        .custom(async (value) => {
+            const imageId = value.split('/').pop();
+
+            if (!mongoose.Types.ObjectId.isValid(imageId)) {
+                return Promise.reject('Invalid ObjectId format');
+            }
+
+            const imageExists = await Image.findById(imageId);
+            if (!imageExists) {
+                return Promise.reject('Image does not exist');
+            }
+
+            return true;
+        }),
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();

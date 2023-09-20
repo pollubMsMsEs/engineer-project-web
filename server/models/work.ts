@@ -3,6 +3,7 @@ import { Schema, model } from "mongoose";
 const WorkSchema = new Schema({
     created_by: { type: Schema.Types.ObjectId, ref: "User" },
     title: { type: String, required: true },
+    cover: { type: String },
     dev: { type: Boolean, default: true },
     description: String,
     published_at: Date,
