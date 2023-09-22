@@ -43,12 +43,12 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const images = await Image.create({
+        const image = await Image.create({
             ...req.body,
         });
-        await images.save();
+        await image.save();
 
-        return res.json({ acknowledged: true });
+        return res.json({ acknowledged: true, created: image });
     },
 ];
 
@@ -66,9 +66,9 @@ export const updateOne = [
             console.log(req.body);
             validationResult(req).throw();
 
-            await Image.findByIdAndUpdate(req.params.id, req.body, {});
+            const image = await Image.findByIdAndUpdate(req.params.id, req.body, {});
 
-            return res.json({ acknowledged: true });
+            return res.json({ acknowledged: true, updated: image });
         } catch (error) {
             return next(error);
         }

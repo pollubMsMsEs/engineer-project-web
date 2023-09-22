@@ -136,7 +136,7 @@ export const createOne = [
         });
         await workInstance.save();
 
-        return res.json({ acknowledged: true });
+        return res.json({ acknowledged: true, created: workInstance });
     },
 ];
 
@@ -218,8 +218,9 @@ export const updateOne = [
                 return res.status(400).json({ acknowledged: false, errors: 'Invalid work_id for the given onModel' });
             }
 
-            await WorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
-            return res.json({ acknowledged: true });
+            const workInstance = await WorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
+
+            return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
             next(error);
         }

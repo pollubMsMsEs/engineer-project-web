@@ -122,7 +122,7 @@ export const createOne = [
         });
         await work.save();
 
-        return res.json({ acknowledged: true });
+        return res.json({ acknowledged: true, created: work });
     },
 ];
 
@@ -185,8 +185,9 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            await Work.findByIdAndUpdate(req.params.id, req.body, {});
-            return res.json({ acknowledged: true });
+            const work = await Work.findByIdAndUpdate(req.params.id, req.body, {});
+
+            return res.json({ acknowledged: true, updated: work });
         } catch (error) {
             next(error);
         }

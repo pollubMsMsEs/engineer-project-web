@@ -50,7 +50,7 @@ export const createOne = [
             const person = await Person.create(req.body);
             await person.save();
 
-            return res.json({ acknowledged: true });
+            return res.json({ acknowledged: true, created: person });
         } catch (error) {
             return next(error);
         }
@@ -70,9 +70,9 @@ export const updateOne = [
             console.log(req.body);
             validationResult(req).throw();
 
-            await Person.findByIdAndUpdate(req.params.id, req.body, {});
+            const person = await Person.findByIdAndUpdate(req.params.id, req.body, {});
 
-            return res.json({ acknowledged: true });
+            return res.json({ acknowledged: true, updated: person });
         } catch (error) {
             return next(error);
         }
