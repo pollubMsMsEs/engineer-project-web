@@ -165,14 +165,14 @@ export default function MovieForm({
         };
 
         const response = movie
-            ? await fetch(`/api/movie/${movie._id}`, {
+            ? await fetch(`/api/work/${movie._id}`, {
                   method: "PUT",
                   headers: {
                       "Content-Type": "application/json",
                   },
                   body: JSON.stringify(submittedMovie),
               })
-            : await fetch(`/api/movie/create`, {
+            : await fetch(`/api/work/create`, {
                   method: "POST",
                   headers: {
                       "Content-Type": "application/json",
@@ -184,7 +184,7 @@ export default function MovieForm({
         if (result.errors) {
             setErrors(result.errors);
         } else {
-            router.push("/movie/all");
+            router.push("/work/all");
         }
     }
 

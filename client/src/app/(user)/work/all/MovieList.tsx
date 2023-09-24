@@ -6,7 +6,7 @@ import React from "react";
 import Link from "next/link";
 
 async function deleteMovie(_id: string) {
-    const response = await fetch(`/api/movie/${_id}`, {
+    const response = await fetch(`/api/work/${_id}`, {
         method: "DELETE",
     });
     const result = await response.json();
@@ -38,13 +38,10 @@ export default function MovieList({ movies }: { movies: Movie[] }) {
                         }, "")}
                     </td>
                     <td>
-                        <a href={`/movie/${movie._id}`}>
+                        <a href={`/work/${movie._id}`}>
                             <button>Details</button>
                         </a>
-                        <Link
-                            href={`/movie/${movie._id}/edit`}
-                            prefetch={false}
-                        >
+                        <Link href={`/work/${movie._id}/edit`} prefetch={false}>
                             <button>Edit</button>
                         </Link>
 

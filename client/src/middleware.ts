@@ -11,13 +11,13 @@ export async function middleware(request: NextRequest) {
         isJWTValid =
             !!jwtCookie &&
             (
-                await fetch(`${process.env.API_ADDRESS}/movie/count`, {
+                await fetch(`${process.env.API_ADDRESS}/validate`, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${jwtCookie?.value}`,
                     },
                 })
-            ).status !== 401;
+            ).status === 200;
     } catch (e) {
         return NextResponse.redirect(new URL("/error", request.url));
     }

@@ -9,7 +9,7 @@ export default async function Home() {
         <div>
             <h1>Index</h1>
             <Suspense fallback={<LoadingCircle size="15px" />}>
-                <CountDisplay title="Movies count:" url="/movie/count" />
+                <CountDisplay title="Works count:" url="/work/count" />
             </Suspense>
             <Suspense fallback={<LoadingCircle size="15px" />}>
                 <CountDisplay title="People count:" url="/person/count" />

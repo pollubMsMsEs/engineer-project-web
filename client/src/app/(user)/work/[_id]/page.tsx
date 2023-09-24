@@ -8,7 +8,7 @@ export default async function MovieDetails({
 }: {
     params: { _id: string };
 }) {
-    const response = await fetchAPIFromServerComponent(`/movie/${params._id}`);
+    const response = await fetchAPIFromServerComponent(`/work/${params._id}`);
     const result: MovieFromAPIPopulated = (await response.json()).data;
     result.published_at = new Date(result.published_at);
 

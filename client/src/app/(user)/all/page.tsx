@@ -5,14 +5,14 @@ import React from "react";
 export const revalidate = 60;
 
 export default async function All() {
-    const response = await fetchAPIFromServerComponent("/movie/all");
+    const response = await fetchAPIFromServerComponent("/work/all");
     const result: MovieFromAPIPopulated[] = await response.json();
 
     return (
         <ul>
             {result.map((m) => (
                 <li key={m._id}>
-                    <a href={`/movie/${m._id}`}>{m.title}</a>
+                    <a href={`/work/${m._id}`}>{m.title}</a>
                     <ul>
                         {m.people.map((p) => {
                             return (

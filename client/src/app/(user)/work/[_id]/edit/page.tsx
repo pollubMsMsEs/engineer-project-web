@@ -10,7 +10,7 @@ export default async function MovieEdit({
     params: { _id: string };
 }) {
     const response = await fetchAPIFromServerComponent(
-        `/movie/${params._id}`,
+        `/work/${params._id}`,
         0
     );
     const movie: MovieFromAPIPopulated = (await response.json()).data;
