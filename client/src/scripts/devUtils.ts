@@ -1,9 +1,9 @@
-export function wait5secPromise() {
-    return new Promise((res) => setTimeout(res, 5000));
+export function waitPromise(seconds = 5000) {
+    return new Promise((res) => setTimeout(res, seconds));
 }
 
-export function waitRandomMax5secPromise() {
+export function waitRandomPromise(maxSeconds = 5000) {
     return new Promise((res) => {
-        setTimeout(res, Math.floor(Math.random() * 5000));
+        setTimeout(res, Math.floor(Math.random() * maxSeconds));
     });
 }

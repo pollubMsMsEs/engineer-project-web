@@ -1,6 +1,6 @@
 "use client";
 
-import { PersonFromAPI } from "@/types/movieType";
+import { PersonFromAPI } from "@/types/types";
 import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";

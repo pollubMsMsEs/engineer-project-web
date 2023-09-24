@@ -1,4 +1,4 @@
-import { MetaObject, Person } from "../types/movieType";
+import { MetaObject, Person } from "../types/types";
 import styles from "./person.module.scss";
 
 export default function Person({

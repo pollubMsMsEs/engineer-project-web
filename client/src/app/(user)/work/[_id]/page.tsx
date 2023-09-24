@@ -1,16 +1,16 @@
-import Movie from "@/components/Movie";
+import Work from "@/components/Work";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
-import { MovieFromAPIPopulated } from "@/types/movieType";
+import { WorkFromAPIPopulated } from "@/types/types";
 import React from "react";
 
-export default async function MovieDetails({
+export default async function WorkDetails({
     params,
 }: {
     params: { _id: string };
 }) {
     const response = await fetchAPIFromServerComponent(`/work/${params._id}`);
-    const result: MovieFromAPIPopulated = (await response.json()).data;
+    const result: WorkFromAPIPopulated = (await response.json()).data;
     result.published_at = new Date(result.published_at);
 
-    return <Movie movie={result} />;
+    return <Work work={result} />;
 }

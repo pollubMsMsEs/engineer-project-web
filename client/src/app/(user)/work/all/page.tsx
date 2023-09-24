@@ -1,17 +1,17 @@
-import { Movie } from "@/types/movieType";
+import { Work } from "@/types/types";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
-import MovieList from "./MovieList";
-import { wait5secPromise } from "@/scripts/devUtils";
+import WorkList from "./WorkList";
+import { waitPromise } from "@/scripts/devUtils";
 import styles from "./page.module.scss";
 
-export default async function MovieAll() {
+export default async function WorkAll() {
     const response = await fetchAPIFromServerComponent("/work/all");
     const result = await response.json();
 
     return (
         <>
             <a href="/work/create">
-                <button className={styles["button"]}>Add movie</button>
+                <button className={styles["button"]}>Add work</button>
             </a>
             <table>
                 <thead>
@@ -21,10 +21,10 @@ export default async function MovieAll() {
                         <th>Operations</th>
                     </tr>
                 </thead>
-                <MovieList movies={result} />
+                <WorkList works={result} />
             </table>
             <a href="/work/create">
-                <button className={styles["button"]}>Add movie</button>
+                <button className={styles["button"]}>Add work</button>
             </a>
         </>
     );

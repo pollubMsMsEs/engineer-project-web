@@ -1,6 +1,6 @@
-import MovieForm from "@/components/MovieForm";
+import WorkForm from "@/components/WorkForm";
 import React from "react";
 
-export default function CreateMovie() {
-    return <MovieForm />;
+export default function CreateWork() {
+    return <WorkForm />;
 }

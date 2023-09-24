@@ -2,13 +2,13 @@
 
 import {
     PersonFromAPI,
-    PersonInMovie,
+    PersonInWork,
     Person as PersonType,
-} from "../types/movieType";
+} from "../types/types";
 import PersonDetailForm from "./PersonDetailForm";
-import styles from "./personInMovieForm.module.scss";
+import styles from "./personInWorkForm.module.scss";
 
-export type PersonInMovieFormType = PersonInMovie & {
+export type PersonInWorkFormType = PersonInWork & {
     react_key: number;
     person_id: string;
 } & {
@@ -20,7 +20,7 @@ export type PersonInMovieFormType = PersonInMovie & {
     };
 };
 
-export default function PersonInMovieForm({
+export default function PersonInWorkForm({
     person,
     peopleToPick,
     index,
@@ -29,11 +29,11 @@ export default function PersonInMovieForm({
     setEditedRoleCallback,
     getUniqueKey,
 }: {
-    person: PersonInMovieFormType;
+    person: PersonInWorkFormType;
     index: number;
     peopleToPick: PersonFromAPI[];
-    editPersonCallback: (person: PersonInMovieFormType) => void;
-    deletePersonCallback: (person: PersonInMovieFormType) => void;
+    editPersonCallback: (person: PersonInWorkFormType) => void;
+    deletePersonCallback: (person: PersonInWorkFormType) => void;
     setEditedRoleCallback: (role: string) => void;
     getUniqueKey: () => number;
 }) {
@@ -55,7 +55,7 @@ export default function PersonInMovieForm({
     }
 
     return (
-        <div className={styles["person-in-movie-container"]}>
+        <div className={styles["person-in-work-container"]}>
             <label htmlFor={`person${index}`}>Person</label>
             <div>
                 <select

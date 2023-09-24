@@ -1,11 +1,11 @@
 "use client";
 
-import { Movie } from "@/types/movieType";
+import { Work } from "@/types/types";
 import { useState } from "react";
 import React from "react";
 import Link from "next/link";
 
-async function deleteMovie(_id: string) {
+async function deleteWork(_id: string) {
     const response = await fetch(`/api/work/${_id}`, {
         method: "DELETE",
     });
@@ -14,40 +14,40 @@ async function deleteMovie(_id: string) {
     return result;
 }
 
-export default function MovieList({ movies }: { movies: Movie[] }) {
-    const [movieList, setMovieList] = useState(movies);
+export default function WorkList({ works: works }: { works: Work[] }) {
+    const [workList, setWorkList] = useState(works);
 
-    async function deleteMovieHandler(_id: string) {
-        const result = await deleteMovie(_id);
-        const deletedMovieId = result && result.deleted?._id;
-        if (deletedMovieId) {
-            setMovieList((previousMovies) => {
-                return previousMovies.filter((m) => m._id !== deletedMovieId);
+    async function deleteWorkHandler(_id: string) {
+        const result = await deleteWork(_id);
+        const deletedWorkId = result && result.deleted?._id;
+        if (deletedWorkId) {
+            setWorkList((previousWorks) => {
+                return previousWorks.filter((m) => m._id !== deletedWorkId);
             });
         }
     }
 
     return (
         <tbody>
-            {movieList.map((movie) => (
-                <tr key={movie._id}>
-                    <td>{movie.title}</td>
+            {workList.map((work) => (
+                <tr key={work._id}>
+                    <td>{work.title}</td>
                     <td>
-                        {movie.genres.reduce((acc, genre) => {
+                        {work.genres.reduce((acc, genre) => {
                             return `${acc}${genre}, `;
                         }, "")}
                     </td>
                     <td>
-                        <a href={`/work/${movie._id}`}>
+                        <a href={`/work/${work._id}`}>
                             <button>Details</button>
                         </a>
-                        <Link href={`/work/${movie._id}/edit`} prefetch={false}>
+                        <Link href={`/work/${work._id}/edit`} prefetch={false}>
                             <button>Edit</button>
                         </Link>
 
                         <button
                             onClick={() => {
-                                deleteMovieHandler(movie._id!);
+                                deleteWorkHandler(work._id!);
                             }}
                         >
                             Delete

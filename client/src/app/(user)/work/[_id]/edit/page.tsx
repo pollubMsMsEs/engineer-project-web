@@ -1,10 +1,10 @@
-import MovieForm from "@/components/MovieForm";
+import WorkForm from "@/components/WorkForm";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
-import { MovieFromAPIPopulated } from "@/types/movieType";
+import { WorkFromAPIPopulated } from "@/types/types";
 import dayjs from "dayjs";
 import React from "react";
 
-export default async function MovieEdit({
+export default async function WorkEdit({
     params,
 }: {
     params: { _id: string };
@@ -13,8 +13,8 @@ export default async function MovieEdit({
         `/work/${params._id}`,
         0
     );
-    const movie: MovieFromAPIPopulated = (await response.json()).data;
-    movie.published_at = new Date(movie.published_at);
+    const work: WorkFromAPIPopulated = (await response.json()).data;
+    work.published_at = new Date(work.published_at);
 
-    return <MovieForm movie={movie} />;
+    return <WorkForm work={work} />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Person, PersonFromAPI } from "../types/movieType";
+import { Person, PersonFromAPI } from "../types/types";
 import ErrorsDisplay from "../components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./personForm.module.scss";
@@ -23,8 +23,6 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
             surname,
         };
 
-        console.log(submittedPerson);
-
         const response = person
             ? await fetch(`/api/person/${person._id}`, {
                   method: "PUT",
@@ -40,7 +38,7 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                   },
                   body: JSON.stringify(submittedPerson),
               });
-        console.log(response);
+
         const result = await response.json();
 
         if (result.errors) {

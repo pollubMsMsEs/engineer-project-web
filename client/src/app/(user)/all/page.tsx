@@ -1,12 +1,12 @@
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
-import { MovieFromAPIPopulated } from "@/types/movieType";
+import { WorkFromAPIPopulated } from "@/types/types";
 import React from "react";
 
 export const revalidate = 60;
 
 export default async function All() {
     const response = await fetchAPIFromServerComponent("/work/all");
-    const result: MovieFromAPIPopulated[] = await response.json();
+    const result: WorkFromAPIPopulated[] = await response.json();
 
     return (
         <ul>

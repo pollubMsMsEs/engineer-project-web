@@ -1,4 +1,4 @@
-export interface Movie {
+export interface Work {
     _id?: string;
     title: string;
     dev: boolean;
@@ -8,7 +8,7 @@ export interface Movie {
     metadata: MetaObject;
 }
 
-export interface PersonInMovie {
+export interface PersonInWork {
     role: string;
     details?: MetaObject;
 }
@@ -25,6 +25,6 @@ export interface MetaObject {
     [key: string]: string[];
 }
 
-export type MovieFromAPIPopulated = Movie & {
-    people: (PersonInMovie & { person_id: PersonFromAPI })[];
+export type WorkFromAPIPopulated = Work & {
+    people: (PersonInWork & { person_id: PersonFromAPI })[];
 };

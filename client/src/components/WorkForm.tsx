@@ -3,21 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import {
     MetaObject,
-    Movie,
-    PersonInMovie,
+    Work,
+    PersonInWork,
     Person,
-    MovieFromAPIPopulated,
-} from "@/types/movieType";
-import PersonInMovieForm, {
-    PersonInMovieFormType,
-} from "../components/PersonInMovieForm";
+    WorkFromAPIPopulated,
+} from "@/types/types";
+import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
 import dayjs from "dayjs";
 import ErrorsDisplay from "@/components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
-import styles from "./movieForm.module.scss";
+import styles from "./workForm.module.scss";
 
-type MovieToDB = Movie & {
-    people: (PersonInMovie & { person_id: string })[];
+type WorkToDB = Work & {
+    people: (PersonInWork & { person_id: string })[];
 };
 
 type MetadataInForm = {
@@ -39,24 +37,20 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
     return await response.json();
 }
 
-export default function MovieForm({
-    movie,
-}: {
-    movie?: MovieFromAPIPopulated;
-}) {
+export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
     const router = useRouter();
     const uniqueKey = useRef(0);
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
-    const [title, setTitle] = useState(movie?.title ?? "");
-    const [description, setDescription] = useState(movie?.description ?? "");
+    const [title, setTitle] = useState(work?.title ?? "");
+    const [description, setDescription] = useState(work?.description ?? "");
     const [publishedAt, setPublishedAt] = useState(
-        movie ? dayjs(movie.published_at).format("YYYY-MM-DD") : ""
+        work ? dayjs(work.published_at).format("YYYY-MM-DD") : ""
     );
-    const [genres, setGenres] = useState<string[]>(movie?.genres ?? []);
+    const [genres, setGenres] = useState<string[]>(work?.genres ?? []);
     const [metadata, setMetadata] = useState<MetadataInForm>(
-        movie
-            ? Object.entries(movie.metadata).reduce<MetadataInForm>(
+        work
+            ? Object.entries(work.metadata).reduce<MetadataInForm>(
                   (acc, [key, values]) => {
                       acc[getUniqueKey()] = { key, values };
                       return acc;
@@ -65,11 +59,11 @@ export default function MovieForm({
               )
             : {}
     );
-    const [people, setPeople] = useState<PersonInMovieFormType[]>(
-        movie?.people
+    const [people, setPeople] = useState<PersonInWorkFormType[]>(
+        work?.people
             .filter((p) => p?.person_id?._id)
-            .map<PersonInMovieFormType>((p) => {
-                const newPerson: PersonInMovieFormType = {
+            .map<PersonInWorkFormType>((p) => {
+                const newPerson: PersonInWorkFormType = {
                     ...p,
                     person_id: p.person_id._id,
                     react_key: getUniqueKey(),
@@ -113,7 +107,7 @@ export default function MovieForm({
 
     const peopleDetailSuggestions = ["Character"];
 
-    function deletePersonCallback(person: PersonInMovieFormType) {
+    function deletePersonCallback(person: PersonInWorkFormType) {
         setPeople((prevPeople) => {
             return prevPeople.filter(
                 (prevPerson) => prevPerson.react_key !== person.react_key
@@ -121,7 +115,7 @@ export default function MovieForm({
         });
     }
 
-    function editPersonCallback(person: PersonInMovieFormType) {
+    function editPersonCallback(person: PersonInWorkFormType) {
         setPeople((prevPeople) => {
             const index = prevPeople.findIndex(
                 (prevPerson) => prevPerson.react_key === person.react_key
@@ -144,8 +138,8 @@ export default function MovieForm({
     }
 
     async function submitForm() {
-        const submittedMovie: MovieToDB = {
-            _id: movie?._id,
+        const submittedWork: WorkToDB = {
+            _id: work?._id,
             title,
             dev: true,
             description,
@@ -164,20 +158,20 @@ export default function MovieForm({
             }),
         };
 
-        const response = movie
-            ? await fetch(`/api/work/${movie._id}`, {
+        const response = work
+            ? await fetch(`/api/work/${work._id}`, {
                   method: "PUT",
                   headers: {
                       "Content-Type": "application/json",
                   },
-                  body: JSON.stringify(submittedMovie),
+                  body: JSON.stringify(submittedWork),
               })
             : await fetch(`/api/work/create`, {
                   method: "POST",
                   headers: {
                       "Content-Type": "application/json",
                   },
-                  body: JSON.stringify(submittedMovie),
+                  body: JSON.stringify(submittedWork),
               });
         const result = await response.json();
 
@@ -190,13 +184,13 @@ export default function MovieForm({
 
     return (
         <form
-            className={styles["movie-form"]}
+            className={styles["work-form"]}
             onSubmit={(e) => {
                 e.preventDefault();
                 submitForm();
             }}
         >
-            {movie && <input type="hidden" name="_id" value={movie._id} />}
+            {work && <input type="hidden" name="_id" value={work._id} />}
             <label htmlFor="title">Title: </label>
             <input
                 type="text"
@@ -274,7 +268,7 @@ export default function MovieForm({
                     <span>No people in database, create some first</span>
                 ) : (
                     people.map((p, index) => (
-                        <PersonInMovieForm
+                        <PersonInWorkForm
                             key={p.react_key}
                             person={p}
                             peopleToPick={peopleToPick}
@@ -373,7 +367,7 @@ export default function MovieForm({
                     </option>
                 ))}
             </datalist>
-            <button type="submit">{movie ? "Update" : "Add"}</button>
+            <button type="submit">{work ? "Update" : "Add"}</button>
             <ErrorsDisplay errors={errors} />
         </form>
     );

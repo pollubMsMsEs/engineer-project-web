@@ -1,12 +1,12 @@
 import {
     MetaObject,
     Person as PersonType,
-    PersonInMovie,
-    MovieFromAPIPopulated,
-} from "../types/movieType";
+    PersonInWork,
+    WorkFromAPIPopulated,
+} from "../types/types";
 import dayjs from "dayjs";
 import Person from "./Person";
-import styles from "./movie.module.scss";
+import styles from "./work.module.scss";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -15,11 +15,11 @@ type PeopleByRole = {
     })[];
 };
 
-type PersonInMovieFromAPI = PersonInMovie & {
+type PersonInWorkFromAPI = PersonInWork & {
     person_id: PersonType & { _id: string };
 };
 
-function groupPeopleInMovieByRole(people: PersonInMovieFromAPI[]) {
+function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
     return Object.entries(
         people
             .filter((p) => p?.person_id?._id)
@@ -40,24 +40,24 @@ function groupPeopleInMovieByRole(people: PersonInMovieFromAPI[]) {
     );
 }
 
-export default function Movie({ movie }: { movie: MovieFromAPIPopulated }) {
-    const peopleByRole = groupPeopleInMovieByRole(movie.people);
+export default function Work({ work }: { work: WorkFromAPIPopulated }) {
+    const peopleByRole = groupPeopleInWorkByRole(work.people);
 
     return (
-        <div className={styles["movie-container"]}>
-            <h2>{movie.title}</h2>
+        <div className={styles["work-container"]}>
+            <h2>{work.title}</h2>
             <div>
                 <span className={styles["label"]}>Description: </span>
-                <span>{movie?.description ?? ""}</span>
+                <span>{work?.description ?? ""}</span>
             </div>
             <div>
                 <span className={styles["label"]}>Published at: </span>
-                {dayjs(movie?.published_at).format("YYYY-MM-DD") ?? ""}
+                {dayjs(work?.published_at).format("YYYY-MM-DD") ?? ""}
             </div>
             <div>
                 <span className={styles["label"]}>Genres: </span>
                 <span>
-                    {movie?.genres.reduce((acc, genre) => {
+                    {work?.genres.reduce((acc, genre) => {
                         return `${acc}${genre}, `;
                     }, "") ?? ""}
                 </span>
@@ -82,7 +82,7 @@ export default function Movie({ movie }: { movie: MovieFromAPIPopulated }) {
             </div>
             <h3>Metadata</h3>
             <div className={styles["metadata"]}>
-                {Object.entries(movie.metadata).map(([key, values]) => (
+                {Object.entries(work.metadata).map(([key, values]) => (
                     <div key={key}>
                         <span>
                             {key.charAt(0).toUpperCase() + key.substring(1)}
