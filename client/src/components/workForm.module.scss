@@ -1,0 +1,20 @@
+.work-form {
+    display: grid;
+    justify-content: start;
+
+    .people-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .people {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+    }
+
+    .metadata-header {
+        display: flex;
+        align-items: center;
+    }
+}

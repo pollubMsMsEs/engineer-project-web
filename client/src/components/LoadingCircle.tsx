@@ -1,4 +1,4 @@
-import "./css/LoadingCircle.css";
+import styles from "./loadingCircle.module.scss";
 
 export default function LoadingCircle({ size }: { size: string }) {
     return (
@@ -9,9 +9,7 @@ export default function LoadingCircle({ size }: { size: string }) {
                 border: `calc(${size} * 0.3) solid #f3f3f3`,
                 borderTop: `calc(${size} * 0.3) solid #3498db`,
             }}
-            className="component-circle-loader"
+            className={styles["component-circle-loader"]}
         ></div>
     );
 }
-/* Light grey */
-/* Blue */
