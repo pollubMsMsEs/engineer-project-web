@@ -15,6 +15,7 @@ async function handler(
     if (!jwt) return NextResponse.redirect(new URL("/auth/login", request.url));
 
     const bodyText = await request.text();
+    console.log(bodyText);
 
     const apiResponse = await fetch(convertParamsToURL(params.slugs), {
         method: request.method,
@@ -33,7 +34,10 @@ async function handler(
         return response;
     }
 
-    return apiResponse;
+    const json = await apiResponse.json();
+    const response = NextResponse.json(json, { status: apiResponse.status });
+
+    return response;
 }
 
 export { handler as GET, handler as POST, handler as PUT, handler as DELETE };
