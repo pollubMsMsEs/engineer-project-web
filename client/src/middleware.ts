@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
                 })
             ).status === 200;
     } catch (e) {
-        return NextResponse.redirect(new URL("/error", request.url));
+        return NextResponse.next();
     }
 
     if (!isJWTValid && !isOnAuthPage) {
