@@ -63,12 +63,12 @@ export const createOne = [
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
 
-        const worksFromAPI = await WorkFromAPI.create({
+        const workFromAPI = await WorkFromAPI.create({
             ...req.body,
         });
-        await worksFromAPI.save();
+        await workFromAPI.save();
 
-        return res.json({ acknowledged: true });
+        return res.json({ acknowledged: true, created: workFromAPI });
     },
 ];
 
@@ -93,8 +93,9 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            await WorkFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
-            return res.json({ acknowledged: true });
+            const workFromAPI = await WorkFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
+
+            return res.json({ acknowledged: true, updated: workFromAPI });
         } catch (error) {
             next(error);
         }
