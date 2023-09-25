@@ -3,9 +3,13 @@ import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
+import multer from 'multer';
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 export async function getCount(req: Request, res: Response) {
     const count = await Image.count();
@@ -31,45 +35,57 @@ export const getOne = [
 ];
 
 export const createOne = [
-    body("image")
-        .exists()
-        .withMessage("Missing image string")
-        .trim(),
+    upload.single('image'),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
-
-        if (!valResult.isEmpty())
+        if (!req.file)
             return res
-                .status(422)
-                .json({ acknowledged: false, errors: valResult.array() });
+                .status(400)
+                .json({ acknowledged: false, message: 'No file uploaded' });
 
-        const image = await Image.create({
-            ...req.body,
-        });
-        await image.save();
+        const base64Image = req.file.buffer.toString('base64');
 
-        return res.json({ acknowledged: true, created: image });
+        try {
+            const image = await Image.create({
+                image: base64Image,
+            });
+            await image.save();
+
+            return res.json({ acknowledged: true, created: image });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ acknowledged: false, message: 'Server error' });
+        }
     },
 ];
 
 export const updateOne = [
     param("id").isMongoId().withMessage("URL contains incorrect id"),
-    body("image")
-        .exists()
-        .withMessage("Missing image string")
-        .trim(),
-    async function (req: Request, res: Response, next: NextFunction) {
+    upload.single('image'),
+    async function (req: Request | any, res: Response, next: NextFunction) {
         try {
-            if (req.body.nick === undefined) {
-                req.body.nick = null;
-            }
-            console.log(req.body);
             validationResult(req).throw();
 
-            const image = await Image.findByIdAndUpdate(req.params.id, req.body, {});
+            if (!req.file)
+                return res
+                    .status(400)
+                    .json({ acknowledged: false, message: 'No file uploaded' });
+
+            const base64Image = req.file.buffer.toString('base64');
+
+            const updateData = {
+                image: base64Image,
+            };
+
+            const image = await Image.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+            if (!image)
+                return res
+                    .status(404)
+                    .json({ acknowledged: false, message: 'Image does not exist' });
 
             return res.json({ acknowledged: true, updated: image });
-        } catch (error) {
+        } catch (error: any) {
+            console.error(error);
             return next(error);
         }
     },
