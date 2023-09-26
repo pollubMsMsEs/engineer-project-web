@@ -9,7 +9,12 @@ const debug = Debug("project:dev");
 const { param, body, validationResult } = ExtendedValidator();
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 3 * 1024 * 1024, // 3MB
+    },
+});
 
 export async function getCount(req: Request, res: Response) {
     const count = await Image.count();
@@ -66,6 +71,12 @@ export const createOne = [
             return res.status(500).json({ acknowledged: false, message: 'Server error' });
         }
     },
+    function (error: any, req: Request, res: Response, next: NextFunction) { // middleware do obsługi błędu multera
+        if (error instanceof multer.MulterError) {
+            return res.status(400).json({ acknowledged: false, message: 'File too large' });
+        }
+        next(error);
+    }
 ];
 
 export const updateOne = [
@@ -99,6 +110,12 @@ export const updateOne = [
             return next(error);
         }
     },
+    function (error: any, req: Request, res: Response, next: NextFunction) { // middleware do obsługi błędu multera
+        if (error instanceof multer.MulterError) {
+            return res.status(400).json({ acknowledged: false, message: 'File too large' });
+        }
+        next(error);
+    }
 ];
 
 export const deleteOne = [
