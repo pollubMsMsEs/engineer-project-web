@@ -1,4 +1,4 @@
-import React from "react";
+import styles from "./instancesGrid.module.scss";
 
 export default function InstancesGrid({
     title,
@@ -7,7 +7,7 @@ export default function InstancesGrid({
     return (
         <div>
             <h2>{title}</h2>
-            <div>{children}</div>
+            <div className={styles["grid"]}>{children}</div>
         </div>
     );
 }
