@@ -3,27 +3,31 @@ import Image from "next/image";
 import React from "react";
 import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
+import styles from "./workInstanceCard.module.scss";
+import Link from "next/link";
 
 export default function WorkInstanceCard({
     workInstance,
 }: {
     workInstance: WorkInstanceFromAPI;
 }) {
-    const { title, cover } = workInstance.work_id;
+    const { _id, title, cover } = workInstance.work_id;
 
     return (
-        <div>
-            {cover ? (
-                <Image
-                    src={cover}
-                    alt={`${title} cover`}
-                    width={300}
-                    height={300}
-                />
-            ) : (
-                <Icon path={mdiImageOff} size={1} />
-            )}
+        <Link className={styles["instance"]} href={`/work/${_id}`}>
+            <div className={styles["instance__img-container"]}>
+                {cover ? (
+                    <Image
+                        src={cover}
+                        alt={`${title} cover`}
+                        sizes="100%"
+                        fill
+                    />
+                ) : (
+                    <Icon path={mdiImageOff} />
+                )}
+            </div>
             <div>{title}</div>
-        </div>
+        </Link>
     );
 }

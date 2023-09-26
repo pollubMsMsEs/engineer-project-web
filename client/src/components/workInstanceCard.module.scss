@@ -1,0 +1,24 @@
+.instance {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+
+    &__img-container {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        aspect-ratio: 1/1;
+
+        /* MDI icon */
+        svg {
+            padding: 20%;
+        }
+
+        /* NEXT image */
+        img {
+            object-fit: contain;
+        }
+    }
+}
