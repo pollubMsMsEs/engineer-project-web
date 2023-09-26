@@ -17,8 +17,18 @@ export async function getCount(req: Request, res: Response) {
 }
 
 export async function getAll(req: Request, res: Response) {
-    const images = await Image.find({}, { __v: 0 });
-    res.json(images);
+    try {
+        const images = await Image.find({}, { __v: 0 });
+
+        const baseUrl = 'localhost:7777/api/image/';
+
+        const urls = images.map(image => baseUrl + image._id);
+
+        res.json(urls);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 }
 
 export const getOne = [
@@ -50,7 +60,7 @@ export const createOne = [
             });
             await image.save();
 
-            return res.json({ acknowledged: true, created: image });
+            return res.json({ acknowledged: true, created: "localhost:7777/api/image/" + image._id });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ acknowledged: false, message: 'Server error' });
@@ -83,7 +93,7 @@ export const updateOne = [
                     .status(404)
                     .json({ acknowledged: false, message: 'Image does not exist' });
 
-            return res.json({ acknowledged: true, updated: image });
+            return res.json({ acknowledged: true, updated: "localhost:7777/api/image/" + image._id });
         } catch (error: any) {
             console.error(error);
             return next(error);
