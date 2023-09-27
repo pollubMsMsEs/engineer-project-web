@@ -3,13 +3,15 @@ import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const workInstances = await WorkInstance.find({}).populate("work_id").exec();
+    const workInstances = await WorkInstance.find({})
+        .populate("work_id")
+        .exec();
     res.json(workInstances);
 }
 
@@ -18,7 +20,11 @@ export const getAllForUser = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstances = await WorkInstance.find({ user_id: req.params.id }).populate("work_id").exec();
+            const workInstances = await WorkInstance.find({
+                user_id: req.params.id,
+            })
+                .populate("work_id")
+                .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
@@ -31,7 +37,11 @@ export const getAllForCurrentUser = [
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstances = await WorkInstance.find({ user_id: req.auth._id }).populate("work_id").exec();
+            const workInstances = await WorkInstance.find({
+                user_id: req.auth._id,
+            })
+                .populate("work_id")
+                .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
             //console.log(res);
@@ -45,7 +55,9 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const workInstance = await WorkInstance.findById(req.params.id).populate("work_id").exec();
+            const workInstance = await WorkInstance.findById(req.params.id)
+                .populate("work_id")
+                .exec();
             res.json({ data: workInstance });
         } catch (e: any) {
             //console.log(res);
@@ -62,21 +74,18 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Work', 'WorkFromAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
+            return ["Work", "WorkFromAPI"].includes(value);
+        })
+        .withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
-            if (value === "") return true;
-            const intValue = parseInt(value);
-            if (isNaN(intValue)) return false;
-            return Number.isInteger(intValue) && intValue >= 0 && intValue <= 10 && value === intValue.toString();
+            if (isNaN(value)) return false;
+            return Number.isInteger(value) && value >= 0 && value <= 10;
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings")
-        .isArray()
-        .withMessage("Viewings must be an array"),
+    body("viewings").isArray().withMessage("Viewings must be an array"),
     body("viewings.*")
         .optional()
         .isISO8601()
@@ -86,7 +95,7 @@ export const createOne = [
             console.log("Validating date:", value);
             const viewingDate = new Date(value);
             const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
+
             return viewingDate <= currentDate;
         })
         .withMessage("Viewing date cannot be in the future")
@@ -99,7 +108,9 @@ export const createOne = [
             }
             return false;
         })
-        .withMessage("Number_of_viewings must match or be greater than the length of the viewings array"),
+        .withMessage(
+            "Number_of_viewings must match or be greater than the length of the viewings array"
+        ),
     body("status").optional().trim().escape(),
     body("type")
         .exists()
@@ -107,8 +118,9 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "computerGame"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -127,7 +139,10 @@ export const createOne = [
         const exists = await Model.exists({ _id: req.body.work_id });
 
         if (!exists) {
-            return res.status(400).json({ acknowledged: false, errors: 'Invalid work_id for the given onModel' });
+            return res.status(400).json({
+                acknowledged: false,
+                errors: "Invalid work_id for the given onModel",
+            });
         }
 
         const workInstance = await WorkInstance.create({
@@ -148,21 +163,19 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['Work', 'WorkFromAPI'].includes(value);
-        }).withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
+            return ["Work", "WorkFromAPI"].includes(value);
+        })
+        .withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
-            if (value === "") return true;
-            const intValue = parseInt(value);
-            if (isNaN(intValue)) return false;
-            return Number.isInteger(intValue) && intValue >= 0 && intValue <= 10 && value === intValue.toString();
+            if (isNaN(value)) return false;
+
+            return Number.isInteger(value) && value >= 0 && value <= 10;
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings")
-        .isArray()
-        .withMessage("Viewings must be an array"),
+    body("viewings").isArray().withMessage("Viewings must be an array"),
     body("viewings.*")
         .optional()
         .isISO8601()
@@ -172,7 +185,7 @@ export const updateOne = [
             console.log("Validating date:", value);
             const viewingDate = new Date(value);
             const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
+
             return viewingDate <= currentDate;
         })
         .withMessage("Viewing date cannot be in the future")
@@ -185,7 +198,9 @@ export const updateOne = [
             }
             return false;
         })
-        .withMessage("Number_of_viewings must match or be greater than the length of the viewings array"),
+        .withMessage(
+            "Number_of_viewings must match or be greater than the length of the viewings array"
+        ),
     body("status").optional().trim().escape(),
     body("type")
         .exists()
@@ -193,8 +208,9 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "computerGame"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -208,17 +224,26 @@ export const updateOne = [
             const instance = await WorkInstance.findById(req.params.id);
 
             if (!instance || String(instance.user_id) !== req.auth._id) {
-                return res.status(403).json({ error: "You do not have permission to update this piece of work instance." });
+                return res.status(403).json({
+                    error: "You do not have permission to update this piece of work instance.",
+                });
             }
 
             const Model = mongoose.model(req.body.onModel);
             const exists = await Model.exists({ _id: req.body.work_id });
 
             if (!exists) {
-                return res.status(400).json({ acknowledged: false, errors: 'Invalid work_id for the given onModel' });
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Invalid work_id for the given onModel",
+                });
             }
 
-            const workInstance = await WorkInstance.findByIdAndUpdate(req.params.id, req.body, {});
+            const workInstance = await WorkInstance.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            );
 
             return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
@@ -236,11 +261,15 @@ export const deleteOne = [
             const instance = await WorkInstance.findById(req.params.id);
 
             if (!instance) {
-                return res.status(404).json({ error: "This work instance does not exist." });
+                return res
+                    .status(404)
+                    .json({ error: "This work instance does not exist." });
             }
 
             if (String(instance.user_id) !== req.auth._id) {
-                return res.status(403).json({ error: "You do not have permission to delete this work instance." });
+                return res.status(403).json({
+                    error: "You do not have permission to delete this work instance.",
+                });
             }
 
             const result = await WorkInstance.findByIdAndRemove(req.params.id);
