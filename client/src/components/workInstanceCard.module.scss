@@ -1,8 +1,13 @@
 .instance {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    align-items: center;
+
+    &__link-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
 
     &__img-container {
         position: relative;
