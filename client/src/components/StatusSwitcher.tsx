@@ -10,6 +10,7 @@ import {
     mdiCheckboxMarkedCirclePlusOutline,
 } from "@mdi/js";
 import { toast } from "react-toastify";
+import styles from "./statusSwitcher.module.scss";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.viewings.some((viewing) =>
@@ -37,7 +38,6 @@ export default function StatusSwitcher({
     }
 
     useEffect(() => {
-        let ignore = false;
         if (
             status === _workInstance.status &&
             hasViewingToday(_workInstance) === viewedToday
@@ -57,50 +57,59 @@ export default function StatusSwitcher({
                 updatedWorkInstance.number_of_viewings++;
             }
 
-            const response = await fetch(
-                `/api/workInstance/${_workInstance._id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedWorkInstance),
-                }
-            );
-            const result = await response.json();
+            try {
+                const response = await fetch(
+                    `/api/workInstance/${_workInstance._id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedWorkInstance),
+                    }
+                );
+                const result = await response.json();
 
-            if (result.acknowledged) {
-                updateWorkInstance(result.updated);
-                toast.success("Status updated succesfully!");
-            } else {
+                if (result.acknowledged) {
+                    updateWorkInstance(result.updated);
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
                 updateWorkInstance(_workInstance);
                 toast.error("Status update failed");
             }
         }, 1000);
 
         return () => {
-            ignore = true;
             clearTimeout(debounce);
         };
     }, [status, viewedToday, _workInstance]);
 
     return (
-        <div>
+        <div className={styles["status-switcher"]}>
             <select
+                className={styles["status-switcher__select"]}
                 name="status"
                 id={`status-${_workInstance._id}`}
                 value={status}
                 onChange={(e) => {
                     setStatus(e.target.value);
                 }}
+                style={{ background: `url(${mdiCheckboxMarkedCircleOutline})` }}
             >
                 {statuses[_workInstance.type].map((status) => (
-                    <option key={status} value={status}>
+                    <option
+                        key={status}
+                        value={status}
+                        className={styles["status-switcher__option"]}
+                    >
                         {status}
                     </option>
                 ))}
             </select>
             <button
+                className={styles["status-switcher__view-button"]}
                 disabled={viewedToday}
                 onClick={() => {
                     setViewedToday(true);
