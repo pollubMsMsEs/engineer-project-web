@@ -1,6 +1,6 @@
 import Work from "../models/work.js";
 import Image from "../models/image.js";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -81,29 +81,30 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "computerGame"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("cover")
         .optional()
         .isString()
         .trim()
         .isURL({
-            protocols: ['http', 'https'],
+            protocols: ["http", "https"],
             require_tld: false,
             require_protocol: false,
         })
         .withMessage("Invalid URL format for cover")
         .bail()
         .custom(async (value) => {
-            const imageId = value.split('/').pop();
+            const imageId = value.split("/").pop();
 
             if (!mongoose.Types.ObjectId.isValid(imageId)) {
-                return Promise.reject('Invalid ObjectId format');
+                return Promise.reject("Invalid ObjectId format");
             }
 
             const imageExists = await Image.findById(imageId);
             if (!imageExists) {
-                return Promise.reject('Image does not exist');
+                return Promise.reject("Image does not exist");
             }
 
             return true;
@@ -154,29 +155,30 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "computerGame"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("cover")
         .optional()
         .isString()
         .trim()
         .isURL({
-            protocols: ['http', 'https'],
+            protocols: ["http", "https"],
             require_tld: false,
             require_protocol: false,
         })
         .withMessage("Invalid URL format for cover")
         .bail()
         .custom(async (value) => {
-            const imageId = value.split('/').pop();
+            const imageId = value.split("/").pop();
 
             if (!mongoose.Types.ObjectId.isValid(imageId)) {
-                return Promise.reject('Invalid ObjectId format');
+                return Promise.reject("Invalid ObjectId format");
             }
 
             const imageExists = await Image.findById(imageId);
             if (!imageExists) {
-                return Promise.reject('Image does not exist');
+                return Promise.reject("Image does not exist");
             }
 
             return true;
@@ -185,7 +187,11 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            const work = await Work.findByIdAndUpdate(req.params.id, req.body, {});
+            const work = await Work.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                {}
+            );
 
             return res.json({ acknowledged: true, updated: work });
         } catch (error) {
@@ -203,7 +209,9 @@ export const deleteOne = [
             const instance = await Work.findById(req.params.id);
 
             if (!instance) {
-                return res.status(404).json({ error: "This work does not exist." });
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
             }
 
             const result = await Work.findByIdAndRemove(req.params.id);
