@@ -76,7 +76,11 @@ export default function StatusSwitcher({
                 if (result.acknowledged) {
                     updateWorkInstance(result.updated);
                     if (addedNewViewing) {
-                        toast.success("Today viewing added");
+                        toast.success(
+                            `Added completion for "${
+                                _workInstance.work_id.title ?? ""
+                            }"`
+                        );
                     }
                 } else {
                     throw new Error();
@@ -120,6 +124,8 @@ export default function StatusSwitcher({
                 onClick={() => {
                     setViewedToday(true);
                 }}
+                data-tooltip-id="tooltip-add-viewing"
+                data-tooltip-content={viewedToday ? "" : "Complete today"}
             >
                 <Icon
                     path={
