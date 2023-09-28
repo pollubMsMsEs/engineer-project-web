@@ -52,7 +52,10 @@ export default function StatusSwitcher({
                 viewings: [..._workInstance.viewings],
             };
 
-            if (viewedToday && !hasViewingToday(_workInstance)) {
+            const addedNewViewing =
+                viewedToday && !hasViewingToday(_workInstance);
+
+            if (addedNewViewing) {
                 updatedWorkInstance.viewings.push(new Date());
                 updatedWorkInstance.number_of_viewings++;
             }
@@ -72,6 +75,9 @@ export default function StatusSwitcher({
 
                 if (result.acknowledged) {
                     updateWorkInstance(result.updated);
+                    if (addedNewViewing) {
+                        toast.success("Today viewing added");
+                    }
                 } else {
                     throw new Error();
                 }
