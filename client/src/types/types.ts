@@ -26,9 +26,11 @@ export interface WorkInstance {
     number_of_viewings: number;
     viewings: Date[];
     status: string;
-    type: "movie" | "book" | "computerGame";
+    type: WorkType;
     from_api: boolean;
 }
+
+export type WorkType = "movie" | "book" | "computerGame";
 
 export interface MetaObject {
     [key: string]: string[];

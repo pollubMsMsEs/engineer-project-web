@@ -13,7 +13,13 @@ export default async function Home() {
         "/workInstance/currentUser",
         0
     );
-    const workInstances: WorkInstanceFromAPI[] = (await response.json()).data;
+    const result: WorkInstanceFromAPI[] = (await response.json()).data;
+    const workInstances = result.map((instance) => {
+        instance.viewings = instance.viewings.map(
+            (viewing) => new Date(viewing)
+        );
+        return instance;
+    });
 
     const movies: WorkInstanceFromAPI[] = [];
     const books: WorkInstanceFromAPI[] = [];
