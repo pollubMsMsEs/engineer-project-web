@@ -1,0 +1,19 @@
+.rating-bar {
+    display: flex;
+    flex-direction: row-reverse;
+    width: min-content;
+
+    &__star {
+        color: white;
+
+        &--selected,
+        &:hover {
+            color: #fbc02d;
+        }
+
+        &--selected ~ &,
+        &:hover ~ & {
+            color: #fbc02d;
+        }
+    }
+}
