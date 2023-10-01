@@ -3,6 +3,7 @@ import styles from "./page.module.scss";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
 import Work from "@/components/Work";
+import WorkInstanceForm from "./WorkInstanceForm";
 
 export default async function WorkInstance({
     params,
@@ -22,5 +23,10 @@ export default async function WorkInstance({
     const work: WorkFromAPIPopulated = (await workResponse.json()).data;
     work.published_at = new Date(work.published_at);
 
-    return <Work work={work} />;
+    return (
+        <div>
+            <Work work={work} />
+            <WorkInstanceForm workInstance={result} />
+        </div>
+    );
 }
