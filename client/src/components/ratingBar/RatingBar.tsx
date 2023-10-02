@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RatingElement from "./RatingElement";
 import styles from "./ratingBar.module.scss";
 
@@ -11,12 +11,14 @@ export default function RatingBar({
     maxValue: number;
     setValue: (value: number) => void;
 }) {
+    const [hovered, setHovered] = useState(false);
     const stars: any[] = [];
 
     for (let i = 1; i <= maxValue; i++) {
         stars.push(
             <RatingElement
-                selected={i === value}
+                key={i}
+                selected={i === value && !hovered}
                 onClick={() => {
                     setValue(i);
                 }}
@@ -26,5 +28,17 @@ export default function RatingBar({
 
     stars.reverse();
 
-    return <div className={styles["rating-bar"]}>{stars}</div>;
+    return (
+        <div
+            className={styles["rating-bar"]}
+            onMouseEnter={() => {
+                setHovered(true);
+            }}
+            onMouseLeave={() => {
+                setHovered(false);
+            }}
+        >
+            {stars}
+        </div>
+    );
 }
