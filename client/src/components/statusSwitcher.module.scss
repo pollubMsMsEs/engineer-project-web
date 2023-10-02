@@ -4,6 +4,10 @@
     align-items: center;
     justify-content: center;
 
+    &__select-wrapper {
+        width: 70%;
+    }
+
     &__view-button {
         padding: 0;
         line-height: 0;
@@ -19,29 +23,5 @@
         &:hover:not(:disabled) {
             color: #f87171;
         }
-    }
-
-    &__select {
-        width: 60%;
-        padding: 0.2rem 20px 0.2rem 0.2rem;
-        font-size: 1rem;
-        color: aliceblue;
-        text-align: center;
-        appearance: none;
-        background: url("menu-down.svg") no-repeat right 2px center;
-        background-color: rgb(177 177 177 / 20.5%);
-        border: none;
-        border-radius: 5px;
-        box-shadow: 0 0 1em 0 rgb(0 0 0 / 20%);
-
-        /* background property applied inline */
-
-        &:focus-visible {
-            outline: none;
-        }
-    }
-
-    &__option {
-        background-color: rgb(54 54 54);
     }
 }

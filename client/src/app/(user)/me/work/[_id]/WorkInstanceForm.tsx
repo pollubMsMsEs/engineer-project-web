@@ -4,8 +4,10 @@ import RatingBar from "@/components/ratingBar/RatingBar";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { WorkInstanceFromAPI } from "@/types/types";
 import React, { useState } from "react";
-import CompletionsForm from "./CompletionsForm";
+import CompletionsList from "./CompletionsList";
 import { toast } from "react-toastify";
+import Select from "@/components/select/Select";
+import { statuses } from "@/modules/workInstanceStatus";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -28,6 +30,7 @@ export default function WorkInstanceForm({
     const [numberOfCompletions, setNumberOfCompletions] = useState(
         workInstance.number_of_viewings
     );
+    const [status, setStatus] = useState(workInstance.status);
 
     function addCompletion() {
         setCompletions([
@@ -78,7 +81,19 @@ export default function WorkInstanceForm({
                 }}
                 value={description}
             />
-            <CompletionsForm
+            <div style={{ width: "200px" }}>
+                <Select
+                    name={"status"}
+                    id={`status`}
+                    value={status}
+                    options={statuses[workInstance.type]}
+                    onChange={(value) => {
+                        setStatus(value);
+                    }}
+                />
+            </div>
+
+            <CompletionsList
                 published_at={workInstance.work_id.published_at}
                 completions={completions}
                 addCompletion={addCompletion}
