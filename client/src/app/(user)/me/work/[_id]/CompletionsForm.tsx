@@ -3,6 +3,7 @@ import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 import dayjs from "dayjs";
 import React from "react";
+import Completion from "./Completion";
 
 export default function CompletionsForm({
     published_at,
@@ -11,7 +12,9 @@ export default function CompletionsForm({
 }: {
     published_at?: Date;
     completions: { id: number; completion: Date }[];
-    setCompletions: (value: any) => void;
+    setCompletions: React.Dispatch<
+        React.SetStateAction<{ id: number; completion: Date }[]>
+    >;
 }) {
     const getUniqueKey = useUniqueKey(completions.length);
 
@@ -20,35 +23,23 @@ export default function CompletionsForm({
             <button
                 type="button"
                 onClick={() => {
-                    setCompletions([...completions, new Date()]);
+                    setCompletions([
+                        { id: getUniqueKey(), completion: new Date() },
+                        ...completions,
+                    ]);
                 }}
             >
                 Add new <Icon path={mdiPlus} size={1} />
             </button>
             <div>
-                {completions.map((value, index) => {
+                {completions.map((completion) => {
                     return (
-                        <div key={value.id}>
-                            <input
-                                type="date"
-                                value={dayjs(value.completion).format(
-                                    "YYYY-MM-DD"
-                                )}
-                                min={dayjs(published_at).format("YYYY-MM-DD")}
-                                max={dayjs().format("YYYY-MM-DD")}
-                                onChange={(e) => {
-                                    const values = [...completions];
-                                    values[index] = {
-                                        id: value.id,
-                                        completion: new Date(e.target.value),
-                                    };
-                                    values.sort((a, b) =>
-                                        a.completion > b.completion ? 1 : -1
-                                    );
-                                    setCompletions(values);
-                                }}
-                            />
-                        </div>
+                        <Completion
+                            key={completion.id}
+                            published_at={published_at}
+                            completion={completion}
+                            setCompletions={setCompletions}
+                        />
                     );
                 })}
             </div>
