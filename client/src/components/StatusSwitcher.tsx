@@ -11,6 +11,7 @@ import {
 } from "@mdi/js";
 import { toast } from "react-toastify";
 import styles from "./statusSwitcher.module.scss";
+import Select from "./select/Select";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.viewings.some((viewing) =>
@@ -98,26 +99,18 @@ export default function StatusSwitcher({
 
     return (
         <div className={styles["status-switcher"]}>
-            <select
-                className={styles["status-switcher__select"]}
-                name="status"
-                id={`status-${_workInstance._id}`}
-                value={status}
-                onChange={(e) => {
-                    setStatus(e.target.value);
-                }}
-                style={{ background: `url(${mdiCheckboxMarkedCircleOutline})` }}
-            >
-                {statuses[_workInstance.type].map((status) => (
-                    <option
-                        key={status}
-                        value={status}
-                        className={styles["status-switcher__option"]}
-                    >
-                        {status}
-                    </option>
-                ))}
-            </select>
+            <div className={styles["status-switcher__select-wrapper"]}>
+                <Select
+                    name={"status"}
+                    id={`status-${_workInstance._id}`}
+                    value={status}
+                    options={statuses[_workInstance.type]}
+                    onChange={(value) => {
+                        setStatus(value);
+                    }}
+                />
+            </div>
+
             <button
                 className={styles["status-switcher__view-button"]}
                 disabled={viewedToday}

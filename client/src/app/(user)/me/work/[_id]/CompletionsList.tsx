@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import React from "react";
 import Completion from "./Completion";
 
-export default function CompletionsForm({
+export default function CompletionsList({
     published_at,
     completions,
     addCompletion,
