@@ -15,6 +15,7 @@ export default async function WorkInstance({
         0
     );
     const result: WorkInstanceFromAPI = (await response.json()).data;
+    result.viewings = result.viewings.map((completion) => new Date(completion));
 
     // TODO: Remove this call when API changed
     const workResponse = await fetchAPIFromServerComponent(

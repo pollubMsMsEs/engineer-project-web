@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import ErrorsDisplay from "@/components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./workForm.module.scss";
+import { useUniqueKey } from "@/hooks/useUniqueKey";
 
 type WorkToDB = Work & {
     people: (PersonInWork & { person_id: string })[];
@@ -40,6 +41,7 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
 export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
     const router = useRouter();
     const uniqueKey = useRef(0);
+    const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
     const [title, setTitle] = useState(work?.title ?? "");
@@ -128,13 +130,6 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
 
     function setEditedRoleCallback(role: string) {
         setEditedRole(role);
-    }
-
-    function getUniqueKey() {
-        uniqueKey.current++;
-
-        console.log(uniqueKey);
-        return uniqueKey.current;
     }
 
     async function submitForm() {
