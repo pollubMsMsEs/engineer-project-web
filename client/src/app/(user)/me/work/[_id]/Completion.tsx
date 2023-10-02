@@ -4,13 +4,16 @@ import React from "react";
 export default function Completion({
     published_at,
     completion,
-    setCompletions,
+    editCompletion,
+    removeCompletion,
 }: {
     published_at?: Date;
     completion: { id: number; completion: Date };
-    setCompletions: React.Dispatch<
-        React.SetStateAction<{ id: number; completion: Date }[]>
-    >;
+    editCompletion: (
+        completion: { id: number; completion: Date },
+        newValue: Date
+    ) => void;
+    removeCompletion: (completion: { id: number; completion: Date }) => void;
 }) {
     return (
         <div>
@@ -20,35 +23,13 @@ export default function Completion({
                 min={dayjs(published_at).format("YYYY-MM-DD")}
                 max={dayjs().format("YYYY-MM-DD")}
                 onChange={(e) => {
-                    setCompletions((values) => {
-                        const editedCompletion = values.find(
-                            (searchedCompletion) =>
-                                searchedCompletion.id === completion.id
-                        );
-
-                        if (editedCompletion) {
-                            editedCompletion.completion = new Date(
-                                e.target.value
-                            );
-                        }
-
-                        values.sort((a, b) =>
-                            a.completion < b.completion ? 1 : -1
-                        );
-
-                        return [...values];
-                    });
+                    editCompletion(completion, new Date(e.target.value));
                 }}
             />
             <button
                 type="button"
                 onClick={() => {
-                    setCompletions((prevCompletions) => {
-                        return prevCompletions.filter(
-                            (prevComplietion) =>
-                                prevComplietion.id !== completion.id
-                        );
-                    });
+                    removeCompletion(completion);
                 }}
             >
                 -

@@ -8,27 +8,24 @@ import Completion from "./Completion";
 export default function CompletionsForm({
     published_at,
     completions,
-    setCompletions,
+    addCompletion,
+    editCompletion,
+    removeCompletion,
 }: {
     published_at?: Date;
     completions: { id: number; completion: Date }[];
-    setCompletions: React.Dispatch<
-        React.SetStateAction<{ id: number; completion: Date }[]>
-    >;
+    addCompletion: () => void;
+    editCompletion: (
+        completion: { id: number; completion: Date },
+        newValue: Date
+    ) => void;
+    removeCompletion: (completion: { id: number; completion: Date }) => void;
 }) {
     const getUniqueKey = useUniqueKey(completions.length);
 
     return (
         <div>
-            <button
-                type="button"
-                onClick={() => {
-                    setCompletions([
-                        { id: getUniqueKey(), completion: new Date() },
-                        ...completions,
-                    ]);
-                }}
-            >
+            <button type="button" onClick={addCompletion}>
                 Add new <Icon path={mdiPlus} size={1} />
             </button>
             <div>
@@ -38,7 +35,8 @@ export default function CompletionsForm({
                             key={completion.id}
                             published_at={published_at}
                             completion={completion}
-                            setCompletions={setCompletions}
+                            editCompletion={editCompletion}
+                            removeCompletion={removeCompletion}
                         />
                     );
                 })}
