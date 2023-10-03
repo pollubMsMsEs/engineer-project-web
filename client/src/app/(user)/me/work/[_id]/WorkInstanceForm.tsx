@@ -3,7 +3,7 @@
 import RatingBar from "@/components/ratingBar/RatingBar";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { WorkInstance, WorkInstanceFromAPI } from "@/types/types";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CompletionsList from "./CompletionsList";
 import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
@@ -18,8 +18,8 @@ export default function WorkInstanceForm({
     const debouncer = useRef<NodeJS.Timeout>();
     const debouncesCount = useRef(0);
 
-    const [rating, _setRating] = useState(workInstance.rating);
-    const [description, _setDescription] = useState(
+    const [rating, setRating] = useState(workInstance.rating);
+    const [description, setDescription] = useState(
         workInstance.description ?? ""
     );
     const [completions, setCompletions] = useState(
@@ -29,40 +29,24 @@ export default function WorkInstanceForm({
                 completion,
             })) ?? []
     );
-    const [numberOfCompletions, _setNumberOfCompletions] = useState(
+    const [numberOfCompletions, setNumberOfCompletions] = useState(
         workInstance.number_of_viewings
     );
-    const [status, _setStatus] = useState(workInstance.status);
-
-    function setRating(rating: number) {
-        onInstanceChange();
-        _setRating(rating);
-    }
-
-    function setDescription(description: string) {
-        onInstanceChange();
-        _setDescription(description);
-    }
-
-    function setStatus(status: string) {
-        onInstanceChange();
-        _setStatus(status);
-    }
+    const [status, setStatus] = useState(workInstance.status);
 
     function addCompletion() {
-        onInstanceChange();
         setCompletions([
             { id: getUniqueKey(), completion: new Date() },
             ...completions,
         ]);
-        _setNumberOfCompletions((value) => value + 1);
+
+        setNumberOfCompletions((value) => value + 1);
     }
 
     function editCompletion(
         completion: { id: number; completion: Date },
         newValue: Date
     ) {
-        onInstanceChange();
         setCompletions((values) => {
             const editedCompletion = values.find(
                 (searchedCompletion) => searchedCompletion.id === completion.id
@@ -79,29 +63,49 @@ export default function WorkInstanceForm({
     }
 
     function removeCompletion(completion: { id: number; completion: Date }) {
-        onInstanceChange();
         setCompletions((prevCompletions) => {
             return prevCompletions.filter(
                 (prevComplietion) => prevComplietion.id !== completion.id
             );
         });
-        _setNumberOfCompletions((value) => value - 1);
+        setNumberOfCompletions((value) => value - 1);
     }
 
-    function setNumberOfCompletions(number: number) {
-        onInstanceChange();
-        _setNumberOfCompletions(number);
-    }
+    useEffect(() => {
+        async function updateInstance() {
+            const newInstance: WorkInstance & { work_id: string } = {
+                ...workInstance,
+                work_id: workInstance.work_id._id,
+                rating,
+                description,
+                number_of_viewings: numberOfCompletions,
+                viewings: completions.map(
+                    (completion) => completion.completion
+                ),
+                status,
+            };
 
-    function onInstanceChange() {
-        if (debouncer.current) {
-            clearTimeout(debouncer.current);
+            const response = await fetch(
+                `/api/workInstance/${workInstance._id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newInstance),
+                }
+            );
+
+            if (!response.ok) {
+                toast.error("Couldn't save status changes");
+                console.log(await response.json());
+            } else {
+                toast.success("Status updated succesfully");
+            }
         }
 
         let delay = 0;
-
         debouncesCount.current++;
-
         switch (debouncesCount.current) {
             case 1:
                 delay = 800;
@@ -113,35 +117,19 @@ export default function WorkInstanceForm({
                 delay = 2000;
         }
 
-        debouncer.current = setTimeout(updateInstance, delay);
-    }
+        const timeout = setTimeout(updateInstance, delay);
 
-    async function updateInstance() {
-        const newInstance: WorkInstance & { work_id: string } = {
-            ...workInstance,
-            work_id: workInstance.work_id._id,
-            rating,
-            description,
-            number_of_viewings: numberOfCompletions,
-            viewings: completions.map((completion) => completion.completion),
-            status,
+        return () => {
+            clearTimeout(timeout);
         };
-
-        const response = await fetch(`/api/workInstance/${workInstance._id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newInstance),
-        });
-
-        if (!response.ok) {
-            toast.error("Couldn't save status changes");
-            console.log(await response.json());
-        } else {
-            toast.success("Status updated succesfully");
-        }
-    }
+    }, [
+        workInstance,
+        rating,
+        description,
+        numberOfCompletions,
+        completions,
+        status,
+    ]);
 
     const isCompleted = numberOfCompletions > 0 || status === "Completed";
 
