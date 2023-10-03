@@ -104,13 +104,13 @@ export default function WorkInstanceForm({
 
         switch (debouncesCount.current) {
             case 1:
-                delay = 1000;
+                delay = 800;
                 break;
             case 2:
-                delay = 2000;
+                delay = 1600;
                 break;
             default:
-                delay = 3000;
+                delay = 2000;
         }
 
         debouncer.current = setTimeout(updateInstance, delay);
@@ -143,19 +143,10 @@ export default function WorkInstanceForm({
         }
     }
 
+    const isCompleted = numberOfCompletions > 0 || status === "Completed";
+
     return (
         <form>
-            <RatingBar value={rating} maxValue={5} setValue={setRating} />
-            <textarea
-                name="description"
-                id="description"
-                cols={30}
-                rows={10}
-                onChange={(e) => {
-                    setDescription(e.target.value);
-                }}
-                value={description}
-            />
             <div style={{ width: "200px" }}>
                 <Select
                     name={"status"}
@@ -167,29 +158,49 @@ export default function WorkInstanceForm({
                     }}
                 />
             </div>
+            {isCompleted && (
+                <>
+                    <input
+                        type="number"
+                        value={numberOfCompletions}
+                        onChange={(e) => {
+                            const value = Number.parseInt(e.target.value);
+                            if (value < completions.length) {
+                                toast.warning(
+                                    "There is more completions in the list, remove them first"
+                                );
+                                return;
+                            }
 
-            <CompletionsList
-                published_at={workInstance.work_id.published_at}
-                completions={completions}
-                addCompletion={addCompletion}
-                editCompletion={editCompletion}
-                removeCompletion={removeCompletion}
-            />
-            <input
-                type="number"
-                value={numberOfCompletions}
-                onChange={(e) => {
-                    const value = Number.parseInt(e.target.value);
-                    if (value < completions.length) {
-                        toast.warning(
-                            "There is more completions in the list, remove them first"
-                        );
-                        return;
-                    }
+                            setNumberOfCompletions(value);
+                        }}
+                    />
+                    <CompletionsList
+                        published_at={workInstance.work_id.published_at}
+                        completions={completions}
+                        addCompletion={addCompletion}
+                        editCompletion={editCompletion}
+                        removeCompletion={removeCompletion}
+                    />
 
-                    setNumberOfCompletions(value);
-                }}
-            />
+                    <RatingBar
+                        value={rating}
+                        maxValue={5}
+                        setValue={setRating}
+                    />
+
+                    <textarea
+                        name="description"
+                        id="description"
+                        cols={30}
+                        rows={10}
+                        onChange={(e) => {
+                            setDescription(e.target.value);
+                        }}
+                        value={description}
+                    />
+                </>
+            )}
         </form>
     );
 }
