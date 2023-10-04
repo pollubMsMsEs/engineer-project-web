@@ -9,11 +9,14 @@ import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
 import { statuses } from "@/modules/workInstanceStatus";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
+import styles from "./workInstanceForm.module.scss";
 
 export default function WorkInstanceForm({
     workInstance,
+    gridArea,
 }: {
     workInstance: WorkInstanceFromAPI;
+    gridArea?: string;
 }) {
     const getUniqueKey = useUniqueKey();
     const debouncesCount = useRef(0);
@@ -133,8 +136,8 @@ export default function WorkInstanceForm({
     const isCompleted = numberOfCompletions > 0 || status === "Completed";
 
     return (
-        <form>
-            <div style={{ width: "200px" }}>
+        <form className={styles["work-instance"]}>
+            <div className={styles["work-instance__status"]}>
                 <Select
                     name={"status"}
                     id={`status`}
@@ -151,7 +154,8 @@ export default function WorkInstanceForm({
                         type="number"
                         value={numberOfCompletions}
                         onChange={(e) => {
-                            const value = Number.parseInt(e.target.value);
+                            let value = Number.parseInt(e.target.value);
+                            if (Number.isNaN(value)) value = 0;
                             if (value < completions.length) {
                                 toast.warning(
                                     "There is more completions in the list, remove them first"
@@ -162,6 +166,11 @@ export default function WorkInstanceForm({
                             setNumberOfCompletions(value);
                         }}
                     />
+                    <RatingBar
+                        value={rating}
+                        maxValue={5}
+                        setValue={setRating}
+                    />
                     <CompletionsList
                         published_at={workInstance.work_id.published_at}
                         completions={completions}
@@ -170,13 +179,8 @@ export default function WorkInstanceForm({
                         removeCompletion={removeCompletion}
                     />
 
-                    <RatingBar
-                        value={rating}
-                        maxValue={5}
-                        setValue={setRating}
-                    />
-
                     <textarea
+                        className={styles["work-instance__description"]}
                         name="description"
                         id="description"
                         cols={30}
