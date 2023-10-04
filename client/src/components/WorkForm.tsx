@@ -15,6 +15,7 @@ import ErrorsDisplay from "@/components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./workForm.module.scss";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
+import { capitalize } from "radash";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -47,12 +48,13 @@ export default function WorkForm({
     onSubmit,
 }: {
     work?: WorkFromAPIPopulated;
-    onSubmit: (work: WorkFromAPIPopulated) => void;
+    onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
     const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
+    const [type, setType] = useState(work?.type ?? "");
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
     const [publishedAt, setPublishedAt] = useState(
@@ -145,7 +147,7 @@ export default function WorkForm({
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
-            type: "book",
+            type,
             dev: true,
             description,
             published_at: new Date(publishedAt),
@@ -185,7 +187,9 @@ export default function WorkForm({
         if (result.errors) {
             setErrors(result.errors);
         } else {
-            onSubmit(updatedWork);
+            if (onSubmit) {
+                onSubmit(updatedWork);
+            }
         }
     }
 
@@ -198,6 +202,19 @@ export default function WorkForm({
             }}
         >
             {work && <input type="hidden" name="_id" value={work._id} />}
+            {work ? (
+                <div>{capitalize(work.type ?? "")}</div>
+            ) : (
+                <select
+                    onChange={(e) => {
+                        setType(e.target.value);
+                    }}
+                >
+                    <option value="book">Book</option>
+                    <option value="movie">Movie</option>
+                    <option value="computerGame">ComputerGame</option>
+                </select>
+            )}
             <label htmlFor="title">Title: </label>
             <input
                 type="text"
