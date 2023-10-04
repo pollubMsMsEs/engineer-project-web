@@ -1,4 +1,12 @@
 .work-container {
+    > h2 {
+        margin: 10px 0 2px;
+    }
+
+    > h5 {
+        margin-top: 0;
+    }
+
     .label {
         font-size: 1.1rem;
         font-weight: bold;

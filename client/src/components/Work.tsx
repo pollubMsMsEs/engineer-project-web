@@ -7,6 +7,7 @@ import {
 import dayjs from "dayjs";
 import Person from "./Person";
 import styles from "./work.module.scss";
+import { capitalize } from "radash";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -46,6 +47,7 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
     return (
         <div className={styles["work-container"]}>
             <h2>{work.title}</h2>
+            <h5>{capitalize(work.type ?? "")}</h5>
             <div>
                 <span className={styles["label"]}>Description: </span>
                 <span>{work?.description ?? ""}</span>
