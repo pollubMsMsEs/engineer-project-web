@@ -7,15 +7,21 @@ import {
     PersonInWork,
     Person,
     WorkFromAPIPopulated,
+    PersonFromAPI,
 } from "@/types/types";
 import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
 import dayjs from "dayjs";
 import ErrorsDisplay from "@/components/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./workForm.module.scss";
+import { useUniqueKey } from "@/hooks/useUniqueKey";
+import { capitalize } from "radash";
 
 type WorkToDB = Work & {
-    people: (PersonInWork & { person_id: string })[];
+    _id?: string;
+    people: (PersonInWork & {
+        person_id: string | PersonFromAPI;
+    })[];
 };
 
 type MetadataInForm = {
@@ -37,11 +43,18 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
     return await response.json();
 }
 
-export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
+export default function WorkForm({
+    work,
+    onSubmit,
+}: {
+    work?: WorkFromAPIPopulated;
+    onSubmit?: (work: WorkFromAPIPopulated) => void;
+}) {
     const router = useRouter();
-    const uniqueKey = useRef(0);
+    const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
+    const [type, setType] = useState(work?.type ?? "");
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
     const [publishedAt, setPublishedAt] = useState(
@@ -130,17 +143,11 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
         setEditedRole(role);
     }
 
-    function getUniqueKey() {
-        uniqueKey.current++;
-
-        console.log(uniqueKey);
-        return uniqueKey.current;
-    }
-
     async function submitForm() {
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
+            type,
             dev: true,
             description,
             published_at: new Date(publishedAt),
@@ -175,10 +182,14 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
               });
         const result = await response.json();
 
+        const updatedWork: WorkFromAPIPopulated = result.updated;
+
         if (result.errors) {
             setErrors(result.errors);
         } else {
-            router.push("/work/all");
+            if (onSubmit) {
+                onSubmit(updatedWork);
+            }
         }
     }
 
@@ -191,6 +202,19 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
             }}
         >
             {work && <input type="hidden" name="_id" value={work._id} />}
+            {work ? (
+                <div>{capitalize(work.type ?? "")}</div>
+            ) : (
+                <select
+                    onChange={(e) => {
+                        setType(e.target.value);
+                    }}
+                >
+                    <option value="book">Book</option>
+                    <option value="movie">Movie</option>
+                    <option value="computerGame">ComputerGame</option>
+                </select>
+            )}
             <label htmlFor="title">Title: </label>
             <input
                 type="text"

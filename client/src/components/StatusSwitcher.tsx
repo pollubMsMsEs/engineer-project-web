@@ -11,6 +11,7 @@ import {
 } from "@mdi/js";
 import { toast } from "react-toastify";
 import styles from "./statusSwitcher.module.scss";
+import Select from "./select/Select";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.viewings.some((viewing) =>
@@ -76,7 +77,11 @@ export default function StatusSwitcher({
                 if (result.acknowledged) {
                     updateWorkInstance(result.updated);
                     if (addedNewViewing) {
-                        toast.success("Today viewing added");
+                        toast.success(
+                            `Added completion for "${
+                                _workInstance.work_id.title ?? ""
+                            }"`
+                        );
                     }
                 } else {
                     throw new Error();
@@ -94,32 +99,26 @@ export default function StatusSwitcher({
 
     return (
         <div className={styles["status-switcher"]}>
-            <select
-                className={styles["status-switcher__select"]}
-                name="status"
-                id={`status-${_workInstance._id}`}
-                value={status}
-                onChange={(e) => {
-                    setStatus(e.target.value);
-                }}
-                style={{ background: `url(${mdiCheckboxMarkedCircleOutline})` }}
-            >
-                {statuses[_workInstance.type].map((status) => (
-                    <option
-                        key={status}
-                        value={status}
-                        className={styles["status-switcher__option"]}
-                    >
-                        {status}
-                    </option>
-                ))}
-            </select>
+            <div className={styles["status-switcher__select-wrapper"]}>
+                <Select
+                    name={"status"}
+                    id={`status-${_workInstance._id}`}
+                    value={status}
+                    options={statuses[_workInstance.type]}
+                    onChange={(value) => {
+                        setStatus(value);
+                    }}
+                />
+            </div>
+
             <button
                 className={styles["status-switcher__view-button"]}
                 disabled={viewedToday}
                 onClick={() => {
                     setViewedToday(true);
                 }}
+                data-tooltip-id="tooltip-add-viewing"
+                data-tooltip-content={viewedToday ? "" : "Complete today"}
             >
                 <Icon
                     path={

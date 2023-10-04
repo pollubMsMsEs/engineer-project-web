@@ -5,6 +5,7 @@ import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkInstanceFromAPI } from "@/types/types";
 import InstancesGrid from "@/components/InstancesGrid";
 import WorkInstanceCard from "@/components/WorkInstanceCard";
+import TooltipWrapper from "@/components/TooltipWrapper";
 
 export const revalidate = 0;
 
@@ -65,6 +66,7 @@ export default async function Home() {
                     />
                 ))}
             </InstancesGrid>
+            <TooltipWrapper id="tooltip-add-viewing" />
         </div>
     );
 }

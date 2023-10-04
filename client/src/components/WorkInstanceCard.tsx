@@ -18,7 +18,7 @@ export default function WorkInstanceCard({
         <div className={styles["instance"]}>
             <Link
                 className={styles["instance__link-wrapper"]}
-                href={`/work/${_id}`}
+                href={`/me/work/${workInstance._id}`}
             >
                 <div className={styles["instance__img-container"]}>
                     {cover ? (

@@ -1,7 +1,7 @@
 export interface Work {
-    _id?: string;
     title: string;
     cover?: string;
+    type?: string;
     dev: boolean;
     description: string;
     published_at: Date;
@@ -37,10 +37,12 @@ export interface MetaObject {
 }
 
 export type WorkFromAPI = Work & {
+    _id: string;
     people: (PersonInWork & { person_id: string })[];
 };
 
 export type WorkFromAPIPopulated = Work & {
+    _id: string;
     people: (PersonInWork & { person_id: PersonFromAPI })[];
 };
 
