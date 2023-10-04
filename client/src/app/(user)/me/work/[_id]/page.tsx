@@ -4,6 +4,7 @@ import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
 import Work from "@/components/Work";
 import WorkInstanceForm from "./WorkInstanceForm";
+import EditableWork from "./EditableWork";
 
 export default async function WorkInstance({
     params,
@@ -26,7 +27,7 @@ export default async function WorkInstance({
 
     return (
         <div>
-            <Work work={work} />
+            <EditableWork _work={work} />
             <WorkInstanceForm workInstance={result} />
         </div>
     );

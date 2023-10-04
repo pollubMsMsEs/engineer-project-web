@@ -1,6 +1,7 @@
 export interface Work {
     title: string;
     cover?: string;
+    type?: string;
     dev: boolean;
     description: string;
     published_at: Date;
@@ -41,6 +42,7 @@ export type WorkFromAPI = Work & {
 };
 
 export type WorkFromAPIPopulated = Work & {
+    _id: string;
     people: (PersonInWork & { person_id: PersonFromAPI })[];
 };
 

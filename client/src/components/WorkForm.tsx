@@ -7,6 +7,7 @@ import {
     PersonInWork,
     Person,
     WorkFromAPIPopulated,
+    PersonFromAPI,
 } from "@/types/types";
 import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
 import dayjs from "dayjs";
@@ -16,7 +17,10 @@ import styles from "./workForm.module.scss";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 
 type WorkToDB = Work & {
-    people: (PersonInWork & { person_id: string })[];
+    _id?: string;
+    people: (PersonInWork & {
+        person_id: string | PersonFromAPI;
+    })[];
 };
 
 type MetadataInForm = {
@@ -38,9 +42,14 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
     return await response.json();
 }
 
-export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
+export default function WorkForm({
+    work,
+    onSubmit,
+}: {
+    work?: WorkFromAPIPopulated;
+    onSubmit: (work: WorkFromAPIPopulated) => void;
+}) {
     const router = useRouter();
-    const uniqueKey = useRef(0);
     const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
@@ -136,6 +145,7 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
+            type: "book",
             dev: true,
             description,
             published_at: new Date(publishedAt),
@@ -170,10 +180,12 @@ export default function WorkForm({ work }: { work?: WorkFromAPIPopulated }) {
               });
         const result = await response.json();
 
+        const updatedWork: WorkFromAPIPopulated = result.updated;
+
         if (result.errors) {
             setErrors(result.errors);
         } else {
-            router.push("/work/all");
+            onSubmit(updatedWork);
         }
     }
 
