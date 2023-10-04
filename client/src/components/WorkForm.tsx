@@ -12,7 +12,7 @@ import {
 import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
 import dayjs from "dayjs";
 import ErrorsDisplay from "@/components/ErrorsDisplay";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./workForm.module.scss";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
@@ -51,10 +51,13 @@ export default function WorkForm({
     onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
 
-    const [type, setType] = useState(work?.type ?? "");
+    const [type, setType] = useState(
+        work?.type ?? searchParams.get("type") ?? ""
+    );
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
     const [publishedAt, setPublishedAt] = useState(
@@ -209,6 +212,7 @@ export default function WorkForm({
                     onChange={(e) => {
                         setType(e.target.value);
                     }}
+                    value={type}
                 >
                     <option value="book">Book</option>
                     <option value="movie">Movie</option>

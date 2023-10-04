@@ -6,6 +6,10 @@ import { WorkInstanceFromAPI } from "@/types/types";
 import InstancesGrid from "@/components/InstancesGrid";
 import WorkInstanceCard from "@/components/WorkInstanceCard";
 import TooltipWrapper from "@/components/TooltipWrapper";
+import Link from "next/link";
+import Icon from "@mdi/react";
+import { mdiPlus } from "@mdi/js";
+import styles from "./page.module.scss";
 
 export const revalidate = 0;
 
@@ -41,7 +45,7 @@ export default async function Home() {
     });
 
     return (
-        <div>
+        <div className={styles["collection"]}>
             <InstancesGrid title="Books">
                 {books.map((workInstance) => (
                     <WorkInstanceCard
@@ -49,6 +53,17 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
+                <Link
+                    className={styles["collection__add-card"]}
+                    href={{
+                        pathname: "/work/create",
+                        query: {
+                            type: "book",
+                        },
+                    }}
+                >
+                    <Icon path={mdiPlus} />
+                </Link>
             </InstancesGrid>
             <InstancesGrid title="Movies">
                 {movies.map((workInstance) => (
@@ -57,6 +72,17 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
+                <Link
+                    className={styles["collection__add-card"]}
+                    href={{
+                        pathname: "/work/create",
+                        query: {
+                            type: "movie",
+                        },
+                    }}
+                >
+                    <Icon path={mdiPlus} />
+                </Link>
             </InstancesGrid>
             <InstancesGrid title="Computer Games">
                 {computerGames.map((workInstance) => (
@@ -65,6 +91,17 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
+                <Link
+                    className={styles["collection__add-card"]}
+                    href={{
+                        pathname: "/work/create",
+                        query: {
+                            type: "computerGame",
+                        },
+                    }}
+                >
+                    <Icon path={mdiPlus} />
+                </Link>
             </InstancesGrid>
             <TooltipWrapper id="tooltip-add-viewing" />
         </div>
