@@ -15,7 +15,6 @@ export default function WorkInstanceForm({
     workInstance: WorkInstanceFromAPI;
 }) {
     const getUniqueKey = useUniqueKey();
-    const debouncer = useRef<NodeJS.Timeout>();
     const debouncesCount = useRef(0);
 
     const [rating, setRating] = useState(workInstance.rating);
