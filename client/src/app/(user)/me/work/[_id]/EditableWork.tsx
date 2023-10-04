@@ -9,14 +9,16 @@ import React, { useState } from "react";
 
 export default function EditableWork({
     _work,
+    gridArea,
 }: {
     _work: WorkFromAPIPopulated;
+    gridArea?: string;
 }) {
     const [isEditable, setIsEditable] = useState(false);
     const [work, setWork] = useState(_work);
 
     return (
-        <>
+        <div style={{ gridArea }}>
             {isEditable ? (
                 <WorkForm
                     work={work}
@@ -40,6 +42,6 @@ export default function EditableWork({
                     </button>
                 </>
             )}
-        </>
+        </div>
     );
 }

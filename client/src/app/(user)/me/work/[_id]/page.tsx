@@ -26,7 +26,7 @@ export default async function WorkInstance({
     work.published_at = new Date(work.published_at);
 
     return (
-        <div>
+        <div className={styles["work"]}>
             <EditableWork _work={work} />
             <WorkInstanceForm workInstance={result} />
         </div>
