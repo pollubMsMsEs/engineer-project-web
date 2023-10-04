@@ -3,11 +3,12 @@
 import RatingBar from "@/components/ratingBar/RatingBar";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { WorkInstance, WorkInstanceFromAPI } from "@/types/types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CompletionsList from "./CompletionsList";
 import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
 import { statuses } from "@/modules/workInstanceStatus";
+import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -70,7 +71,7 @@ export default function WorkInstanceForm({
         setNumberOfCompletions((value) => value - 1);
     }
 
-    useEffect(() => {
+    useUnmountedEffect(() => {
         async function updateInstance() {
             const newInstance: WorkInstance & { work_id: string } = {
                 ...workInstance,
@@ -97,7 +98,6 @@ export default function WorkInstanceForm({
 
             if (!response.ok) {
                 toast.error("Couldn't save status changes");
-                console.log(await response.json());
             } else {
                 toast.success("Status updated succesfully");
             }
