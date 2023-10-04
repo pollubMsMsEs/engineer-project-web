@@ -1,6 +1,6 @@
 "use client";
 
-import { Work } from "@/types/types";
+import { WorkFromAPI } from "@/types/types";
 import { useState } from "react";
 import React from "react";
 import Link from "next/link";
@@ -14,7 +14,7 @@ async function deleteWork(_id: string) {
     return result;
 }
 
-export default function WorkList({ works: works }: { works: Work[] }) {
+export default function WorkList({ works: works }: { works: WorkFromAPI[] }) {
     const [workList, setWorkList] = useState(works);
 
     async function deleteWorkHandler(_id: string) {
