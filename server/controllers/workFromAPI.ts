@@ -33,9 +33,17 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const worksFromAPI = await WorkFromAPI.findById(
                 req.params.id
             ).exec();
+
+            if (!worksFromAPI) {
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
+            }
+
             res.json({ data: worksFromAPI });
         } catch (e: any) {
             //console.log(res);

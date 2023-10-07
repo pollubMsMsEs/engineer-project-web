@@ -44,7 +44,15 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const images = await Image.findById(req.params.id).exec();
+
+            if (!images) {
+                return res
+                    .status(404)
+                    .json({ error: "This image does not exist." });
+            }
+
             res.json({ data: images });
         } catch (e: any) {
             return next(e);
