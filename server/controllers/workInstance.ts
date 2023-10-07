@@ -227,7 +227,13 @@ export const updateOne = [
 
             const instance = await WorkInstance.findById(req.params.id);
 
-            if (!instance || String(instance.user_id) !== req.auth._id) {
+            if (!instance) {
+                return res.status(404).json({
+                    error: "This work instance does not exist.",
+                });
+            }
+
+            if (String(instance.user_id) !== req.auth._id) {
                 return res.status(403).json({
                     error: "You do not have permission to update this piece of work instance.",
                 });
