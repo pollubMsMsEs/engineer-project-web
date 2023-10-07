@@ -1,4 +1,5 @@
 import Image from "../models/image.js";
+import { fileTypeFromBuffer } from "file-type";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -58,6 +59,14 @@ export const createOne = [
             return res
                 .status(400)
                 .json({ acknowledged: false, message: "No file uploaded" });
+
+        const mime = await fileTypeFromBuffer(req.file.buffer);
+        if (!mime || !mime.mime.startsWith("image/")) {
+            return res.status(400).json({
+                acknowledged: false,
+                message: "Uploaded file is not an image",
+            });
+        }
 
         const base64Image = req.file.buffer.toString("base64");
 
