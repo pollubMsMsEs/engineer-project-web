@@ -1,4 +1,5 @@
 import Work from "../models/work.js";
+import WorkInstance from "../models/workInstance.js";
 import Person from "../models/person.js";
 import Image from "../models/image.js";
 import mongoose from "mongoose";
@@ -239,8 +240,18 @@ export const deleteOne = [
                     .json({ error: "This work does not exist." });
             }
 
-            const result = await Work.findByIdAndRemove(req.params.id);
-            return res.json({ acknowledged: true, deleted: result });
+            const workInstanceResult = await WorkInstance.deleteMany({
+                work_id: req.params.id,
+            });
+
+            const workResult = await Work.findByIdAndRemove(req.params.id);
+            return res.json({
+                acknowledged: true,
+                deleted: {
+                    workInstancesCount: workInstanceResult.deletedCount,
+                    work: workResult,
+                },
+            });
         } catch (error) {
             return next(error);
         }

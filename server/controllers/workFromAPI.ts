@@ -1,4 +1,5 @@
 import WorkFromAPI from "../models/workFromAPI.js";
+import WorkInstance from "../models/workInstance.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -131,8 +132,20 @@ export const deleteOne = [
                     .json({ error: "This work does not exist." });
             }
 
-            const result = await WorkFromAPI.findByIdAndRemove(req.params.id);
-            return res.json({ acknowledged: true, deleted: result });
+            const workInstanceResult = await WorkInstance.deleteMany({
+                work_id: req.params.id,
+            });
+
+            const workFromAPIResult = await WorkFromAPI.findByIdAndRemove(
+                req.params.id
+            );
+            return res.json({
+                acknowledged: true,
+                deleted: {
+                    workInstancesCount: workInstanceResult.deletedCount,
+                    work: workFromAPIResult,
+                },
+            });
         } catch (error) {
             return next(error);
         }
