@@ -66,7 +66,7 @@ export default function WorkForm({
     );
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
-    const [cover, setCover] = useState<string | undefined>();
+    const [cover, setCover] = useState<string | undefined>(work?.cover);
     const [publishedAt, setPublishedAt] = useState(
         work ? dayjs(work.published_at).format("YYYY-MM-DD") : ""
     );
@@ -233,9 +233,11 @@ export default function WorkForm({
                     trySubmitCover();
                 }}
             >
-                {coverFile && (
+                {(coverFile || cover) && (
                     <Image
-                        src={URL.createObjectURL(coverFile)}
+                        src={
+                            coverFile ? URL.createObjectURL(coverFile) : cover!
+                        }
                         alt="Work cover"
                         width={300}
                         height={400}

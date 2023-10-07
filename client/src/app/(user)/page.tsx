@@ -30,19 +30,22 @@ export default async function Home() {
     const books: WorkInstanceFromAPI[] = [];
     const computerGames: WorkInstanceFromAPI[] = [];
 
-    workInstances.forEach((workInstance) => {
-        switch (workInstance.type) {
-            case "movie":
-                movies.push(workInstance);
-                break;
-            case "book":
-                books.push(workInstance);
-                break;
-            case "computerGame":
-                computerGames.push(workInstance);
-                break;
-        }
-    });
+    // TODO: Filter unsupported works from API
+    workInstances
+        .filter((workInstance) => !workInstance.from_api)
+        .forEach((workInstance) => {
+            switch (workInstance.type) {
+                case "movie":
+                    movies.push(workInstance);
+                    break;
+                case "book":
+                    books.push(workInstance);
+                    break;
+                case "computerGame":
+                    computerGames.push(workInstance);
+                    break;
+            }
+        });
 
     return (
         <div className={styles["collection"]}>
