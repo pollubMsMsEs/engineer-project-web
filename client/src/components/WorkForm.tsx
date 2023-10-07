@@ -19,6 +19,7 @@ import { capitalize } from "radash";
 import FilePicker from "./filePicker/FilePicker";
 import Icon from "@mdi/react";
 import { mdiDisc, mdiFloppy } from "@mdi/js";
+import Image from "next/image";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -57,12 +58,15 @@ export default function WorkForm({
     const searchParams = useSearchParams();
     const getUniqueKey = useUniqueKey();
     const [editedRole, setEditedRole] = useState<string | undefined>();
+    const [coverFile, setCoverFile] = useState<File>();
+    const [isCoverNew, setIsCoverNew] = useState(false);
 
     const [type, setType] = useState(
         work?.type ?? searchParams.get("type") ?? ""
     );
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
+    const [cover, setCover] = useState<string | undefined>();
     const [publishedAt, setPublishedAt] = useState(
         work ? dayjs(work.published_at).format("YYYY-MM-DD") : ""
     );
@@ -149,15 +153,33 @@ export default function WorkForm({
         setEditedRole(role);
     }
 
-    async function submitCover() {
-        console.log("submitted cover");
+    async function trySubmitCover(): Promise<string | undefined> {
+        if (isCoverNew && coverFile) {
+            const formData = new FormData();
+            formData.append("image", coverFile);
+
+            const response = await fetch("/api/image/create", {
+                method: "POST",
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (result.acknowledged) {
+                setIsCoverNew(false);
+                return result.created;
+            }
+        }
     }
 
     async function submitForm() {
+        let newCover = (await trySubmitCover()) || cover;
+        setCover(newCover);
+
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
             type,
+            cover: newCover,
             dev: true,
             description,
             published_at: new Date(publishedAt),
@@ -208,18 +230,32 @@ export default function WorkForm({
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    submitCover();
+                    trySubmitCover();
                 }}
             >
+                {coverFile && (
+                    <Image
+                        src={URL.createObjectURL(coverFile)}
+                        alt="Work cover"
+                        width={300}
+                        height={400}
+                        style={{ objectFit: "cover" }}
+                    />
+                )}
                 <FilePicker
-                    title="Submit cover"
+                    title="Pick cover"
                     name="cover"
                     acceptedTypes="image/*"
-                    onChange={() => {}}
+                    onChange={(fileList) => {
+                        setCoverFile(fileList?.[0]);
+                        setIsCoverNew(true);
+                    }}
                 />
-                <button type="submit">
-                    <Icon path={mdiFloppy} size={1} />
-                </button>
+                {false && ( // this will be usefull if endpoint for updating image will exist
+                    <button type="submit" disabled={!coverFile}>
+                        <Icon path={mdiFloppy} size={1} />
+                    </button>
+                )}
             </form>
             <form
                 className={styles["work-form"]}
