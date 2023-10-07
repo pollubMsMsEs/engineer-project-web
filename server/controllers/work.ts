@@ -44,9 +44,17 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const work = await Work.findById(req.params.id)
                 .populate("people.person_id")
                 .exec();
+
+            if (!work) {
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
+            }
+
             res.json({ data: work });
         } catch (e: any) {
             //console.log(res);

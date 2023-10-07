@@ -55,9 +55,17 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const workInstance = await WorkInstance.findById(req.params.id)
                 .populate("work_id")
                 .exec();
+
+            if (!workInstance) {
+                return res
+                    .status(404)
+                    .json({ error: "This work instance does not exist." });
+            }
+
             res.json({ data: workInstance });
         } catch (e: any) {
             //console.log(res);
