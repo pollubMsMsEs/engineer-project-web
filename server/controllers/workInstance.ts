@@ -145,6 +145,18 @@ export const createOne = [
             });
         }
 
+        const existingInstance = await WorkInstance.findOne({
+            work_id: req.body.work_id,
+            user_id: req.auth._id,
+        });
+
+        if (existingInstance) {
+            return res.status(400).json({
+                acknowledged: false,
+                errors: "User already has an instance with this work_id",
+            });
+        }
+
         const workInstance = await WorkInstance.create({
             ...req.body,
             user_id: req.auth._id,
