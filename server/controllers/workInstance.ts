@@ -112,15 +112,6 @@ export const createOne = [
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
     body("status").optional().trim().escape(),
-    body("type")
-        .exists()
-        .withMessage("Missing type string")
-        .trim()
-        .escape()
-        .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
-        })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -136,14 +127,16 @@ export const createOne = [
                 .json({ acknowledged: false, errors: valResult.array() });
 
         const Model = mongoose.model(req.body.onModel);
-        const exists = await Model.exists({ _id: req.body.work_id });
+        const work = await Model.findById(req.body.work_id);
 
-        if (!exists) {
+        if (!work) {
             return res.status(400).json({
                 acknowledged: false,
                 errors: "Invalid work_id for the given onModel",
             });
         }
+
+        req.body.type = work.type;
 
         const existingInstance = await WorkInstance.findOne({
             work_id: req.body.work_id,
@@ -214,15 +207,6 @@ export const updateOne = [
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
     body("status").optional().trim().escape(),
-    body("type")
-        .exists()
-        .withMessage("Missing type string")
-        .trim()
-        .escape()
-        .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
-        })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
     body("from_api")
         .exists()
         .withMessage("Missing from_api boolean")
@@ -242,14 +226,16 @@ export const updateOne = [
             }
 
             const Model = mongoose.model(req.body.onModel);
-            const exists = await Model.exists({ _id: req.body.work_id });
+            const work = await Model.findById(req.body.work_id);
 
-            if (!exists) {
+            if (!work) {
                 return res.status(400).json({
                     acknowledged: false,
                     errors: "Invalid work_id for the given onModel",
                 });
             }
+
+            req.body.type = work.type;
 
             const workInstance = await WorkInstance.findByIdAndUpdate(
                 req.params.id,
