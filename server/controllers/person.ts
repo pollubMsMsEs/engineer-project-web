@@ -70,7 +70,11 @@ export const updateOne = [
             console.log(req.body);
             validationResult(req).throw();
 
-            const person = await Person.findByIdAndUpdate(req.params.id, req.body, {});
+            const person = await Person.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                {}
+            );
 
             return res.json({ acknowledged: true, updated: person });
         } catch (error) {

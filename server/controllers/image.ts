@@ -116,12 +116,10 @@ export const updateOne = [
             );
 
             if (!image)
-                return res
-                    .status(404)
-                    .json({
-                        acknowledged: false,
-                        message: "Image does not exist",
-                    });
+                return res.status(404).json({
+                    acknowledged: false,
+                    message: "Image does not exist",
+                });
 
             const host = req.get("host");
             const protocol = req.protocol;
