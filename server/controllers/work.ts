@@ -1,4 +1,5 @@
 import Work from "../models/work.js";
+import Person from "../models/person.js";
 import Image from "../models/image.js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
@@ -116,6 +117,22 @@ export const createOne = [
             return res
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
+
+        if (req.body.people && Array.isArray(req.body.people)) {
+            for (const person of req.body.people) {
+                if (person.person_id) {
+                    const personExists = await Person.exists({
+                        _id: person.person_id,
+                    });
+                    if (!personExists) {
+                        return res.status(400).json({
+                            acknowledged: false,
+                            errors: `Person with ID '${person.person_id}' does not exist`,
+                        });
+                    }
+                }
+            }
+        }
 
         const work = await Work.create({
             ...req.body,
