@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import Person from "./Person";
 import styles from "./work.module.scss";
 import { capitalize } from "radash";
+import Image from "next/image";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -48,6 +49,16 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
         <div className={styles["work-container"]}>
             <h2>{work.title}</h2>
             <h5>{capitalize(work.type ?? "")}</h5>
+            {work.cover && (
+                <Image
+                    src={work.cover}
+                    alt="Work cover"
+                    width={300}
+                    height={400}
+                    style={{ objectFit: "cover" }}
+                />
+            )}
+
             <div>
                 <span className={styles["label"]}>Description: </span>
                 <span>{work?.description ?? ""}</span>

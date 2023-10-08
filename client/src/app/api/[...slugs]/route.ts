@@ -14,16 +14,16 @@ async function handler(
 
     if (!jwt) return NextResponse.redirect(new URL("/auth/login", request.url));
 
-    const bodyText = await request.text();
-    console.log(bodyText);
+    const headers = new Headers(request.headers);
+    headers.set("Authorization", `Bearer ${jwt}`);
+    headers.delete("content-length");
+
+    let body = await request.blob();
 
     const apiResponse = await fetch(convertParamsToURL(params.slugs), {
         method: request.method,
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`,
-        },
-        body: bodyText.length !== 0 ? bodyText : undefined,
+        headers,
+        body: body.size !== 0 ? body : undefined,
     });
 
     if (apiResponse.status === 401) {

@@ -19,7 +19,7 @@
         display: grid;
         place-items: center;
         width: calc(100% + 20px);
-        aspect-ratio: 1/1.1;
+        aspect-ratio: 3/4;
 
         /* MDI icon */
         svg {
@@ -29,6 +29,7 @@
         /* NEXT image */
         img {
             object-fit: cover;
+            border-radius: 20px 20px 0 0;
         }
     }
 
