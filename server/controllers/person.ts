@@ -81,7 +81,7 @@ export const updateOne = [
             const person = await Person.findByIdAndUpdate(
                 req.params.id,
                 req.body,
-                {}
+                { new: true }
             );
 
             return res.json({ acknowledged: true, updated: person });
