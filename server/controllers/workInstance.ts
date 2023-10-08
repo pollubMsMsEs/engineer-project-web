@@ -169,16 +169,6 @@ export const createOne = [
 ];
 
 export const updateOne = [
-    body("work_id").isMongoId(),
-    body("onModel")
-        .exists()
-        .withMessage("Missing onModel string")
-        .trim()
-        .escape()
-        .custom((value) => {
-            return ["Work", "WorkFromAPI"].includes(value);
-        })
-        .withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -239,8 +229,15 @@ export const updateOne = [
                 });
             }
 
-            const Model = mongoose.model(req.body.onModel);
-            const work = await Model.findById(req.body.work_id);
+            if (!instance.onModel || typeof instance.onModel !== "string") {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Invalid or missing onModel",
+                });
+            }
+
+            const Model = mongoose.model(instance.onModel);
+            const work = await Model.findById(instance.work_id);
 
             if (!work) {
                 return res.status(400).json({
@@ -250,6 +247,13 @@ export const updateOne = [
             }
 
             req.body.type = work.type;
+
+            const forbiddenUpdates = ["work_id", "onModel"];
+            forbiddenUpdates.forEach((field) => {
+                if (req.body[field]) {
+                    delete req.body[field];
+                }
+            });
 
             const workInstance = await WorkInstance.findByIdAndUpdate(
                 req.params.id,
