@@ -213,11 +213,9 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            const work = await Work.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                {}
-            );
+            const work = await Work.findByIdAndUpdate(req.params.id, req.body, {
+                new: true,
+            });
 
             return res.json({ acknowledged: true, updated: work });
         } catch (error) {

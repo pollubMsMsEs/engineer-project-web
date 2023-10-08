@@ -108,7 +108,7 @@ export const updateOne = [
             const workFromAPI = await WorkFromAPI.findByIdAndUpdate(
                 req.params.id,
                 req.body,
-                {}
+                { new: true }
             );
 
             return res.json({ acknowledged: true, updated: workFromAPI });
