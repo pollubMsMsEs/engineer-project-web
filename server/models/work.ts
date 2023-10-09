@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 function normalizeCoverURL(work: any & { cover?: string }) {
     let baseUrl;
     if (!process.env.PRODUCTION) {
-        baseUrl = `http://localhost:${process.env.port}/api/image/`;
+        baseUrl = `http://localhost:${process.env.PORT}/api/image/`;
     } else {
         baseUrl = `${process.env.URL}/api/image/`;
     }
