@@ -20,6 +20,7 @@ import FilePicker from "./filePicker/FilePicker";
 import Icon from "@mdi/react";
 import { mdiDisc, mdiFloppy } from "@mdi/js";
 import Image from "next/image";
+import LoadingCircle from "./LoadingCircle";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -60,6 +61,9 @@ export default function WorkForm({
     const [editedRole, setEditedRole] = useState<string | undefined>();
     const [coverFile, setCoverFile] = useState<File>();
     const [isCoverNew, setIsCoverNew] = useState(false);
+    const [fetchingState, setFetchingState] = useState<
+        "cover" | "work" | false
+    >(false);
 
     const [type, setType] = useState(
         work?.type ?? searchParams.get("type") ?? ""
@@ -172,6 +176,8 @@ export default function WorkForm({
     }
 
     async function submitForm() {
+        setFetchingState("cover");
+
         let newCover = (await trySubmitCover()) || cover;
         setCover(newCover);
 
@@ -197,6 +203,7 @@ export default function WorkForm({
             }),
         };
 
+        setFetchingState("work");
         const response = work
             ? await fetch(`/api/work/${work._id}`, {
                   method: "PUT",
@@ -214,14 +221,34 @@ export default function WorkForm({
               });
         const result = await response.json();
 
-        const updatedWork: WorkFromAPIPopulated = result.updated;
+        const updatedWork: WorkFromAPIPopulated = work
+            ? result.updated
+            : result.created;
 
         if (result.errors) {
             setErrors(result.errors);
+            setFetchingState(false);
         } else {
             if (onSubmit) {
                 onSubmit(updatedWork);
             }
+        }
+    }
+
+    let submitBtnText: any = work ? "Update" : "Add";
+
+    if (fetchingState) {
+        switch (fetchingState) {
+            case "cover":
+                submitBtnText = (
+                    <LoadingCircle size="15px" text={`Uploading photo... `} />
+                );
+                break;
+            case "work":
+                submitBtnText = (
+                    <LoadingCircle size="15px" text={`Uploading ${type}... `} />
+                );
+                break;
         }
     }
 
@@ -457,7 +484,7 @@ export default function WorkForm({
                         </option>
                     ))}
                 </datalist>
-                <button type="submit">{work ? "Update" : "Add"}</button>
+                <button type="submit">{submitBtnText}</button>
                 <ErrorsDisplay errors={errors} />
             </form>
         </div>

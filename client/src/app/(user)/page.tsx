@@ -59,7 +59,7 @@ export default async function Home() {
                 <Link
                     className={styles["collection__add-card"]}
                     href={{
-                        pathname: "/work/create",
+                        pathname: "/me/work/create",
                         query: {
                             type: "book",
                         },
@@ -78,7 +78,7 @@ export default async function Home() {
                 <Link
                     className={styles["collection__add-card"]}
                     href={{
-                        pathname: "/work/create",
+                        pathname: "/me/work/create",
                         query: {
                             type: "movie",
                         },
@@ -97,7 +97,7 @@ export default async function Home() {
                 <Link
                     className={styles["collection__add-card"]}
                     href={{
-                        pathname: "/work/create",
+                        pathname: "/me/work/create",
                         query: {
                             type: "computerGame",
                         },
