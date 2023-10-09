@@ -69,11 +69,25 @@ export const createOne = [
                 .json({ acknowledged: false, message: "No file uploaded" });
 
         const mime = await fileTypeFromBuffer(req.file.buffer);
-        if (!mime || !mime.mime.startsWith("image/")) {
+        console.log(mime);
+        if (
+            !mime ||
+            (!mime.mime.startsWith("image/") && mime.mime !== "application/xml")
+        ) {
             return res.status(400).json({
                 acknowledged: false,
                 message: "Uploaded file is not an image",
             });
+        }
+
+        if (mime.mime === "application/xml") {
+            const svgString = req.file.buffer.toString("utf-8");
+            if (!svgString.includes("<svg") || !svgString.includes("</svg>")) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    message: "Uploaded XML file is not a valid SVG image",
+                });
+            }
         }
 
         const base64Image = req.file.buffer.toString("base64");
@@ -81,6 +95,7 @@ export const createOne = [
         try {
             const image = await Image.create({
                 image: base64Image,
+                type: mime.mime,
             });
             await image.save();
 
@@ -120,10 +135,36 @@ export const updateOne = [
                     .status(400)
                     .json({ acknowledged: false, message: "No file uploaded" });
 
+            const mime = await fileTypeFromBuffer(req.file.buffer);
+            if (
+                !mime ||
+                (!mime.mime.startsWith("image/") &&
+                    mime.mime !== "application/xml")
+            ) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    message: "Uploaded file is not an image",
+                });
+            }
+
+            if (mime.mime === "application/xml") {
+                const svgString = req.file.buffer.toString("utf-8");
+                if (
+                    !svgString.includes("<svg") ||
+                    !svgString.includes("</svg>")
+                ) {
+                    return res.status(400).json({
+                        acknowledged: false,
+                        message: "Uploaded XML file is not a valid SVG image",
+                    });
+                }
+            }
+
             const base64Image = req.file.buffer.toString("base64");
 
             const updateData = {
                 image: base64Image,
+                type: mime.mime,
             };
 
             const image = await Image.findByIdAndUpdate(
@@ -191,7 +232,7 @@ export const showOne = [
                 return res.status(404).send("Image does not exist");
             }
 
-            res.set("Content-Type", "image/jpg");
+            res.set("Content-Type", images.type);
 
             if (images.image) {
                 const buffer = Buffer.from(images.image, "base64");
