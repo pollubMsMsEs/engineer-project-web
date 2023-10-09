@@ -10,7 +10,13 @@ const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
     const workInstances = await WorkInstance.find({})
-        .populate("work_id")
+        .populate({
+            path: "work_id",
+            populate: {
+                path: "people.person_id",
+                model: "Person",
+            },
+        })
         .exec();
     res.json(workInstances);
 }
@@ -23,7 +29,13 @@ export const getAllForUser = [
             const workInstances = await WorkInstance.find({
                 user_id: req.params.id,
             })
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                    },
+                })
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
@@ -40,7 +52,13 @@ export const getAllForCurrentUser = [
             const workInstances = await WorkInstance.find({
                 user_id: req.auth._id,
             })
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                    },
+                })
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
@@ -57,7 +75,13 @@ export const getOne = [
             validationResult(req).throw();
 
             const workInstance = await WorkInstance.findById(req.params.id)
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                    },
+                })
                 .exec();
 
             if (!workInstance) {
@@ -164,7 +188,19 @@ export const createOne = [
         });
         await workInstance.save();
 
-        return res.json({ acknowledged: true, created: workInstance });
+        const workInstancePopulated = await WorkInstance.findById(
+            workInstance._id
+        )
+            .populate({
+                path: "work_id",
+                populate: {
+                    path: "people.person_id",
+                    model: "Person",
+                },
+            })
+            .exec();
+
+        return res.json({ acknowledged: true, created: workInstancePopulated });
     },
 ];
 
@@ -259,7 +295,15 @@ export const updateOne = [
                 req.params.id,
                 req.body,
                 { new: true }
-            );
+            )
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                    },
+                })
+                .exec();
 
             return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
@@ -288,7 +332,16 @@ export const deleteOne = [
                 });
             }
 
-            const result = await WorkInstance.findByIdAndRemove(req.params.id);
+            const result = await WorkInstance.findByIdAndRemove(req.params.id)
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                    },
+                })
+                .exec();
+
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);
