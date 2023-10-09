@@ -65,9 +65,9 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["movie", "book", "game"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -98,9 +98,9 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["movie", "book", "game"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
