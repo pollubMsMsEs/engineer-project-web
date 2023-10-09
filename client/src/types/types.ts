@@ -48,8 +48,8 @@ export type WorkFromAPIPopulated = Work & {
 
 export type PersonFromAPI = Person & { _id: string };
 
-export type WorkInstanceFromAPI = WorkInstance & {
+export type WorkInstanceFromAPI<T = WorkFromAPI> = WorkInstance & {
     _id: string;
     user_id: string;
-    work_id: WorkFromAPI;
+    work_id: T;
 };
