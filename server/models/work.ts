@@ -44,7 +44,7 @@ const WorkSchema = new Schema(
                 },
             },
         ],
-        type: { type: String, enum: ["movie", "book", "computerGame"] },
+        type: { type: String, enum: ["movie", "book", "game"] },
     },
     {
         toObject: {
