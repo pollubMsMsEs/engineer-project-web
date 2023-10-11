@@ -1,6 +1,12 @@
-.component-circle-loader {
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
+.loading-circle {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+
+    &__circle {
+        border-radius: 50%;
+        animation: spin 2s linear infinite;
+    }
 }
 
 @keyframes spin {

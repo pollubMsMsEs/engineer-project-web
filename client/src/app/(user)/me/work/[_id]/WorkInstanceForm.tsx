@@ -2,7 +2,11 @@
 
 import RatingBar from "@/components/ratingBar/RatingBar";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
-import { WorkInstance, WorkInstanceFromAPI } from "@/types/types";
+import {
+    WorkFromAPIPopulated,
+    WorkInstance,
+    WorkInstanceFromAPI,
+} from "@/types/types";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CompletionsList from "./CompletionsList";
 import { toast } from "react-toastify";
@@ -15,7 +19,7 @@ export default function WorkInstanceForm({
     workInstance,
     gridArea,
 }: {
-    workInstance: WorkInstanceFromAPI;
+    workInstance: WorkInstanceFromAPI<WorkFromAPIPopulated>;
     gridArea?: string;
 }) {
     const getUniqueKey = useUniqueKey();
