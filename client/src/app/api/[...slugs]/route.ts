@@ -6,6 +6,17 @@ function convertParamsToURL(params: string[]) {
     return `${process.env.API_ADDRESS}${reducedParams}`;
 }
 
+function transferHeaders(request: NextRequest, headersNames: string[]) {
+    const headers = new Headers();
+    headersNames.forEach((name) => {
+        const value = request.headers.get(name);
+        if (value) {
+            headers.set(name, value);
+        }
+    });
+    return headers;
+}
+
 async function handler(
     request: NextRequest,
     { params }: { params: { slugs: string[] } }
@@ -14,9 +25,9 @@ async function handler(
 
     if (!jwt) return NextResponse.redirect(new URL("/auth/login", request.url));
 
-    const headers = new Headers(request.headers);
+    const headers = transferHeaders(request, ["Content-Type"]);
+
     headers.set("Authorization", `Bearer ${jwt}`);
-    headers.delete("content-length");
 
     let body = await request.blob();
 
