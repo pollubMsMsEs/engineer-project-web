@@ -15,6 +15,7 @@ export async function getAll(req: Request, res: Response) {
             populate: {
                 path: "people.person_id",
                 model: "Person",
+                strictPopulate: false,
             },
         })
         .exec();
@@ -34,6 +35,7 @@ export const getAllForUser = [
                     populate: {
                         path: "people.person_id",
                         model: "Person",
+                        strictPopulate: false,
                     },
                 })
                 .exec();
@@ -57,6 +59,7 @@ export const getAllForCurrentUser = [
                     populate: {
                         path: "people.person_id",
                         model: "Person",
+                        strictPopulate: false,
                     },
                 })
                 .exec();
@@ -80,6 +83,7 @@ export const getOne = [
                     populate: {
                         path: "people.person_id",
                         model: "Person",
+                        strictPopulate: false,
                     },
                 })
                 .exec();
@@ -196,6 +200,7 @@ export const createOne = [
                 populate: {
                     path: "people.person_id",
                     model: "Person",
+                    strictPopulate: false,
                 },
             })
             .exec();
@@ -301,6 +306,7 @@ export const updateOne = [
                     populate: {
                         path: "people.person_id",
                         model: "Person",
+                        strictPopulate: false,
                     },
                 })
                 .exec();
@@ -338,6 +344,7 @@ export const deleteOne = [
                     populate: {
                         path: "people.person_id",
                         model: "Person",
+                        strictPopulate: false,
                     },
                 })
                 .exec();
