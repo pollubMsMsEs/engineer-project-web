@@ -34,7 +34,6 @@ export async function getAll(req: Request, res: Response) {
 
         res.json(urls);
     } catch (error) {
-        console.error(error);
         res.status(500).send("Internal Server Error");
     }
 }
@@ -69,7 +68,6 @@ export const createOne = [
                 .json({ acknowledged: false, message: "No file uploaded" });
 
         const mime = await fileTypeFromBuffer(req.file.buffer);
-        console.log(mime);
         if (
             !mime ||
             (!mime.mime.startsWith("image/") && mime.mime !== "application/xml")
@@ -106,7 +104,6 @@ export const createOne = [
                 created: `${protocol}://${host}/api/image/${image._id}`,
             });
         } catch (error) {
-            console.error(error);
             return res
                 .status(500)
                 .json({ acknowledged: false, message: "Server error" });
@@ -186,7 +183,6 @@ export const updateOne = [
                 updated: `${protocol}://${host}/api/image/${image._id}`,
             });
         } catch (error: any) {
-            console.error(error);
             return next(error);
         }
     },
@@ -241,7 +237,6 @@ export const showOne = [
                 return res.status(404).send("Base64 image does not exist");
             }
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },

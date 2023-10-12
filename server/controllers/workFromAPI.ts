@@ -23,7 +23,6 @@ export const getAllByType = [
             }).exec();
             res.json({ data: worksFromAPI });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -47,7 +46,6 @@ export const getOne = [
 
             res.json({ data: worksFromAPI });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -69,7 +67,7 @@ export const createOne = [
         })
         .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res

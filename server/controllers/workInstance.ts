@@ -41,7 +41,6 @@ export const getAllForUser = [
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -65,7 +64,6 @@ export const getAllForCurrentUser = [
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -96,7 +94,6 @@ export const getOne = [
 
             res.json({ data: workInstance });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -128,7 +125,6 @@ export const createOne = [
         .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            console.log("Validating date:", value);
             const completionDate = new Date(value);
             const currentDate = new Date();
 
@@ -158,7 +154,7 @@ export const createOne = [
             "OnModel must be one of 'wishlist', 'todo', 'doing' or 'completed'"
         ),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res
@@ -230,7 +226,6 @@ export const updateOne = [
         .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            console.log("Validating date:", value);
             const completionDate = new Date(value);
             const currentDate = new Date();
 
