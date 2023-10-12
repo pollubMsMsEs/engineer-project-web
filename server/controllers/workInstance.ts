@@ -121,31 +121,31 @@ export const createOne = [
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings").isArray().withMessage("Viewings must be an array"),
-    body("viewings.*")
+    body("completions").isArray().withMessage("Completions must be an array"),
+    body("completions.*")
         .optional()
         .isISO8601()
-        .withMessage("Incorrect format in viewings array")
+        .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
             console.log("Validating date:", value);
-            const viewingDate = new Date(value);
+            const completionDate = new Date(value);
             const currentDate = new Date();
 
-            return viewingDate <= currentDate;
+            return completionDate <= currentDate;
         })
-        .withMessage("Viewing date cannot be in the future")
+        .withMessage("Completion date cannot be in the future")
         .bail()
         .toDate(),
-    body("number_of_viewings")
+    body("number_of_completions")
         .custom((value, { req }) => {
-            if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length <= parseInt(value);
+            if (req.body.completions && Array.isArray(req.body.completions)) {
+                return req.body.completions.length <= parseInt(value);
             }
             return false;
         })
         .withMessage(
-            "Number_of_viewings must match or be greater than the length of the viewings array"
+            "Number_of_completions must match or be greater than the length of the completions array"
         ),
     body("status")
         .optional()
@@ -223,31 +223,31 @@ export const updateOne = [
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings").isArray().withMessage("Viewings must be an array"),
-    body("viewings.*")
+    body("completions").isArray().withMessage("Completions must be an array"),
+    body("completions.*")
         .optional()
         .isISO8601()
-        .withMessage("Incorrect format in viewings array")
+        .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
             console.log("Validating date:", value);
-            const viewingDate = new Date(value);
+            const completionDate = new Date(value);
             const currentDate = new Date();
 
-            return viewingDate <= currentDate;
+            return completionDate <= currentDate;
         })
-        .withMessage("Viewing date cannot be in the future")
+        .withMessage("Completion date cannot be in the future")
         .bail()
         .toDate(),
-    body("number_of_viewings")
+    body("number_of_completions")
         .custom((value, { req }) => {
-            if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length <= parseInt(value);
+            if (req.body.completions && Array.isArray(req.body.completions)) {
+                return req.body.completions.length <= parseInt(value);
             }
             return false;
         })
         .withMessage(
-            "Number_of_viewings must match or be greater than the length of the viewings array"
+            "Number_of_completions must match or be greater than the length of the completions array"
         ),
     body("status")
         .optional()
