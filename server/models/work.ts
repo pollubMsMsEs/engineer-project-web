@@ -9,7 +9,6 @@ function normalizeCoverURL(work: any & { cover?: string }) {
     }
 
     if (!work?.cover || work.cover.startsWith(baseUrl)) {
-        console.log("not transformed");
         return work;
     } else {
         return { ...work, cover: baseUrl + work.cover.split("/").pop() };
@@ -24,7 +23,7 @@ const WorkSchema = new Schema(
         dev: { type: Boolean, default: true },
         description: String,
         published_at: Date,
-        genres: [String], //TODO: Should enforce uniqueness of values in array?
+        genres: [String],
         metadata: {
             type: Map,
             of: [String],

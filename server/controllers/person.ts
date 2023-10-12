@@ -75,7 +75,6 @@ export const updateOne = [
             if (req.body.nick === undefined) {
                 req.body.nick = null;
             }
-            console.log(req.body);
             validationResult(req).throw();
 
             const person = await Person.findByIdAndUpdate(

@@ -34,7 +34,6 @@ export const getAllByType = [
             const works = await Work.find({ type: req.params.type }).exec();
             res.json({ data: works });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -58,7 +57,6 @@ export const getOne = [
 
             res.json({ data: work });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -120,7 +118,7 @@ export const createOne = [
             return true;
         }),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res
