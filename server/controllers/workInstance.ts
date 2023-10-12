@@ -151,7 +151,7 @@ export const createOne = [
             return ["wishlist", "todo", "doing", "completed"].includes(value);
         })
         .withMessage(
-            "OnModel must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+            "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
         ),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req);
@@ -252,7 +252,7 @@ export const updateOne = [
             return ["wishlist", "todo", "doing", "completed"].includes(value);
         })
         .withMessage(
-            "OnModel must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+            "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
         ),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
