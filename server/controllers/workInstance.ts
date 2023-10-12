@@ -148,12 +148,6 @@ export const createOne = [
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
     body("status").optional().trim().escape(),
-    body("from_api")
-        .exists()
-        .withMessage("Missing from_api boolean")
-        .bail()
-        .isBoolean()
-        .withMessage("From_api must be a boolean"),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -172,6 +166,7 @@ export const createOne = [
             });
         }
 
+        req.body.from_api = req.body.onModel === "WorkFromAPI";
         req.body.type = work.type;
 
         const existingInstance = await WorkInstance.findOne({
@@ -246,12 +241,6 @@ export const updateOne = [
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
     body("status").optional().trim().escape(),
-    body("from_api")
-        .exists()
-        .withMessage("Missing from_api boolean")
-        .bail()
-        .isBoolean()
-        .withMessage("From_api must be a boolean"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
@@ -287,6 +276,7 @@ export const updateOne = [
                 });
             }
 
+            req.body.from_api = req.body.onModel === "WorkFromAPI";
             req.body.type = work.type;
 
             const forbiddenUpdates = ["work_id", "onModel"];
