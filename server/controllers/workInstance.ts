@@ -147,7 +147,16 @@ export const createOne = [
         .withMessage(
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
-    body("status").optional().trim().escape(),
+    body("status")
+        .optional()
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ["wishlist", "todo", "doing", "completed"].includes(value);
+        })
+        .withMessage(
+            "OnModel must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+        ),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
 
@@ -240,7 +249,16 @@ export const updateOne = [
         .withMessage(
             "Number_of_viewings must match or be greater than the length of the viewings array"
         ),
-    body("status").optional().trim().escape(),
+    body("status")
+        .optional()
+        .trim()
+        .escape()
+        .custom((value) => {
+            return ["wishlist", "todo", "doing", "completed"].includes(value);
+        })
+        .withMessage(
+            "OnModel must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+        ),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
