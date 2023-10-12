@@ -8,7 +8,7 @@ const WorkInstanceSchema = new Schema({
     description: { type: String },
     number_of_viewings: { type: Number, min: 0 },
     viewings: { type: [Date] },
-    status: { type: String },
+    status: { type: String, enum: ["wishlist", "todo", "doing", "completed"] },
     type: { type: String, enum: ["movie", "book", "game"] },
     from_api: { type: Boolean, default: false },
 });
