@@ -10,7 +10,14 @@ const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
     const workInstances = await WorkInstance.find({})
-        .populate("work_id")
+        .populate({
+            path: "work_id",
+            populate: {
+                path: "people.person_id",
+                model: "Person",
+                strictPopulate: false,
+            },
+        })
         .exec();
     res.json(workInstances);
 }
@@ -23,11 +30,17 @@ export const getAllForUser = [
             const workInstances = await WorkInstance.find({
                 user_id: req.params.id,
             })
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -40,11 +53,17 @@ export const getAllForCurrentUser = [
             const workInstances = await WorkInstance.find({
                 user_id: req.auth._id,
             })
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
                 .exec();
             res.json({ data: workInstances });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -55,12 +74,26 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const workInstance = await WorkInstance.findById(req.params.id)
-                .populate("work_id")
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
                 .exec();
+
+            if (!workInstance) {
+                return res
+                    .status(404)
+                    .json({ error: "This work instance does not exist." });
+            }
+
             res.json({ data: workInstance });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -85,50 +118,43 @@ export const createOne = [
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings").isArray().withMessage("Viewings must be an array"),
-    body("viewings.*")
+    body("completions").isArray().withMessage("Completions must be an array"),
+    body("completions.*")
         .optional()
         .isISO8601()
-        .withMessage("Incorrect format in viewings array")
+        .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            console.log("Validating date:", value);
-            const viewingDate = new Date(value);
+            const completionDate = new Date(value);
             const currentDate = new Date();
 
-            return viewingDate <= currentDate;
+            return completionDate <= currentDate;
         })
-        .withMessage("Viewing date cannot be in the future")
+        .withMessage("Completion date cannot be in the future")
         .bail()
         .toDate(),
-    body("number_of_viewings")
+    body("number_of_completions")
         .custom((value, { req }) => {
-            if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length <= parseInt(value);
+            if (req.body.completions && Array.isArray(req.body.completions)) {
+                return req.body.completions.length <= parseInt(value);
             }
             return false;
         })
         .withMessage(
-            "Number_of_viewings must match or be greater than the length of the viewings array"
+            "Number_of_completions must match or be greater than the length of the completions array"
         ),
-    body("status").optional().trim().escape(),
-    body("type")
-        .exists()
-        .withMessage("Missing type string")
+    body("status")
+        .optional()
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["wishlist", "todo", "doing", "completed"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
-    body("from_api")
-        .exists()
-        .withMessage("Missing from_api boolean")
-        .bail()
-        .isBoolean()
-        .withMessage("From_api must be a boolean"),
+        .withMessage(
+            "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+        ),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res
@@ -136,12 +162,27 @@ export const createOne = [
                 .json({ acknowledged: false, errors: valResult.array() });
 
         const Model = mongoose.model(req.body.onModel);
-        const exists = await Model.exists({ _id: req.body.work_id });
+        const work = await Model.findById(req.body.work_id);
 
-        if (!exists) {
+        if (!work) {
             return res.status(400).json({
                 acknowledged: false,
                 errors: "Invalid work_id for the given onModel",
+            });
+        }
+
+        req.body.from_api = req.body.onModel === "WorkFromAPI";
+        req.body.type = work.type;
+
+        const existingInstance = await WorkInstance.findOne({
+            work_id: req.body.work_id,
+            user_id: req.auth._id,
+        });
+
+        if (existingInstance) {
+            return res.status(400).json({
+                acknowledged: false,
+                errors: "User already has an instance with this work_id",
             });
         }
 
@@ -151,21 +192,24 @@ export const createOne = [
         });
         await workInstance.save();
 
-        return res.json({ acknowledged: true, created: workInstance });
+        const workInstancePopulated = await WorkInstance.findById(
+            workInstance._id
+        )
+            .populate({
+                path: "work_id",
+                populate: {
+                    path: "people.person_id",
+                    model: "Person",
+                    strictPopulate: false,
+                },
+            })
+            .exec();
+
+        return res.json({ acknowledged: true, created: workInstancePopulated });
     },
 ];
 
 export const updateOne = [
-    body("work_id").isMongoId(),
-    body("onModel")
-        .exists()
-        .withMessage("Missing onModel string")
-        .trim()
-        .escape()
-        .custom((value) => {
-            return ["Work", "WorkFromAPI"].includes(value);
-        })
-        .withMessage("OnModel must be one of 'Work' or 'WorkFromAPI'"),
     body("rating")
         .optional()
         .custom((value) => {
@@ -175,75 +219,100 @@ export const updateOne = [
         })
         .withMessage("Rating must be an integer number between 0 and 10"),
     body("description").optional().trim().escape(),
-    body("viewings").isArray().withMessage("Viewings must be an array"),
-    body("viewings.*")
+    body("completions").isArray().withMessage("Completions must be an array"),
+    body("completions.*")
         .optional()
         .isISO8601()
-        .withMessage("Incorrect format in viewings array")
+        .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            console.log("Validating date:", value);
-            const viewingDate = new Date(value);
+            const completionDate = new Date(value);
             const currentDate = new Date();
 
-            return viewingDate <= currentDate;
+            return completionDate <= currentDate;
         })
-        .withMessage("Viewing date cannot be in the future")
+        .withMessage("Completion date cannot be in the future")
         .bail()
         .toDate(),
-    body("number_of_viewings")
+    body("number_of_completions")
         .custom((value, { req }) => {
-            if (req.body.viewings && Array.isArray(req.body.viewings)) {
-                return req.body.viewings.length <= parseInt(value);
+            if (req.body.completions && Array.isArray(req.body.completions)) {
+                return req.body.completions.length <= parseInt(value);
             }
             return false;
         })
         .withMessage(
-            "Number_of_viewings must match or be greater than the length of the viewings array"
+            "Number_of_completions must match or be greater than the length of the completions array"
         ),
-    body("status").optional().trim().escape(),
-    body("type")
-        .exists()
-        .withMessage("Missing type string")
+    body("status")
+        .optional()
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["wishlist", "todo", "doing", "completed"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
-    body("from_api")
-        .exists()
-        .withMessage("Missing from_api boolean")
-        .bail()
-        .isBoolean()
-        .withMessage("From_api must be a boolean"),
+        .withMessage(
+            "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+        ),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
             const instance = await WorkInstance.findById(req.params.id);
 
-            if (!instance || String(instance.user_id) !== req.auth._id) {
+            if (!instance) {
+                return res.status(404).json({
+                    error: "This work instance does not exist.",
+                });
+            }
+
+            if (String(instance.user_id) !== req.auth._id) {
                 return res.status(403).json({
                     error: "You do not have permission to update this piece of work instance.",
                 });
             }
 
-            const Model = mongoose.model(req.body.onModel);
-            const exists = await Model.exists({ _id: req.body.work_id });
+            if (!instance.onModel || typeof instance.onModel !== "string") {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Invalid or missing onModel",
+                });
+            }
 
-            if (!exists) {
+            const Model = mongoose.model(instance.onModel);
+            const work = await Model.findById(instance.work_id);
+
+            if (!work) {
                 return res.status(400).json({
                     acknowledged: false,
                     errors: "Invalid work_id for the given onModel",
                 });
             }
 
+            req.body.from_api = req.body.onModel === "WorkFromAPI";
+            req.body.type = work.type;
+
+            const forbiddenUpdates = ["work_id", "onModel"];
+            forbiddenUpdates.forEach((field) => {
+                if (req.body[field]) {
+                    delete req.body[field];
+                }
+            });
+
             const workInstance = await WorkInstance.findByIdAndUpdate(
                 req.params.id,
                 req.body,
                 { new: true }
-            );
+            )
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
+                .exec();
 
             return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
@@ -272,7 +341,17 @@ export const deleteOne = [
                 });
             }
 
-            const result = await WorkInstance.findByIdAndRemove(req.params.id);
+            const result = await WorkInstance.findByIdAndRemove(req.params.id)
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
+                .exec();
+
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
             return next(error);

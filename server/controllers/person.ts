@@ -31,7 +31,15 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const person = await Person.findById(req.params.id).exec();
+
+            if (!person) {
+                return res
+                    .status(404)
+                    .json({ error: "This person does not exist." });
+            }
+
             res.json({ data: person });
         } catch (e: any) {
             return next(e);
@@ -67,10 +75,13 @@ export const updateOne = [
             if (req.body.nick === undefined) {
                 req.body.nick = null;
             }
-            console.log(req.body);
             validationResult(req).throw();
 
-            const person = await Person.findByIdAndUpdate(req.params.id, req.body, {});
+            const person = await Person.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            );
 
             return res.json({ acknowledged: true, updated: person });
         } catch (error) {

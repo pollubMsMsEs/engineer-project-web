@@ -1,4 +1,6 @@
 import Work from "../models/work.js";
+import WorkInstance from "../models/workInstance.js";
+import Person from "../models/person.js";
 import Image from "../models/image.js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
@@ -32,7 +34,6 @@ export const getAllByType = [
             const works = await Work.find({ type: req.params.type }).exec();
             res.json({ data: works });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -43,12 +44,19 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
             const work = await Work.findById(req.params.id)
                 .populate("people.person_id")
                 .exec();
+
+            if (!work) {
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
+            }
+
             res.json({ data: work });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -81,9 +89,9 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["movie", "book", "game"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     body("cover")
         .optional()
         .isString()
@@ -110,12 +118,28 @@ export const createOne = [
             return true;
         }),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res
                 .status(422)
                 .json({ acknowledged: false, errors: valResult.array() });
+
+        if (req.body.people && Array.isArray(req.body.people)) {
+            for (const person of req.body.people) {
+                if (person.person_id) {
+                    const personExists = await Person.exists({
+                        _id: person.person_id,
+                    });
+                    if (!personExists) {
+                        return res.status(400).json({
+                            acknowledged: false,
+                            errors: `Person with ID '${person.person_id}' does not exist`,
+                        });
+                    }
+                }
+            }
+        }
 
         const work = await Work.create({
             ...req.body,
@@ -155,9 +179,9 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ["movie", "book", "computerGame"].includes(value);
+            return ["movie", "book", "game"].includes(value);
         })
-        .withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     body("cover")
         .optional()
         .isString()
@@ -187,11 +211,9 @@ export const updateOne = [
         try {
             validationResult(req).throw();
 
-            const work = await Work.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                {}
-            );
+            const work = await Work.findByIdAndUpdate(req.params.id, req.body, {
+                new: true,
+            });
 
             return res.json({ acknowledged: true, updated: work });
         } catch (error) {
@@ -214,8 +236,18 @@ export const deleteOne = [
                     .json({ error: "This work does not exist." });
             }
 
-            const result = await Work.findByIdAndRemove(req.params.id);
-            return res.json({ acknowledged: true, deleted: result });
+            const workInstanceResult = await WorkInstance.deleteMany({
+                work_id: req.params.id,
+            });
+
+            const workResult = await Work.findByIdAndRemove(req.params.id);
+            return res.json({
+                acknowledged: true,
+                deleted: {
+                    workInstancesCount: workInstanceResult.deletedCount,
+                    work: workResult,
+                },
+            });
         } catch (error) {
             return next(error);
         }

@@ -3,13 +3,12 @@ import { Schema, model } from "mongoose";
 function normalizeCoverURL(work: any & { cover?: string }) {
     let baseUrl;
     if (!process.env.PRODUCTION) {
-        baseUrl = `http://localhost:${process.env.port}/api/image/`;
+        baseUrl = `http://localhost:${process.env.PORT}/api/image/`;
     } else {
         baseUrl = `${process.env.URL}/api/image/`;
     }
 
     if (!work?.cover || work.cover.startsWith(baseUrl)) {
-        console.log("not transformed");
         return work;
     } else {
         return { ...work, cover: baseUrl + work.cover.split("/").pop() };
@@ -24,7 +23,7 @@ const WorkSchema = new Schema(
         dev: { type: Boolean, default: true },
         description: String,
         published_at: Date,
-        genres: [String], //TODO: Should enforce uniqueness of values in array?
+        genres: [String],
         metadata: {
             type: Map,
             of: [String],
@@ -44,7 +43,7 @@ const WorkSchema = new Schema(
                 },
             },
         ],
-        type: { type: String, enum: ["movie", "book", "computerGame"] },
+        type: { type: String, enum: ["movie", "book", "game"] },
     },
     {
         toObject: {

@@ -1,4 +1,5 @@
 import WorkFromAPI from "../models/workFromAPI.js";
+import WorkInstance from "../models/workInstance.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
@@ -17,10 +18,11 @@ export const getAllByType = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const worksFromAPI = await WorkFromAPI.find({ type: req.params.type }).exec();
+            const worksFromAPI = await WorkFromAPI.find({
+                type: req.params.type,
+            }).exec();
             res.json({ data: worksFromAPI });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -31,11 +33,19 @@ export const getOne = [
     async function (req: Request, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
-            const worksFromAPI = await WorkFromAPI.findById(req.params.id)
-                .exec();
+
+            const worksFromAPI = await WorkFromAPI.findById(
+                req.params.id
+            ).exec();
+
+            if (!worksFromAPI) {
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
+            }
+
             res.json({ data: worksFromAPI });
         } catch (e: any) {
-            //console.log(res);
             return next(e);
         }
     },
@@ -53,10 +63,11 @@ export const createOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "game"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req); //debug(inspect(req.body, false, null, true));
+        const valResult = validationResult(req);
 
         if (!valResult.isEmpty())
             return res
@@ -73,9 +84,7 @@ export const createOne = [
 ];
 
 export const updateOne = [
-    param("id")
-        .isMongoId()
-        .withMessage("URL contains incorrect id"),
+    param("id").isMongoId().withMessage("URL contains incorrect id"),
     body("api_id")
         .exists()
         .withMessage("Missing api_id string")
@@ -87,13 +96,18 @@ export const updateOne = [
         .trim()
         .escape()
         .custom((value) => {
-            return ['movie', 'book', 'computerGame'].includes(value);
-        }).withMessage("Type must be one of 'movie', 'book' or 'computerGame'"),
+            return ["movie", "book", "game"].includes(value);
+        })
+        .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
-            const workFromAPI = await WorkFromAPI.findByIdAndUpdate(req.params.id, req.body, {});
+            const workFromAPI = await WorkFromAPI.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            );
 
             return res.json({ acknowledged: true, updated: workFromAPI });
         } catch (error) {
@@ -111,11 +125,25 @@ export const deleteOne = [
             const instance = await WorkFromAPI.findById(req.params.id);
 
             if (!instance) {
-                return res.status(404).json({ error: "This work does not exist." });
+                return res
+                    .status(404)
+                    .json({ error: "This work does not exist." });
             }
 
-            const result = await WorkFromAPI.findByIdAndRemove(req.params.id);
-            return res.json({ acknowledged: true, deleted: result });
+            const workInstanceResult = await WorkInstance.deleteMany({
+                work_id: req.params.id,
+            });
+
+            const workFromAPIResult = await WorkFromAPI.findByIdAndRemove(
+                req.params.id
+            );
+            return res.json({
+                acknowledged: true,
+                deleted: {
+                    workInstancesCount: workInstanceResult.deletedCount,
+                    work: workFromAPIResult,
+                },
+            });
         } catch (error) {
             return next(error);
         }
