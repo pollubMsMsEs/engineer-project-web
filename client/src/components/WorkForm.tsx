@@ -50,9 +50,13 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
 
 export default function WorkForm({
     work,
+    fetchingState,
+    setFetchingState,
     onSubmit,
 }: {
     work?: WorkFromAPIPopulated;
+    fetchingState: "cover" | "work" | false;
+    setFetchingState: (state: "cover" | "work" | false) => void;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
@@ -61,9 +65,6 @@ export default function WorkForm({
     const [editedRole, setEditedRole] = useState<string | undefined>();
     const [coverFile, setCoverFile] = useState<File>();
     const [isCoverNew, setIsCoverNew] = useState(false);
-    const [fetchingState, setFetchingState] = useState<
-        "cover" | "work" | false
-    >(false);
 
     const [type, setType] = useState(
         work?.type ?? searchParams.get("type") ?? ""
@@ -219,19 +220,32 @@ export default function WorkForm({
                   },
                   body: JSON.stringify(submittedWork),
               });
-        const result = await response.json();
 
+        console.log(response);
+
+        if (!response.ok) {
+            try {
+                const result = await response.json();
+
+                if (result.errors) {
+                    setErrors(result.errors);
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setFetchingState(false);
+            }
+
+            return;
+        }
+
+        const result = await response.json();
         const updatedWork: WorkFromAPIPopulated = work
             ? result.updated
             : result.created;
 
-        if (result.errors) {
-            setErrors(result.errors);
-            setFetchingState(false);
-        } else {
-            if (onSubmit) {
-                onSubmit(updatedWork);
-            }
+        if (onSubmit) {
+            onSubmit(updatedWork);
         }
     }
 
