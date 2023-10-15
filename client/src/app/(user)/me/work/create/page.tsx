@@ -18,7 +18,6 @@ export default function MeWorkCreate() {
                 fetchingState={fetchingState}
                 setFetchingState={setFetchingState}
                 onSubmit={async (work) => {
-                    //TODO: Remove type
                     const workInstance = {
                         work_id: work._id,
                         onModel: "Work",
@@ -27,7 +26,6 @@ export default function MeWorkCreate() {
                         number_of_viewings: 0,
                         viewings: [],
                         status: "todo",
-                        type: work.type,
                         from_api: false,
                     };
 

@@ -23,8 +23,8 @@ export interface Person {
 export interface WorkInstance {
     rating: number;
     description?: string;
-    number_of_viewings: number;
-    viewings: Date[];
+    number_of_completions: number;
+    completions: Date[];
     status: string;
     type: WorkType;
     from_api: boolean;
