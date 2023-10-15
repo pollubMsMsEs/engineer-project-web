@@ -12,7 +12,7 @@ export default function Select({
     name: string;
     id: string;
     value: string;
-    options: string[];
+    options: [string, string][];
     onChange: (value: string) => void;
 }) {
     return (
@@ -27,11 +27,11 @@ export default function Select({
         >
             {options.map((option) => (
                 <option
-                    key={option}
-                    value={option}
+                    key={option[0]}
+                    value={option[0]}
                     className={styles["select__option"]}
                 >
-                    {option}
+                    {option[1]}
                 </option>
             ))}
         </select>

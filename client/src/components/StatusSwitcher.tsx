@@ -14,7 +14,7 @@ import styles from "./statusSwitcher.module.scss";
 import Select from "./select/Select";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
-    return workInstance.viewings.some((viewing) =>
+    return workInstance.completions.some((viewing) =>
         dayjs(viewing).isSame(new Date(), "date")
     );
 }
@@ -25,7 +25,7 @@ export default function StatusSwitcher({
     workInstance: WorkInstanceFromAPI;
 }) {
     const [_workInstance, setWorkInstance] = useState(workInstance);
-    const [status, setStatus] = useState(_workInstance.status);
+    const [status, setStatus] = useState(_workInstance.status ?? "");
     const [viewedToday, setViewedToday] = useState(() => {
         return hasViewingToday(_workInstance);
     });
@@ -50,15 +50,16 @@ export default function StatusSwitcher({
                 ..._workInstance,
                 work_id: _workInstance.work_id._id,
                 status,
-                viewings: [..._workInstance.viewings],
+                number_of_completions: _workInstance.number_of_completions ?? 0,
+                completions: [...(_workInstance.completions ?? [])],
             };
 
             const addedNewViewing =
                 viewedToday && !hasViewingToday(_workInstance);
 
             if (addedNewViewing) {
-                updatedWorkInstance.viewings.push(new Date());
-                updatedWorkInstance.number_of_viewings++;
+                updatedWorkInstance.completions.push(new Date());
+                updatedWorkInstance.number_of_completions++;
             }
 
             try {
@@ -104,7 +105,7 @@ export default function StatusSwitcher({
                     name={"status"}
                     id={`status-${_workInstance._id}`}
                     value={status}
-                    options={statuses[_workInstance.type]}
+                    options={Object.entries(statuses[_workInstance.type])}
                     onChange={(value) => {
                         setStatus(value);
                     }}

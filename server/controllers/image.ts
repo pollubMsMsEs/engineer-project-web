@@ -68,6 +68,7 @@ export const createOne = [
                 .json({ acknowledged: false, message: "No file uploaded" });
 
         const mime = await fileTypeFromBuffer(req.file.buffer);
+
         if (
             !mime ||
             (!mime.mime.startsWith("image/") && mime.mime !== "application/xml")

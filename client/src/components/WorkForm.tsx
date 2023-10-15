@@ -50,9 +50,13 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
 
 export default function WorkForm({
     work,
+    fetchingState,
+    setFetchingState,
     onSubmit,
 }: {
     work?: WorkFromAPIPopulated;
+    fetchingState: "cover" | "work" | false;
+    setFetchingState: (state: "cover" | "work" | false) => void;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
@@ -61,9 +65,6 @@ export default function WorkForm({
     const [editedRole, setEditedRole] = useState<string | undefined>();
     const [coverFile, setCoverFile] = useState<File>();
     const [isCoverNew, setIsCoverNew] = useState(false);
-    const [fetchingState, setFetchingState] = useState<
-        "cover" | "work" | false
-    >(false);
 
     const [type, setType] = useState(
         work?.type ?? searchParams.get("type") ?? ""
@@ -113,7 +114,7 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [errors, setErrors] = useState([]);
+    const [errors, setErrors] = useState<any[]>([]);
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
@@ -157,7 +158,7 @@ export default function WorkForm({
         setEditedRole(role);
     }
 
-    async function trySubmitCover(): Promise<string | undefined> {
+    async function trySubmitCover(): Promise<string | false | undefined> {
         if (isCoverNew && coverFile) {
             const formData = new FormData();
             formData.append("image", coverFile);
@@ -166,19 +167,44 @@ export default function WorkForm({
                 method: "POST",
                 body: formData,
             });
+
+            console.log(response);
+
+            if (!response.ok) {
+                try {
+                    const result = await response.json();
+
+                    if (result.errors) {
+                        setErrors(result.errors);
+                    } else if (result.message) {
+                        setErrors([{ msg: result.message }]);
+                    }
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    setFetchingState(false);
+                }
+
+                return false;
+            }
+
             const result = await response.json();
 
             if (result.acknowledged) {
                 setIsCoverNew(false);
                 return result.created;
             }
+        } else {
+            return cover;
         }
     }
 
     async function submitForm() {
         setFetchingState("cover");
 
-        let newCover = (await trySubmitCover()) || cover;
+        let newCover = await trySubmitCover();
+        if (newCover === false) return;
+
         setCover(newCover);
 
         const submittedWork: WorkToDB = {
@@ -219,19 +245,30 @@ export default function WorkForm({
                   },
                   body: JSON.stringify(submittedWork),
               });
-        const result = await response.json();
 
+        if (!response.ok) {
+            try {
+                const result = await response.json();
+
+                if (result.errors) {
+                    setErrors(result.errors);
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setFetchingState(false);
+            }
+
+            return;
+        }
+
+        const result = await response.json();
         const updatedWork: WorkFromAPIPopulated = work
             ? result.updated
             : result.created;
 
-        if (result.errors) {
-            setErrors(result.errors);
-            setFetchingState(false);
-        } else {
-            if (onSubmit) {
-                onSubmit(updatedWork);
-            }
+        if (onSubmit) {
+            onSubmit(updatedWork);
         }
     }
 

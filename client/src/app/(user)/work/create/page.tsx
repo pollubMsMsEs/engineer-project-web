@@ -1,6 +1,17 @@
+"use client";
+
 import WorkForm from "@/components/WorkForm";
-import React from "react";
+import React, { useState } from "react";
 
 export default function CreateWork() {
-    return <WorkForm />;
+    const [fetchingState, setFetchingState] = useState<
+        "cover" | "work" | false
+    >(false);
+
+    return (
+        <WorkForm
+            fetchingState={fetchingState}
+            setFetchingState={setFetchingState}
+        />
+    );
 }

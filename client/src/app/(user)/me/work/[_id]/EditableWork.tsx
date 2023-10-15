@@ -16,17 +16,19 @@ export default function EditableWork({
 }) {
     const [isEditable, setIsEditable] = useState(false);
     const [work, setWork] = useState(_work);
+    const [fetchingState, setFetchingState] = useState<
+        "cover" | "work" | false
+    >(false);
 
     return (
         <div style={{ gridArea }}>
             {isEditable ? (
                 <WorkForm
                     work={work}
+                    fetchingState={fetchingState}
+                    setFetchingState={setFetchingState}
                     onSubmit={async (work) => {
-                        //TODO: Remove fetch when fields become populated
-                        const response = await fetch(`/api/work/${work._id}`);
-                        const result = await response.json();
-                        setWork(result.data);
+                        setWork(work);
                         setIsEditable(false);
                     }}
                 />

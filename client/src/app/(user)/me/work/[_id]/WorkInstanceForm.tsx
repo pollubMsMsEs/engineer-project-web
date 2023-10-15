@@ -31,15 +31,15 @@ export default function WorkInstanceForm({
     );
     const [completions, setCompletions] = useState(
         () =>
-            workInstance.viewings?.map((completion) => ({
+            workInstance.completions?.map((completion) => ({
                 id: getUniqueKey(),
                 completion,
             })) ?? []
     );
     const [numberOfCompletions, setNumberOfCompletions] = useState(
-        workInstance.number_of_viewings
+        workInstance.number_of_completions ?? 0
     );
-    const [status, setStatus] = useState(workInstance.status);
+    const [status, setStatus] = useState(workInstance.status ?? "");
 
     function addCompletion() {
         setCompletions([
@@ -80,13 +80,12 @@ export default function WorkInstanceForm({
 
     useUnmountedEffect(() => {
         async function updateInstance() {
-            const newInstance: WorkInstance & { work_id: string } = {
+            const newInstance: WorkInstance = {
                 ...workInstance,
-                work_id: workInstance.work_id._id,
                 rating,
                 description,
-                number_of_viewings: numberOfCompletions,
-                viewings: completions.map(
+                number_of_completions: numberOfCompletions,
+                completions: completions.map(
                     (completion) => completion.completion
                 ),
                 status,
@@ -104,7 +103,16 @@ export default function WorkInstanceForm({
             );
 
             if (!response.ok) {
-                toast.error("Couldn't save status changes");
+                let error = "Unknown error";
+
+                try {
+                    const result = await response.json();
+                    error = result?.errors?.[0].msg ?? error;
+                } catch (e) {
+                    console.log(e);
+                }
+
+                toast.error(`Couldn't save status changes: ${error}`);
             } else {
                 toast.success("Status updated succesfully");
             }
@@ -137,7 +145,7 @@ export default function WorkInstanceForm({
         status,
     ]);
 
-    const isCompleted = numberOfCompletions > 0 || status === "Completed";
+    const isCompleted = numberOfCompletions > 0 || status === "completed";
 
     return (
         <form className={styles["work-instance"]}>
@@ -146,7 +154,7 @@ export default function WorkInstanceForm({
                     name={"status"}
                     id={`status`}
                     value={status}
-                    options={statuses[workInstance.type]}
+                    options={Object.entries(statuses[workInstance.type])}
                     onChange={(value) => {
                         setStatus(value);
                     }}
