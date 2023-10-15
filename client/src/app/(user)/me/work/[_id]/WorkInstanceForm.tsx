@@ -145,7 +145,7 @@ export default function WorkInstanceForm({
         status,
     ]);
 
-    const isCompleted = numberOfCompletions > 0 || status === "Completed";
+    const isCompleted = numberOfCompletions > 0 || status === "completed";
 
     return (
         <form className={styles["work-instance"]}>
@@ -154,7 +154,7 @@ export default function WorkInstanceForm({
                     name={"status"}
                     id={`status`}
                     value={status}
-                    options={statuses[workInstance.type]}
+                    options={Object.entries(statuses[workInstance.type])}
                     onChange={(value) => {
                         setStatus(value);
                     }}
