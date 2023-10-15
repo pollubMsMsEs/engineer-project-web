@@ -14,13 +14,10 @@ import styles from "./page.module.scss";
 export const revalidate = 0;
 
 export default async function Home() {
-    const response = await fetchAPIFromServerComponent(
-        "/workInstance/currentUser",
-        0
-    );
+    const response = await fetchAPIFromServerComponent("/workInstance/me", 0);
     const result: WorkInstanceFromAPI[] = (await response.json()).data;
     const workInstances = result.map((instance) => {
-        instance.viewings = instance.viewings.map(
+        instance.completions = instance.completions.map(
             (viewing) => new Date(viewing)
         );
         return instance;

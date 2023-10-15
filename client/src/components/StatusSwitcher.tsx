@@ -14,7 +14,7 @@ import styles from "./statusSwitcher.module.scss";
 import Select from "./select/Select";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
-    return workInstance.viewings.some((viewing) =>
+    return workInstance.completions.some((viewing) =>
         dayjs(viewing).isSame(new Date(), "date")
     );
 }
@@ -50,7 +50,7 @@ export default function StatusSwitcher({
                 ..._workInstance,
                 work_id: _workInstance.work_id._id,
                 status,
-                viewings: [..._workInstance.viewings],
+                viewings: [..._workInstance.completions],
             };
 
             const addedNewViewing =
@@ -58,7 +58,7 @@ export default function StatusSwitcher({
 
             if (addedNewViewing) {
                 updatedWorkInstance.viewings.push(new Date());
-                updatedWorkInstance.number_of_viewings++;
+                updatedWorkInstance.number_of_completions++;
             }
 
             try {

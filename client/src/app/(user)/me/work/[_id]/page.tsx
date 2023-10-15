@@ -2,10 +2,10 @@ import React from "react";
 import styles from "./page.module.scss";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
-import Work from "@/components/Work";
 import WorkInstanceForm from "./WorkInstanceForm";
 import EditableWork from "./EditableWork";
 import DeleteWork from "./DeleteWork";
+import { notFound } from "next/navigation";
 
 export default async function WorkInstance({
     params,
@@ -16,24 +16,25 @@ export default async function WorkInstance({
         `/workInstance/${params._id}`,
         0
     );
-    const result: WorkInstanceFromAPI<WorkFromAPIPopulated> = (
+    if (response.status === 404) {
+        notFound();
+    }
+
+    const workInstance: WorkInstanceFromAPI<WorkFromAPIPopulated> = (
         await response.json()
     ).data;
-    result.viewings = result.viewings.map((completion) => new Date(completion));
-
-    // TODO: Remove this call when API changed
-    const workResponse = await fetchAPIFromServerComponent(
-        `/work/${result.work_id._id}`
+    workInstance.completions = workInstance.completions.map(
+        (completion) => new Date(completion)
     );
-    const work: WorkFromAPIPopulated = (await workResponse.json()).data;
-    work.published_at = new Date(work.published_at);
-    result.work_id = work;
+    workInstance.work_id.published_at = new Date(
+        workInstance.work_id.published_at
+    );
 
     return (
         <div className={styles["work"]}>
-            <EditableWork _work={work} />
-            <WorkInstanceForm workInstance={result} />
-            <DeleteWork workInstance={result} />
+            <EditableWork _work={workInstance.work_id} />
+            <WorkInstanceForm workInstance={workInstance} />
+            <DeleteWork workInstance={workInstance} />
         </div>
     );
 }

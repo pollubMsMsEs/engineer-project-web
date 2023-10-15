@@ -28,10 +28,7 @@ export default function EditableWork({
                     fetchingState={fetchingState}
                     setFetchingState={setFetchingState}
                     onSubmit={async (work) => {
-                        //TODO: Remove fetch when fields become populated
-                        const response = await fetch(`/api/work/${work._id}`);
-                        const result = await response.json();
-                        setWork(result.data);
+                        setWork(work);
                         setIsEditable(false);
                     }}
                 />
