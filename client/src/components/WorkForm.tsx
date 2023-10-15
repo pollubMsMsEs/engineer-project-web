@@ -114,7 +114,7 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [errors, setErrors] = useState([]);
+    const [errors, setErrors] = useState<any[]>([]);
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
@@ -158,7 +158,7 @@ export default function WorkForm({
         setEditedRole(role);
     }
 
-    async function trySubmitCover(): Promise<string | undefined> {
+    async function trySubmitCover(): Promise<string | false | undefined> {
         if (isCoverNew && coverFile) {
             const formData = new FormData();
             formData.append("image", coverFile);
@@ -167,19 +167,44 @@ export default function WorkForm({
                 method: "POST",
                 body: formData,
             });
+
+            console.log(response);
+
+            if (!response.ok) {
+                try {
+                    const result = await response.json();
+
+                    if (result.errors) {
+                        setErrors(result.errors);
+                    } else if (result.message) {
+                        setErrors([{ msg: result.message }]);
+                    }
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    setFetchingState(false);
+                }
+
+                return false;
+            }
+
             const result = await response.json();
 
             if (result.acknowledged) {
                 setIsCoverNew(false);
                 return result.created;
             }
+        } else {
+            return cover;
         }
     }
 
     async function submitForm() {
         setFetchingState("cover");
 
-        let newCover = (await trySubmitCover()) || cover;
+        let newCover = await trySubmitCover();
+        if (newCover === false) return;
+
         setCover(newCover);
 
         const submittedWork: WorkToDB = {
@@ -220,8 +245,6 @@ export default function WorkForm({
                   },
                   body: JSON.stringify(submittedWork),
               });
-
-        console.log(response);
 
         if (!response.ok) {
             try {
