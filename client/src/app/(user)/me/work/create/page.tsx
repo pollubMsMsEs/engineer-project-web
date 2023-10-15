@@ -23,8 +23,8 @@ export default function MeWorkCreate() {
                         onModel: "Work",
                         rating: 0,
                         description: "",
-                        number_of_viewings: 0,
-                        viewings: [],
+                        number_of_completions: 0,
+                        completions: [],
                         status: "todo",
                         from_api: false,
                     };
