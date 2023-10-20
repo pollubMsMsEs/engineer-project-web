@@ -23,7 +23,7 @@ export default async function Home() {
 
     const movies: WorkInstanceFromAPI[] = [];
     const books: WorkInstanceFromAPI[] = [];
-    const computerGames: WorkInstanceFromAPI[] = [];
+    const games: WorkInstanceFromAPI[] = [];
 
     // TODO: Filter unsupported works from API
     workInstances
@@ -36,8 +36,8 @@ export default async function Home() {
                 case "book":
                     books.push(workInstance);
                     break;
-                case "computerGame":
-                    computerGames.push(workInstance);
+                case "game":
+                    games.push(workInstance);
                     break;
             }
         });
@@ -63,13 +63,13 @@ export default async function Home() {
                 <AddCard workType="movie" />
             </InstancesGrid>
             <InstancesGrid title="Computer Games">
-                {computerGames.map((workInstance) => (
+                {games.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
                         workInstance={workInstance}
                     />
                 ))}
-                <AddCard workType="computerGame" />
+                <AddCard workType="game" />
             </InstancesGrid>
             <TooltipWrapper id="tooltip-add-viewing" />
         </div>
