@@ -1,15 +1,14 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./page.module.scss";
 import Icon from "@mdi/react";
 import { mdiPlus } from "@mdi/js";
 import Link from "next/link";
+import { WorkType } from "@/types/types";
+import { searchWorks } from "@/modules/apiBrowser";
 
-function assertCorrectType(
-    type: any,
-    defaultType: "book" | "movie" | "game" = "book"
-) {
+function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
         return type;
     } else {
@@ -19,9 +18,12 @@ function assertCorrectType(
 
 export default function Search() {
     const searchParams = useSearchParams();
-    const [type, setType] = useState<"book" | "movie" | "game">(() => {
+    const [type, setType] = useState<WorkType>(() => {
         return assertCorrectType(searchParams.get("type"));
     });
+    const [query, setQuery] = useState("");
+    const [foundWorks, setFoundWorks] = useState([]);
+    const searchDebounce = useRef<NodeJS.Timeout>();
 
     return (
         <div className={styles["search"]}>
@@ -29,7 +31,18 @@ export default function Search() {
                 <input
                     className={styles["search__input"]}
                     type="text"
-                    onChange={() => {}}
+                    value={query}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+
+                        if (searchDebounce.current != undefined) {
+                            clearTimeout(searchDebounce.current);
+                        }
+
+                        searchDebounce.current = setTimeout(() => {
+                            setFoundWorks(searchWorks(e.target.value, type));
+                        }, 1000);
+                    }}
                 />
                 <select
                     className={styles["search__select"]}
@@ -43,7 +56,12 @@ export default function Search() {
                     <option value="game">Game</option>
                 </select>
                 <Link
-                    href="/me/work/create"
+                    href={{
+                        pathname: "/me/work/create",
+                        query: {
+                            type,
+                        },
+                    }}
                     className={styles["search__add-manualy"]}
                 >
                     <Icon path={mdiPlus} size={1} /> Add manually
