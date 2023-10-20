@@ -1,6 +1,3 @@
-import LoadingCircle from "@/components/LoadingCircle";
-import { Suspense } from "react";
-import CountDisplay from "./CountDisplay";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkInstanceFromAPI } from "@/types/types";
 import InstancesGrid from "@/components/InstancesGrid";
@@ -10,6 +7,7 @@ import Link from "next/link";
 import Icon from "@mdi/react";
 import { mdiPlus } from "@mdi/js";
 import styles from "./page.module.scss";
+import AddCard from "./AddCard";
 
 export const revalidate = 0;
 
@@ -53,17 +51,7 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
-                <Link
-                    className={styles["collection__add-card"]}
-                    href={{
-                        pathname: "/me/work/create",
-                        query: {
-                            type: "book",
-                        },
-                    }}
-                >
-                    <Icon path={mdiPlus} />
-                </Link>
+                <AddCard workType="book" />
             </InstancesGrid>
             <InstancesGrid title="Movies">
                 {movies.map((workInstance) => (
@@ -72,17 +60,7 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
-                <Link
-                    className={styles["collection__add-card"]}
-                    href={{
-                        pathname: "/me/work/create",
-                        query: {
-                            type: "movie",
-                        },
-                    }}
-                >
-                    <Icon path={mdiPlus} />
-                </Link>
+                <AddCard workType="movie" />
             </InstancesGrid>
             <InstancesGrid title="Computer Games">
                 {computerGames.map((workInstance) => (
@@ -91,17 +69,7 @@ export default async function Home() {
                         workInstance={workInstance}
                     />
                 ))}
-                <Link
-                    className={styles["collection__add-card"]}
-                    href={{
-                        pathname: "/me/work/create",
-                        query: {
-                            type: "computerGame",
-                        },
-                    }}
-                >
-                    <Icon path={mdiPlus} />
-                </Link>
+                <AddCard workType="computerGame" />
             </InstancesGrid>
             <TooltipWrapper id="tooltip-add-viewing" />
         </div>

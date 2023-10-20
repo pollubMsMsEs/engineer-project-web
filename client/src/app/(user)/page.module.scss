@@ -1,16 +1,2 @@
 .collection {
-    &__add-card {
-        display: grid;
-        place-items: center;
-        width: 100%;
-        height: 100%;
-        aspect-ratio: 1 / 1.4;
-        background-color: rgb(134 134 134 / 19.9%);
-        border-radius: 20px;
-
-        /* MDI icon */
-        svg {
-            padding: 30%;
-        }
-    }
 }
