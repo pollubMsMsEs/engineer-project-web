@@ -8,6 +8,8 @@ import Link from "next/link";
 import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
 import LoadingCircle from "@/components/LoadingCircle";
+import InstancesGrid from "@/components/InstancesGrid";
+import WorkCard from "@/components/workCard/WorkCard";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -77,7 +79,22 @@ export default function Search() {
             </div>
             {query !== "" && (
                 <div className={styles["search__results"]}>
-                    {!isFetching ? "ha!" : <LoadingCircle size="30px" />}
+                    {!isFetching ? (
+                        <InstancesGrid>
+                            {foundWorks
+                                ? foundWorks.map((work) => {
+                                      return (
+                                          <WorkCard
+                                              key={work.api_id}
+                                              work={work}
+                                          />
+                                      );
+                                  })
+                                : "Works browser is unavailable"}
+                        </InstancesGrid>
+                    ) : (
+                        <LoadingCircle size="30px" />
+                    )}
                 </div>
             )}
         </div>
