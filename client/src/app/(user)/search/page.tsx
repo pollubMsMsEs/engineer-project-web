@@ -6,7 +6,8 @@ import Icon from "@mdi/react";
 import { mdiPlus } from "@mdi/js";
 import Link from "next/link";
 import { WorkType } from "@/types/types";
-import { searchWorks } from "@/modules/apiBrowser";
+import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
+import LoadingCircle from "@/components/LoadingCircle";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -22,7 +23,10 @@ export default function Search() {
         return assertCorrectType(searchParams.get("type"));
     });
     const [query, setQuery] = useState("");
-    const [foundWorks, setFoundWorks] = useState([]);
+    const [foundWorks, setFoundWorks] = useState<WorkFromAPIShort[] | false>(
+        []
+    );
+    const [isFetching, setIsFetching] = useState(false);
     const searchDebounce = useRef<NodeJS.Timeout>();
 
     return (
@@ -34,13 +38,17 @@ export default function Search() {
                     value={query}
                     onChange={(e) => {
                         setQuery(e.target.value);
+                        setIsFetching(true);
 
                         if (searchDebounce.current != undefined) {
                             clearTimeout(searchDebounce.current);
                         }
 
-                        searchDebounce.current = setTimeout(() => {
-                            setFoundWorks(searchWorks(e.target.value, type));
+                        searchDebounce.current = setTimeout(async () => {
+                            setFoundWorks(
+                                await searchWorks(e.target.value, type)
+                            );
+                            setIsFetching(false);
                         }, 1000);
                     }}
                 />
@@ -67,6 +75,11 @@ export default function Search() {
                     <Icon path={mdiPlus} size={1} /> Add manually
                 </Link>
             </div>
+            {query !== "" && (
+                <div className={styles["search__results"]}>
+                    {!isFetching ? "ha!" : <LoadingCircle size="30px" />}
+                </div>
+            )}
         </div>
     );
 }

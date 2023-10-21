@@ -4,6 +4,7 @@
     align-items: center;
 
     &__circle {
+        box-sizing: border-box;
         border-radius: 50%;
         animation: spin 2s linear infinite;
     }
