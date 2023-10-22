@@ -67,19 +67,16 @@ export const createOne = [
                 .status(400)
                 .json({ acknowledged: false, message: "No file uploaded" });
 
-        const mime = await fileTypeFromBuffer(req.file.buffer);
+        const mimetype = req.file.mimetype;
 
-        if (
-            !mime ||
-            (!mime.mime.startsWith("image/") && mime.mime !== "application/xml")
-        ) {
+        if (!mimetype.startsWith("image/") && mimetype !== "application/xml") {
             return res.status(400).json({
                 acknowledged: false,
                 message: "Uploaded file is not an image",
             });
         }
 
-        if (mime.mime === "application/xml") {
+        if (mimetype === "application/xml" || mimetype === "image/svg+xml") {
             const svgString = req.file.buffer.toString("utf-8");
             if (!svgString.includes("<svg") || !svgString.includes("</svg>")) {
                 return res.status(400).json({
@@ -94,7 +91,7 @@ export const createOne = [
         try {
             const image = await Image.create({
                 image: base64Image,
-                type: mime.mime,
+                type: mimetype,
             });
             await image.save();
 
@@ -133,11 +130,11 @@ export const updateOne = [
                     .status(400)
                     .json({ acknowledged: false, message: "No file uploaded" });
 
-            const mime = await fileTypeFromBuffer(req.file.buffer);
+            const mimetype = req.file.mimetype;
+
             if (
-                !mime ||
-                (!mime.mime.startsWith("image/") &&
-                    mime.mime !== "application/xml")
+                !mimetype.startsWith("image/") &&
+                mimetype !== "application/xml"
             ) {
                 return res.status(400).json({
                     acknowledged: false,
@@ -145,7 +142,10 @@ export const updateOne = [
                 });
             }
 
-            if (mime.mime === "application/xml") {
+            if (
+                mimetype === "application/xml" ||
+                mimetype === "image/svg+xml"
+            ) {
                 const svgString = req.file.buffer.toString("utf-8");
                 if (
                     !svgString.includes("<svg") ||
@@ -162,7 +162,7 @@ export const updateOne = [
 
             const updateData = {
                 image: base64Image,
-                type: mime.mime,
+                type: mimetype,
             };
 
             const image = await Image.findByIdAndUpdate(

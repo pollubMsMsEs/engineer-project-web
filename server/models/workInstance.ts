@@ -11,6 +11,12 @@ const WorkInstanceSchema = new Schema({
     status: { type: String, enum: ["wishlist", "todo", "doing", "completed"] },
     type: { type: String, enum: ["movie", "book", "game"] },
     from_api: { type: Boolean, default: false },
+    began_at: { type: Date },
+    finished_at: { type: Date },
+    metadata: {
+        type: Map,
+        of: [String],
+    },
 });
 
 export default model("WorkInstance", WorkInstanceSchema, "workInstances");
