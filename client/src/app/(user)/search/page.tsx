@@ -10,6 +10,8 @@ import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
 import LoadingCircle from "@/components/LoadingCircle";
 import InstancesGrid from "@/components/InstancesGrid";
 import WorkCard from "@/components/workCard/WorkCard";
+import ClickableCard from "@/components/clickableCard/ClickableCard";
+import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -31,6 +33,19 @@ export default function Search() {
     const [isFetching, setIsFetching] = useState(false);
     const searchDebounce = useRef<NodeJS.Timeout>();
 
+    function doDebouncedSearch(query: string, type: WorkType) {
+        setIsFetching(true);
+
+        if (searchDebounce.current != undefined) {
+            clearTimeout(searchDebounce.current);
+        }
+
+        searchDebounce.current = setTimeout(async () => {
+            setFoundWorks(await searchWorks(query, type));
+            setIsFetching(false);
+        }, 1000);
+    }
+
     return (
         <div className={styles["search"]}>
             <div className={styles["search__form"]}>
@@ -39,19 +54,9 @@ export default function Search() {
                     type="text"
                     value={query}
                     onChange={(e) => {
-                        setQuery(e.target.value);
-                        setIsFetching(true);
-
-                        if (searchDebounce.current != undefined) {
-                            clearTimeout(searchDebounce.current);
-                        }
-
-                        searchDebounce.current = setTimeout(async () => {
-                            setFoundWorks(
-                                await searchWorks(e.target.value, type)
-                            );
-                            setIsFetching(false);
-                        }, 1000);
+                        const newQuery = e.target.value;
+                        setQuery(newQuery);
+                        doDebouncedSearch(newQuery, type);
                     }}
                 />
                 <select
@@ -59,7 +64,11 @@ export default function Search() {
                     name="type"
                     id="type"
                     value={type}
-                    onChange={(e) => setType(assertCorrectType(e.target.value))}
+                    onChange={(e) => {
+                        const newType = assertCorrectType(e.target.value);
+                        setType(assertCorrectType(newType));
+                        doDebouncedSearch(query, newType);
+                    }}
                 >
                     <option value="book">Book</option>
                     <option value="movie">Movie</option>
@@ -84,10 +93,18 @@ export default function Search() {
                             {foundWorks
                                 ? foundWorks.map((work) => {
                                       return (
-                                          <WorkCard
+                                          <ClickableCard
                                               key={work.api_id}
-                                              work={work}
-                                          />
+                                              onClick={async () => {
+                                                  await waitRandomPromise(2000);
+                                                  return {
+                                                      success: true,
+                                                      stopLoading: true,
+                                                  };
+                                              }}
+                                          >
+                                              <WorkCard work={work} />
+                                          </ClickableCard>
                                       );
                                   })
                                 : "Works browser is unavailable"}
