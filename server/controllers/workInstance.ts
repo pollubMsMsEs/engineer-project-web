@@ -4,7 +4,7 @@ import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import mongoose from "mongoose";
-import { isPast, parseISO } from "date-fns";
+import { isPast, parseISO, isAfter, isBefore, isEqual } from "date-fns";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
@@ -152,6 +152,49 @@ export const createOne = [
         .withMessage(
             "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
         ),
+    body("began_at")
+        .optional()
+        .isISO8601()
+        .withMessage("Incorrect format for began_at date")
+        .bail()
+        .custom((value) => {
+            const beganDate = parseISO(value);
+            return isPast(beganDate);
+        })
+        .withMessage("Began_at date cannot be in the future")
+        .bail()
+        .toDate(),
+
+    body("finished_at")
+        .optional()
+        .isISO8601()
+        .withMessage("Incorrect format for finished_at date")
+        .bail()
+        .custom((value) => {
+            const finishedDate = parseISO(value);
+            return isPast(finishedDate);
+        })
+        .withMessage("Finished_at date cannot be in the future")
+        .bail()
+        .toDate(),
+    body("metadata[*].*").optional().escape(),
+    body()
+        .custom((body) => {
+            if (body.began_at && body.finished_at) {
+                const beganDate = new Date(body.began_at);
+                const finishedDate = new Date(body.finished_at);
+                if (
+                    isAfter(beganDate, finishedDate) ||
+                    isEqual(beganDate, finishedDate)
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        })
+        .withMessage(
+            "Began_at date cannot be at the same time or after finished_at date"
+        ),
     async function (req: Request | any, res: Response) {
         const valResult = validationResult(req);
 
@@ -250,6 +293,49 @@ export const updateOne = [
         })
         .withMessage(
             "Status must be one of 'wishlist', 'todo', 'doing' or 'completed'"
+        ),
+    body("began_at")
+        .optional()
+        .isISO8601()
+        .withMessage("Incorrect format for began_at date")
+        .bail()
+        .custom((value) => {
+            const beganDate = parseISO(value);
+            return isPast(beganDate);
+        })
+        .withMessage("Began_at date cannot be in the future")
+        .bail()
+        .toDate(),
+
+    body("finished_at")
+        .optional()
+        .isISO8601()
+        .withMessage("Incorrect format for finished_at date")
+        .bail()
+        .custom((value) => {
+            const finishedDate = parseISO(value);
+            return isPast(finishedDate);
+        })
+        .withMessage("Finished_at date cannot be in the future")
+        .bail()
+        .toDate(),
+    body("metadata[*].*").optional().escape(),
+    body()
+        .custom((body) => {
+            if (body.began_at && body.finished_at) {
+                const beganDate = new Date(body.began_at);
+                const finishedDate = new Date(body.finished_at);
+                if (
+                    isAfter(beganDate, finishedDate) ||
+                    isEqual(beganDate, finishedDate)
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        })
+        .withMessage(
+            "Began_at date cannot be at the same time or after finished_at date"
         ),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
