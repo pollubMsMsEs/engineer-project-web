@@ -289,7 +289,7 @@ export const updateOne = [
                 });
             }
 
-            req.body.from_api = req.body.onModel === "WorkFromAPI";
+            req.body.from_api = instance.onModel === "WorkFromAPI";
             req.body.type = work.type;
 
             const forbiddenUpdates = ["work_id", "onModel"];
