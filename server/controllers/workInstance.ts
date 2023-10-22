@@ -4,6 +4,7 @@ import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import mongoose from "mongoose";
+import { isPast, parseISO } from "date-fns";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
@@ -125,10 +126,8 @@ export const createOne = [
         .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            const completionDate = new Date(value);
-            const currentDate = new Date();
-
-            return completionDate <= currentDate;
+            const completionDate = parseISO(value);
+            return isPast(completionDate);
         })
         .withMessage("Completion date cannot be in the future")
         .bail()
@@ -226,10 +225,8 @@ export const updateOne = [
         .withMessage("Incorrect format in completions array")
         .bail()
         .custom((value) => {
-            const completionDate = new Date(value);
-            const currentDate = new Date();
-
-            return completionDate <= currentDate;
+            const completionDate = parseISO(value);
+            return isPast(completionDate);
         })
         .withMessage("Completion date cannot be in the future")
         .bail()
