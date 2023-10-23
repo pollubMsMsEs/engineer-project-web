@@ -2,6 +2,8 @@
     display: grid;
     grid-template: 1fr / 1fr;
     place-items: stretch;
+    padding: 0;
+    border-radius: 21px;
 
     &__card {
         grid-row: 1 / -1;
