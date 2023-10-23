@@ -51,7 +51,7 @@ export default function Search() {
 
     async function createWorkInstance(work: WorkFromAPIShort) {
         const newWorkFromAPI = {
-            api_id: work.api_id,
+            api_id: work.api_id.replace("/works/", ""),
             type: work.type,
         };
 
