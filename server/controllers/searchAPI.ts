@@ -15,13 +15,13 @@ export async function search(req: Request | any, res: Response): Promise<void> {
 
         switch (type) {
             case "book":
-                results = await searchBooks(query);
+                results = await searchBooks(query, req.query.page);
                 break;
             case "movie":
-                results = await searchMovies(query);
+                results = await searchMovies(query, req.query.page);
                 break;
             case "game":
-                results = await searchGames(query);
+                results = await searchGames(query, req.query.page);
                 break;
             default:
                 res.status(400).json({
@@ -50,12 +50,14 @@ export async function search(req: Request | any, res: Response): Promise<void> {
     }
 }
 
-async function searchBooks(query: string): Promise<any[]> {
+async function searchBooks(query: string, page: number = 1): Promise<any[]> {
     try {
+        const LIMIT = 20;
+        const OFFSET = (page - 1) * LIMIT;
         const encodedQuery = encodeURIComponent(query);
 
         const response = await axios.get(
-            `https://openlibrary.org/search.json?title=${encodedQuery}`
+            `https://openlibrary.org/search.json?title=${encodedQuery}&limit=${LIMIT}&offset=${OFFSET}`
         );
 
         const books = response.data.docs.map(
@@ -74,14 +76,14 @@ async function searchBooks(query: string): Promise<any[]> {
     }
 }
 
-async function searchMovies(query: string): Promise<any[]> {
+async function searchMovies(query: string, page: number = 1): Promise<any[]> {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
         const encodedQuery = encodeURIComponent(query);
 
         const response = await axios.get(
-            `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodedQuery}`
+            `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodedQuery}&page=${page}`
         );
 
         const movies = response.data.results.map(
@@ -100,9 +102,11 @@ async function searchMovies(query: string): Promise<any[]> {
     }
 }
 
-async function searchGames(query: string): Promise<any[]> {
+async function searchGames(query: string, page: number = 1): Promise<any[]> {
     try {
         const IGDB_CLIENT_ID = process.env.IGDB_CLIENT_ID;
+        const LIMIT = 20;
+        const OFFSET = (page - 1) * LIMIT;
 
         const accessToken = await getTwitchAccessToken();
         if (!accessToken) {
@@ -121,7 +125,8 @@ async function searchGames(query: string): Promise<any[]> {
             data: `
                 search "${query}";
                 fields id, name, cover.url;
-                limit 50; 
+                limit ${LIMIT}; 
+                offset ${OFFSET};
             `,
         });
 
