@@ -350,7 +350,6 @@ export default function WorkForm({
                     type="text"
                     name="title"
                     id="title"
-                    required
                     value={title}
                     onChange={(e) => {
                         setTitle(e.target.value);
@@ -370,7 +369,6 @@ export default function WorkForm({
                     type="date"
                     name="published_at"
                     id="published_at"
-                    required
                     value={publishedAt}
                     onChange={(e) => {
                         setPublishedAt(e.target.value);

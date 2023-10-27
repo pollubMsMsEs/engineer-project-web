@@ -1,21 +1,10 @@
-export default function ErrorsDisplay({
-    errors,
-    containerClass,
-    errorsClass,
-}: {
-    errors?: any[];
-    containerClass?: string;
-    errorsClass?: string;
-}) {
+export default function ErrorsDisplay({ errors }: { errors?: any[] }) {
     return (
         <>
             {errors && (
-                <div className={containerClass}>
+                <div>
                     {errors.map((error) => (
-                        <div
-                            key={`${error.path ?? ""} ${error.msg}`}
-                            className={errorsClass}
-                        >
+                        <div key={`${error.path ?? ""} ${error.msg}`}>
                             {`${error.path ?? ""}: ${error.msg}`}
                         </div>
                     ))}
