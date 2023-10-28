@@ -31,9 +31,16 @@ export async function search(req: Request | any, res: Response): Promise<void> {
                 return;
         }
 
-        const workInstances = await Promise.all(
+        let workInstances = await WorkInstance.find({
+            user_id: userId,
+            from_api: true,
+        })
+            .populate("work_id")
+            .exec();
+
+        workInstances = await Promise.all(
             results.map((work) =>
-                findWorkInstanceByUserIdAndApiId(userId, work.api_key)
+                findWorkInstanceByUserIdAndApiId(work.api_key, workInstances)
             )
         );
 
@@ -63,7 +70,9 @@ async function searchBooks(query: string, page: number = 1): Promise<any[]> {
         const books = response.data.docs.map(
             (book: { title: any; cover_i: any; key: any }) => ({
                 title: book.title,
-                cover: `http://covers.openlibrary.org/b/id/${book.cover_i}.jpg`,
+                cover: book.cover_i
+                    ? `http://covers.openlibrary.org/b/id/${book.cover_i}.jpg`
+                    : "",
                 has_instance: false,
                 api_key: book.key.replace("/works/", ""),
                 type: "book",
@@ -89,7 +98,9 @@ async function searchMovies(query: string, page: number = 1): Promise<any[]> {
         const movies = response.data.results.map(
             (movie: { title: string; poster_path: string; id: number }) => ({
                 title: movie.title,
-                cover: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+                cover: movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : "",
                 has_instance: false,
                 api_key: movie.id.toString(),
                 type: "movie",
@@ -138,7 +149,7 @@ async function searchGames(query: string, page: number = 1): Promise<any[]> {
                           "t_thumb",
                           "t_cover_big"
                       )}`
-                    : null,
+                    : "",
                 has_instance: false,
                 api_key: game.id.toString(),
                 type: "game",
@@ -167,17 +178,10 @@ async function getTwitchAccessToken() {
 }
 
 async function findWorkInstanceByUserIdAndApiId(
-    user_id: string,
-    api_key: string
+    api_key: string,
+    workInstances: any
 ): Promise<any | null> {
     try {
-        const workInstances = await WorkInstance.find({
-            user_id: user_id,
-            from_api: true,
-        })
-            .populate("work_id")
-            .exec();
-
         for (let instance of workInstances) {
             const workIdData: any = instance.work_id;
             if (instance.work_id && workIdData.api_id === api_key) {
