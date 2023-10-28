@@ -3,7 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import axios from "axios";
+import { Mutex } from "async-mutex";
 const debug = Debug("project:dev");
+
+const mutex = new Mutex();
+let twitchAccessToken: string | null = null;
+let twitchTokenExpiry: number | null = null;
 
 export async function search(req: Request | any, res: Response): Promise<void> {
     try {
@@ -162,18 +167,32 @@ async function searchGames(query: string, page: number = 1): Promise<any[]> {
     }
 }
 
-async function getTwitchAccessToken() {
+async function getTwitchAccessToken(): Promise<string | null> {
+    const release = await mutex.acquire();
+
     try {
+        const now = Date.now();
+
+        if (twitchAccessToken && twitchTokenExpiry && twitchTokenExpiry > now) {
+            return twitchAccessToken;
+        }
+
         const IGDB_CLIENT_ID = process.env.IGDB_CLIENT_ID;
         const IGDB_CLIENT_SECRET = process.env.IGDB_CLIENT_SECRET;
 
         const response = await axios.post(
             `https://id.twitch.tv/oauth2/token?client_id=${IGDB_CLIENT_ID}&client_secret=${IGDB_CLIENT_SECRET}&grant_type=client_credentials`
         );
-        return response.data.access_token;
+
+        twitchAccessToken = response.data.access_token;
+        twitchTokenExpiry = now + (response.data.expires_in - 60) * 1000;
+
+        return twitchAccessToken;
     } catch (error) {
         console.error("Error getting Twitch OAuth Token:", error);
         return null;
+    } finally {
+        release();
     }
 }
 
