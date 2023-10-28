@@ -29,8 +29,6 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </header>
             <aside className={styles["default-layout-aside"]}>
                 <a href="/">Home</a>
-                <a href="/all">Everything list</a>
-                <a href="/work/all">Works table</a>
                 <a href="/person/all">People table</a>
             </aside>
             <main className={styles["default-layout-main"]}>{children}</main>
