@@ -24,6 +24,24 @@ const nextConfig = {
                 port: "",
                 pathname: "**",
             },
+            {
+                protocol: "http",
+                hostname: "covers.openlibrary.org",
+                port: "",
+                pathname: "**",
+            },
+            {
+                protocol: "https",
+                hostname: "image.tmdb.org",
+                port: "",
+                pathname: "**",
+            },
+            {
+                protocol: "https",
+                hostname: "images.igdb.com",
+                port: "",
+                pathname: "**",
+            },
         ],
     },
 };

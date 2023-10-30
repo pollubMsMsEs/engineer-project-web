@@ -7,7 +7,7 @@ export default function WorkCard({
     work,
     roundedCornersTop = false,
 }: {
-    work: { title: string; cover?: string; authors?: string[] };
+    work: { title: string; cover?: string };
     roundedCornersTop?: boolean;
 }) {
     return (

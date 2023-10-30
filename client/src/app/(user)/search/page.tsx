@@ -51,7 +51,7 @@ export default function Search() {
 
     async function createWorkInstance(work: WorkFromAPIShort) {
         const newWorkFromAPI = {
-            api_id: work.api_id.replace("/works/", ""),
+            api_id: work.api_key.replace("/works/", ""),
             type: work.type,
         };
 
@@ -174,7 +174,7 @@ export default function Search() {
                                 ? foundWorks.map((work) => {
                                       return (
                                           <ClickableCard
-                                              key={work.api_id}
+                                              key={work.api_key}
                                               onClick={async () => {
                                                   return {
                                                       success:

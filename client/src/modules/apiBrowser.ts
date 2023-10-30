@@ -1,31 +1,18 @@
-import { WorkType } from "@/types/types";
+import { Work, WorkType } from "@/types/types";
 
 export interface WorkFromAPIShort {
-    api_id: string;
+    api_key: string;
     type: WorkType;
     title: string;
-    authors: string[];
     cover: string;
+    has_instance: boolean;
 }
 
 export async function searchWorks(
     query: string,
     type: WorkType
 ): Promise<WorkFromAPIShort[] | false> {
-    switch (type) {
-        case "movie":
-            return false;
-        case "book":
-            return await searchBooks(query);
-        case "game":
-            return false;
-    }
-}
-
-async function searchBooks(query: string): Promise<WorkFromAPIShort[] | false> {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BOOKS_API}/search.json?q=${query}`
-    );
+    const response = await fetch(`/api/search/${type}?query=${query}`);
 
     if (!response.ok) {
         try {
@@ -40,19 +27,9 @@ async function searchBooks(query: string): Promise<WorkFromAPIShort[] | false> {
         return false;
     }
 
-    const result: { docs: any[] } = await response.json();
+    const result: WorkFromAPIShort[] = await response.json();
 
-    const books = result.docs.map<WorkFromAPIShort>((work: any) => {
-        return {
-            api_id: work.key,
-            type: "book",
-            title: work.title,
-            authors: work.author_name,
-            cover: work.cover_i
-                ? `https://covers.openlibrary.org/b/id/${work.cover_i}.jpg`
-                : "",
-        };
-    });
+    console.log(result);
 
-    return books;
+    return result;
 }
