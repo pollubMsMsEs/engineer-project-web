@@ -11,7 +11,7 @@ export const statuses = Object.freeze({
         doing: "Watching",
         completed: "Completed",
     },
-    computerGame: {
+    game: {
         wishlist: "Wishlist",
         todo: "To Play",
         doing: "Playing",

@@ -1,0 +1,22 @@
+.img-container {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 3/4;
+
+    /* MDI icon */
+    svg {
+        padding: 20%;
+    }
+
+    /* NEXT image */
+    &__img {
+        object-fit: cover;
+        object-position: top;
+
+        &--rounded-corners-top {
+            border-radius: 20px 20px 0 0;
+        }
+    }
+}

@@ -18,9 +18,9 @@ export default function LoadingCircle({
                 className={styles["loading-circle__circle"]}
                 style={{
                     aspectRatio: "1 / 1",
-                    height: "90%",
-                    border: `calc(${size} * 0.3) solid #f3f3f3`,
-                    borderTop: `calc(${size} * 0.3) solid #3498db`,
+                    height: "100%",
+                    border: `calc(${size} * 0.2) solid #f3f3f3`,
+                    borderTop: `calc(${size} * 0.2) solid #3498db`,
                 }}
             ></div>
             {text && <span>{text}</span>}

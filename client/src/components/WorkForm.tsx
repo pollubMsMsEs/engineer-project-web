@@ -342,7 +342,7 @@ export default function WorkForm({
                     >
                         <option value="book">Book</option>
                         <option value="movie">Movie</option>
-                        <option value="computerGame">ComputerGame</option>
+                        <option value="game">Game</option>
                     </select>
                 )}
                 <label htmlFor="title">Title: </label>
