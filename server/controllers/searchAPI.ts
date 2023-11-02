@@ -10,6 +10,22 @@ const mutex = new Mutex();
 let twitchAccessToken: string | null = null;
 let twitchTokenExpiry: number | null = null;
 
+export async function getOneFromAPI(apiId: any, type: any) {
+    let results;
+    switch (type) {
+        case "book":
+            results = await getBookFromAPI(apiId);
+            break;
+        case "movie":
+            results = await getMovieFromAPI(apiId);
+            break;
+        case "game":
+            results = await getGameFromAPI(apiId);
+            break;
+    }
+    return results;
+}
+
 export async function search(req: Request | any, res: Response): Promise<void> {
     try {
         const type = req.params.type as string;
@@ -211,5 +227,81 @@ async function findWorkInstanceByUserIdAndApiId(
         return null;
     } catch (error) {
         return null;
+    }
+}
+
+async function getBookFromAPI(apiId: string) {
+    try {
+        const response = await fetch(
+            `https://openlibrary.org/works/${apiId}.json`
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch data from OpenLibrary");
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return [];
+    }
+}
+
+async function getMovieFromAPI(apiId: string) {
+    try {
+        const TMDB_API_KEY = process.env.TMDB_API_KEY;
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${apiId}?append_to_response=credits&api_key=${TMDB_API_KEY}`
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch data from TMDB");
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return [];
+    }
+}
+
+async function getGameFromAPI(apiId: string) {
+    try {
+        const IGDB_CLIENT_ID = process.env.IGDB_CLIENT_ID;
+        const accessToken = await getTwitchAccessToken();
+
+        if (!accessToken) {
+            console.error("Could not obtain access token.");
+            return [];
+        }
+
+        const response = await axios({
+            url: `https://api.igdb.com/v4/games`,
+            method: "POST",
+            headers: {
+                "Client-ID": IGDB_CLIENT_ID,
+                Authorization: `Bearer ${accessToken}`,
+                Accept: "application/json",
+            },
+            data: `
+                fields id, name, summary, first_release_date, cover.url, genres.name;
+                where id = ${apiId};
+            `,
+        });
+
+        return response.data;
+    } catch (error) {
+        return [];
+    }
+}
+
+export async function getBookAuthorFromAPI(authorId: string) {
+    try {
+        const response = await fetch(
+            `https://openlibrary.org/authors/${authorId}.json`
+        );
+        if (!response.ok) {
+            throw new Error("Failed to fetch data from OpenLibrary");
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return [];
     }
 }

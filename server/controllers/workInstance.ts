@@ -1,10 +1,19 @@
 import WorkInstance from "../models/workInstance.js";
+import { getBookAuthorFromAPI, getOneFromAPI } from "./searchAPI.js";
 import { Request, Response, NextFunction } from "express";
 import { inspect } from "util";
 import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import mongoose from "mongoose";
-import { isPast, parseISO, isAfter, isBefore, isEqual } from "date-fns";
+import {
+    format,
+    isPast,
+    parseISO,
+    isAfter,
+    isEqual,
+    fromUnixTime,
+    parse,
+} from "date-fns";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
@@ -93,7 +102,18 @@ export const getOne = [
                     .json({ error: "This work instance does not exist." });
             }
 
-            res.json({ data: workInstance });
+            if (workInstance.onModel === "WorkFromAPI") {
+                const transformedData = await transformToWorkType(
+                    workInstance.work_id
+                );
+                const responseData = {
+                    ...workInstance.toObject(),
+                    work_id: transformedData,
+                };
+                res.json({ data: responseData });
+            } else {
+                res.json({ data: workInstance });
+            }
         } catch (e: any) {
             return next(e);
         }
@@ -441,3 +461,155 @@ export const deleteOne = [
         }
     },
 ];
+
+async function transformToWorkType(work: any) {
+    let transformedData;
+    let transformedPeople;
+    const apiId = work.api_id;
+    const type = work.type;
+    const workDataFromAPI = await getOneFromAPI(apiId, type);
+
+    switch (type) {
+        case "book":
+            transformedPeople = await transformPeople(
+                workDataFromAPI.authors,
+                type
+            );
+
+            transformedData = {
+                _id: apiId,
+                title: work.title,
+                description:
+                    workDataFromAPI.description.value ??
+                    workDataFromAPI.description ??
+                    "",
+                published_at: workDataFromAPI.first_publish_date
+                    ? convertDate(workDataFromAPI.first_publish_date)
+                    : "",
+                cover: work.cover,
+                genres: [],
+                people: transformedPeople,
+                metadata: {
+                    places: workDataFromAPI.subject_places ?? "",
+                    characters: workDataFromAPI.subject_people ?? "",
+                },
+                type: type,
+                __v: 0,
+            };
+
+            break;
+        case "movie":
+            const peopleToTransform = workDataFromAPI.credits.cast.concat(
+                workDataFromAPI.credits.crew
+            );
+            transformedPeople =
+                (await transformPeople(peopleToTransform, type)) ?? [];
+
+            transformedData = {
+                _id: apiId,
+                title: work.title,
+                description: workDataFromAPI.overview ?? "",
+                published_at: workDataFromAPI.release_date ?? "",
+                cover: work.cover,
+                genres: workDataFromAPI.genres.map(
+                    (genre: { name: String }) => genre.name
+                ),
+                people: transformedPeople,
+                metadata: {
+                    places: "",
+                    characters: "",
+                },
+                type: type,
+                __v: 0,
+            };
+
+            break;
+        case "game":
+            transformedData = {
+                _id: apiId,
+                title: work.title,
+                description: workDataFromAPI[0].summary ?? "",
+                published_at: workDataFromAPI[0].first_release_date
+                    ? format(
+                          fromUnixTime(workDataFromAPI[0].first_release_date),
+                          "yyyy-MM-dd"
+                      )
+                    : "",
+                cover: work.cover,
+                genres:
+                    workDataFromAPI[0].genres.map(
+                        (genre: { name: any }) => genre.name
+                    ) ?? [],
+                people: "",
+                metadata: {
+                    places: "",
+                    characters: "",
+                },
+                type: type,
+                __v: 0,
+            };
+
+            break;
+    }
+
+    return transformedData;
+}
+
+async function transformPeople(people: any[], type: String) {
+    let results: any[] = [];
+    switch (type) {
+        case "book":
+            results = await Promise.all(
+                people.map(async (authorData) => {
+                    const authorPersonalData = await getBookAuthorFromAPI(
+                        authorData.author.key.replace("/authors/", "")
+                    );
+                    return {
+                        person_id: {
+                            _id: authorData.author.key.replace("/authors/", ""),
+                            name: authorPersonalData.name,
+                            surname: "",
+                        },
+                        role: authorData.type.key
+                            .replace("/type/", "")
+                            .replace("_role", ""),
+                        details: {},
+                    };
+                })
+            );
+            break;
+        case "movie":
+            results = await Promise.all(
+                people.map(async (person) => {
+                    return {
+                        person_id: {
+                            _id: person.id.toString(),
+                            name: person.name,
+                            surname: "",
+                        },
+                        role: person.known_for_department,
+                        details: {
+                            character: person.character || "",
+                            job: person.job || "",
+                        },
+                    };
+                })
+            );
+            break;
+    }
+    return results;
+}
+
+const convertDate = (dateString: string) => {
+    try {
+        if (/^\d{4}$/.test(dateString)) {
+            return `${dateString}-01-01`;
+        } else {
+            const parsedDate = parse(dateString, "MMMM d, yyyy", new Date());
+            return format(parsedDate, "yyyy-MM-dd");
+        }
+    } catch (error) {
+        console.error("Error parsing date:", error);
+        return null;
+    }
+};
