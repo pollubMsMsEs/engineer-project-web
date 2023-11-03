@@ -492,8 +492,12 @@ async function transformToWorkType(work: any) {
                 genres: [],
                 people: transformedPeople,
                 metadata: {
-                    places: workDataFromAPI.subject_places ?? "",
-                    characters: workDataFromAPI.subject_people ?? "",
+                    places: Array.isArray(workDataFromAPI.subject_places)
+                        ? workDataFromAPI.subject_places
+                        : [],
+                    characters: Array.isArray(workDataFromAPI.subject_people)
+                        ? workDataFromAPI.subject_people
+                        : [],
                 },
                 type: type,
                 __v: 0,
@@ -523,8 +527,13 @@ async function transformToWorkType(work: any) {
                     ) ?? [],
                 people: transformedPeople,
                 metadata: {
-                    places: "",
-                    characters: "",
+                    production_companies: Array.isArray(
+                        workDataFromAPI.production_companies
+                    )
+                        ? workDataFromAPI.production_companies.map(
+                              (company: { name: String }) => company.name
+                          )
+                        : [],
                 },
                 type: type,
                 __v: 0,
@@ -552,12 +561,36 @@ async function transformToWorkType(work: any) {
                     : "",
                 genres:
                     workDataFromAPI[0].genres?.map(
-                        (genre: { name: any }) => genre.name
+                        (genre: { name: String }) => genre.name
                     ) ?? [],
-                people: "",
+                people: [],
                 metadata: {
-                    places: "",
-                    characters: "",
+                    developers: Array.isArray(
+                        workDataFromAPI[0].involved_companies
+                    )
+                        ? workDataFromAPI[0].involved_companies
+                              .filter(
+                                  (company: { developer: boolean }) =>
+                                      company.developer
+                              )
+                              .map(
+                                  (company: { company: { name: String } }) =>
+                                      company.company.name
+                              )
+                        : [],
+                    publishers: Array.isArray(
+                        workDataFromAPI[0].involved_companies
+                    )
+                        ? workDataFromAPI[0].involved_companies
+                              .filter(
+                                  (company: { publisher: boolean }) =>
+                                      company.publisher
+                              )
+                              .map(
+                                  (company: { company: { name: String } }) =>
+                                      company.company.name
+                              )
+                        : [],
                 },
                 type: type,
                 __v: 0,

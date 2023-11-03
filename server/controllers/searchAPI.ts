@@ -280,7 +280,9 @@ async function getGameFromAPI(apiId: string) {
                 Accept: "application/json",
             },
             data: `
-                fields id, name, summary, first_release_date, cover.url, genres.name;
+                fields id, name, summary, first_release_date, cover.url, genres.name,
+                involved_companies.company.name, involved_companies.developer,
+                involved_companies.publisher;
                 where id = ${apiId};
             `,
         });
