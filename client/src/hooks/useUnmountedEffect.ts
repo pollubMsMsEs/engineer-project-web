@@ -7,6 +7,10 @@ export function useUnmountedEffect(
     const didMount = useRef(false);
 
     useEffect(() => {
+        didMount.current = false;
+    }, []);
+
+    useEffect(() => {
         if (!didMount.current) {
             didMount.current = true;
             return;
