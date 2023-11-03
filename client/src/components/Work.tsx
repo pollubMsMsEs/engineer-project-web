@@ -11,6 +11,7 @@ import { capitalize } from "radash";
 import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
+import Markdown from "react-markdown";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -70,7 +71,9 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
 
             <div>
                 <span className={styles["label"]}>Description: </span>
-                <span>{work?.description ?? ""}</span>
+                <span>
+                    <Markdown>{work?.description ?? ""}</Markdown>
+                </span>
             </div>
             <div>
                 <span className={styles["label"]}>Published at: </span>
