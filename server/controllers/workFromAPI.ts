@@ -57,7 +57,7 @@ export const createOne = [
         .withMessage("Missing api_id string")
         .trim()
         .escape(),
-    body("title").optional().isString().trim(),
+    body("title").isString().trim(),
     body("cover")
         .optional()
         .isString()
@@ -101,7 +101,7 @@ export const updateOne = [
         .withMessage("Missing api_id string")
         .trim()
         .escape(),
-    body("title").optional().isString().trim(),
+    body("title").isString().trim(),
     body("cover")
         .optional()
         .isString()
