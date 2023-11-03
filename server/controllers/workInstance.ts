@@ -486,8 +486,8 @@ async function transformToWorkType(work: any) {
                     : "",
                 cover: work.cover
                     ? work.cover
-                    : workDataFromAPI.cover_i
-                    ? `http://covers.openlibrary.org/b/id/${workDataFromAPI.cover_i}.jpg`
+                    : Array.isArray(workDataFromAPI.covers)
+                    ? `http://covers.openlibrary.org/b/id/${workDataFromAPI.covers[0]}.jpg`
                     : "",
                 genres: [],
                 people: transformedPeople,
