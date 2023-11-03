@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 10px;
     justify-content: space-between;
-    padding: 0 10px 10px;
+    padding: 0 0 10px;
     background-color: rgb(134 134 134 / 19.9%);
     border-radius: 20px;
 
@@ -12,26 +12,6 @@
         flex-direction: column;
         gap: 10px;
         align-items: center;
-    }
-
-    &__img-container {
-        position: relative;
-        display: grid;
-        place-items: center;
-        width: calc(100% + 20px);
-        aspect-ratio: 3/4;
-
-        /* MDI icon */
-        svg {
-            padding: 20%;
-        }
-
-        /* NEXT image */
-        img {
-            object-fit: cover;
-            object-position: top;
-            border-radius: 20px 20px 0 0;
-        }
     }
 
     &__title {

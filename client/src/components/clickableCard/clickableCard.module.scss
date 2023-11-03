@@ -1,0 +1,21 @@
+.clickable-card {
+    display: grid;
+    grid-template: 1fr / 1fr;
+    place-items: stretch;
+    padding: 0;
+    border-radius: 21px;
+
+    &__card {
+        grid-row: 1 / -1;
+        grid-column: 1 / -1;
+    }
+
+    &__loading {
+        z-index: 1;
+        display: grid;
+        grid-row: 1 / -1;
+        grid-column: 1 / -1;
+        place-items: center;
+        background-color: rgb(0 0 0 / 45%);
+    }
+}

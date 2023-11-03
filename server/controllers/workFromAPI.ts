@@ -57,6 +57,17 @@ export const createOne = [
         .withMessage("Missing api_id string")
         .trim()
         .escape(),
+    body("title").isString().trim(),
+    body("cover")
+        .optional()
+        .isString()
+        .trim()
+        .isURL({
+            protocols: ["http", "https"],
+            require_tld: false,
+            require_protocol: true,
+        })
+        .withMessage("Invalid URL format for cover"),
     body("type")
         .exists()
         .withMessage("Missing type string")
@@ -90,6 +101,17 @@ export const updateOne = [
         .withMessage("Missing api_id string")
         .trim()
         .escape(),
+    body("title").isString().trim(),
+    body("cover")
+        .optional()
+        .isString()
+        .trim()
+        .isURL({
+            protocols: ["http", "https"],
+            require_tld: false,
+            require_protocol: true,
+        })
+        .withMessage("Invalid URL format for cover"),
     body("type")
         .exists()
         .withMessage("Missing type string")

@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-function convertParamsToURL(params: string[]) {
-    const reducedParams = params.reduce((acc, param) => `${acc}/${param}`, "");
-
-    return `${process.env.API_ADDRESS}${reducedParams}`;
-}
-
 function transferHeaders(request: NextRequest, headersNames: string[]) {
     const headers = new Headers();
     headersNames.forEach((name) => {
@@ -17,10 +11,7 @@ function transferHeaders(request: NextRequest, headersNames: string[]) {
     return headers;
 }
 
-async function handler(
-    request: NextRequest,
-    { params }: { params: { slugs: string[] } }
-) {
+async function handler(request: NextRequest) {
     const jwt = request.cookies.get("jwt")?.value;
 
     if (!jwt) return NextResponse.redirect(new URL("/auth/login", request.url));
@@ -31,11 +22,17 @@ async function handler(
 
     let body = await request.blob();
 
-    const apiResponse = await fetch(convertParamsToURL(params.slugs), {
-        method: request.method,
-        headers,
-        body: body.size !== 0 ? body : undefined,
-    });
+    const apiResponse = await fetch(
+        `${process.env.API_ADDRESS}${request.nextUrl.pathname.replace(
+            "/api",
+            ""
+        )}${request.nextUrl.search}`,
+        {
+            method: request.method,
+            headers,
+            body: body.size !== 0 ? body : undefined,
+        }
+    );
 
     if (apiResponse.status === 401) {
         const response = NextResponse.redirect(

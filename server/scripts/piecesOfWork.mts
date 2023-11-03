@@ -2,7 +2,7 @@ type PieceOfWork = {
     title: string;
     description: string;
     published_at: any;
-    type?: "computerGame" | "movie" | "book";
+    type?: "game" | "movie" | "book";
     genres: string[];
     people: Object;
     metadata: Object;
@@ -17,7 +17,7 @@ export default function getPiecesOfWork(
             title: "Minecraft",
             description: "Most popular sandbox game in the world",
             published_at: dateTransformer("2011-11-18"),
-            type: "computerGame",
+            type: "game",
             genres: ["Sandbox", "Survival"],
             people: {
                 designers: [
@@ -58,7 +58,7 @@ export default function getPiecesOfWork(
             description:
                 "Simulation role-playing video game about simple life on the farm",
             published_at: dateTransformer("2016-02-26"),
-            type: "computerGame",
+            type: "game",
             genres: ["Simulation", "Role-playing"],
             people: {
                 designers: [
@@ -138,7 +138,7 @@ export default function getPiecesOfWork(
             title: "Super Mario Bros.",
             description: "A computer game developed by Nintendo",
             published_at: dateTransformer("1985-09-13"),
-            type: "computerGame",
+            type: "game",
             genres: ["Platformer"],
             people: {
                 designers: [{ name: "Shigeru", surname: "Miyamoto" }],
@@ -166,7 +166,7 @@ export default function getPiecesOfWork(
             title: "Super Mario Bros. 2",
             description: "A sequel to the computer game developed by Nintendo",
             published_at: dateTransformer("1988-10-09"),
-            type: "computerGame",
+            type: "game",
             genres: ["Platformer"],
             people: {
                 designers: [
@@ -339,7 +339,7 @@ export default function getPiecesOfWork(
             description:
                 "A first-person shooter video game developed by Ubisoft Montreal and published by Ubisoft",
             published_at: dateTransformer("2018-03-27"),
-            type: "computerGame",
+            type: "game",
             genres: ["Action", "Adventure", "First-person shooter"],
             people: {
                 designers: [
@@ -369,7 +369,7 @@ export default function getPiecesOfWork(
             description:
                 "A first-person shooter game developed by MachineGames",
             published_at: dateTransformer("2014-05-20"),
-            type: "computerGame",
+            type: "game",
             genres: ["FPS"],
             people: {
                 designers: [
@@ -396,7 +396,7 @@ export default function getPiecesOfWork(
             description:
                 "An action-adventure game set in an open world environment, played from a third-person perspective",
             published_at: dateTransformer("2016-11-15"),
-            type: "computerGame",
+            type: "game",
             genres: ["Action", "Adventure"],
             people: {
                 designers: [{ name: "Alexandre", surname: "Pedneault" }],

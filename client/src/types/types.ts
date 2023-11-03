@@ -30,7 +30,7 @@ export interface WorkInstance {
     from_api: boolean;
 }
 
-export type WorkType = "movie" | "book" | "computerGame";
+export type WorkType = "movie" | "book" | "game";
 
 export interface MetaObject {
     [key: string]: string[];

@@ -2,6 +2,7 @@
 
 import ErrorsDisplay from "@/components/ErrorsDisplay";
 import WorkForm from "@/components/WorkForm";
+import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -19,13 +20,9 @@ export default function MeWorkCreate() {
                 setFetchingState={setFetchingState}
                 onSubmit={async (work) => {
                     const workInstance = {
+                        ...DEFAULT_WORK_INSTANCE,
                         work_id: work._id,
                         onModel: "Work",
-                        rating: 0,
-                        description: "",
-                        number_of_completions: 0,
-                        completions: [],
-                        status: "todo",
                         from_api: false,
                     };
 
