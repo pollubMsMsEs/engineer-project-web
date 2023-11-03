@@ -6,6 +6,7 @@ import WorkInstanceForm from "./WorkInstanceForm";
 import EditableWork from "./EditableWork";
 import DeleteWork from "./DeleteWork";
 import { notFound } from "next/navigation";
+import Work from "@/components/Work";
 
 export default async function WorkInstance({
     params,
@@ -26,13 +27,18 @@ export default async function WorkInstance({
     workInstance.completions = workInstance.completions.map(
         (completion) => new Date(completion)
     );
-    workInstance.work_id.published_at = new Date(
-        workInstance.work_id.published_at
-    );
+    workInstance.work_id.published_at = workInstance.work_id.published_at
+        ? new Date(workInstance.work_id.published_at)
+        : undefined;
 
     return (
         <div className={styles["work"]}>
-            <EditableWork _work={workInstance.work_id} />
+            {workInstance.from_api ? (
+                <Work work={workInstance.work_id} readOnly />
+            ) : (
+                <EditableWork _work={workInstance.work_id} />
+            )}
+
             <WorkInstanceForm workInstance={workInstance} />
             <DeleteWork workInstance={workInstance} />
         </div>

@@ -45,12 +45,14 @@ function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
     );
 }
 
-export default function Work({ work }: { work: WorkFromAPIPopulated }) {
+export default function Work({
+    work,
+    readOnly,
+}: {
+    work: WorkFromAPIPopulated;
+    readOnly: boolean;
+}) {
     const peopleByRole = groupPeopleInWorkByRole(work.people);
-
-    const published_at = work?.published_at
-        ? dayjs(work.published_at).format("YYYY-MM-DD")
-        : "";
 
     return (
         <div className={styles["work-container"]}>
@@ -77,7 +79,9 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
             </div>
             <div>
                 <span className={styles["label"]}>Published at: </span>
-                {published_at}
+                {work?.published_at
+                    ? dayjs(work.published_at).format("YYYY-MM-DD")
+                    : ""}
             </div>
             <div>
                 <span className={styles["label"]}>Genres: </span>
@@ -98,7 +102,11 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
                         <div className={styles["people"]}>
                             {people.map((p) => (
                                 <div key={p._id} className={styles["person"]}>
-                                    <Person person={p} details={p.details} />
+                                    <Person
+                                        person={p}
+                                        details={p.details}
+                                        readOnly={readOnly}
+                                    />
                                 </div>
                             ))}
                         </div>
