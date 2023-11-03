@@ -543,32 +543,32 @@ async function transformToWorkType(work: any) {
         case "game":
             transformedData = {
                 _id: apiId,
-                title: work.title ? work.title : workDataFromAPI[0].title ?? "",
-                description: workDataFromAPI[0].summary ?? "",
-                published_at: workDataFromAPI[0].first_release_date
+                title: work.title ? work.title : workDataFromAPI.title ?? "",
+                description: workDataFromAPI.summary ?? "",
+                published_at: workDataFromAPI.first_release_date
                     ? format(
-                          fromUnixTime(workDataFromAPI[0].first_release_date),
+                          fromUnixTime(workDataFromAPI.first_release_date),
                           "yyyy-MM-dd"
                       )
                     : "",
                 cover: work.cover
                     ? work.cover
-                    : workDataFromAPI[0].cover
-                    ? `https:${workDataFromAPI[0].cover.url.replace(
+                    : workDataFromAPI.cover
+                    ? `https:${workDataFromAPI.cover.url.replace(
                           "t_thumb",
                           "t_cover_big"
                       )}`
                     : "",
                 genres:
-                    workDataFromAPI[0].genres?.map(
+                    workDataFromAPI.genres?.map(
                         (genre: { name: String }) => genre.name
                     ) ?? [],
                 people: [],
                 metadata: {
                     developers: Array.isArray(
-                        workDataFromAPI[0].involved_companies
+                        workDataFromAPI.involved_companies
                     )
-                        ? workDataFromAPI[0].involved_companies
+                        ? workDataFromAPI.involved_companies
                               .filter(
                                   (company: { developer: boolean }) =>
                                       company.developer
@@ -579,9 +579,9 @@ async function transformToWorkType(work: any) {
                               )
                         : [],
                     publishers: Array.isArray(
-                        workDataFromAPI[0].involved_companies
+                        workDataFromAPI.involved_companies
                     )
-                        ? workDataFromAPI[0].involved_companies
+                        ? workDataFromAPI.involved_companies
                               .filter(
                                   (company: { publisher: boolean }) =>
                                       company.publisher
