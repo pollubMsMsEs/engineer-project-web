@@ -47,6 +47,10 @@ function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
 export default function Work({ work }: { work: WorkFromAPIPopulated }) {
     const peopleByRole = groupPeopleInWorkByRole(work.people);
 
+    const published_at = work?.published_at
+        ? dayjs(work.published_at).format("YYYY-MM-DD")
+        : "";
+
     return (
         <div className={styles["work-container"]}>
             <h2>{work.title}</h2>
@@ -70,7 +74,7 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
             </div>
             <div>
                 <span className={styles["label"]}>Published at: </span>
-                {dayjs(work?.published_at).format("YYYY-MM-DD") ?? ""}
+                {published_at}
             </div>
             <div>
                 <span className={styles["label"]}>Genres: </span>
