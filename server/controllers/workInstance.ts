@@ -471,22 +471,24 @@ async function transformToWorkType(work: any) {
 
     switch (type) {
         case "book":
-            transformedPeople = await transformPeople(
-                workDataFromAPI.authors,
-                type
-            );
+            transformedPeople =
+                (await transformPeople(workDataFromAPI.authors, type)) ?? [];
 
             transformedData = {
                 _id: apiId,
-                title: work.title,
+                title: work.title ? work.title : workDataFromAPI.title ?? "",
                 description:
-                    workDataFromAPI.description.value ??
+                    workDataFromAPI.description?.value ??
                     workDataFromAPI.description ??
                     "",
                 published_at: workDataFromAPI.first_publish_date
                     ? convertDate(workDataFromAPI.first_publish_date)
                     : "",
-                cover: work.cover,
+                cover: work.cover
+                    ? work.cover
+                    : workDataFromAPI.cover_i
+                    ? `http://covers.openlibrary.org/b/id/${workDataFromAPI.cover_i}.jpg`
+                    : "",
                 genres: [],
                 people: transformedPeople,
                 metadata: {
@@ -499,21 +501,26 @@ async function transformToWorkType(work: any) {
 
             break;
         case "movie":
-            const peopleToTransform = workDataFromAPI.credits.cast.concat(
-                workDataFromAPI.credits.crew
-            );
+            const cast = workDataFromAPI.credits?.cast ?? [];
+            const crew = workDataFromAPI.credits?.crew ?? [];
+            const peopleToTransform = cast.concat(crew);
             transformedPeople =
                 (await transformPeople(peopleToTransform, type)) ?? [];
 
             transformedData = {
                 _id: apiId,
-                title: work.title,
+                title: work.title ? work.title : workDataFromAPI.title ?? "",
                 description: workDataFromAPI.overview ?? "",
                 published_at: workDataFromAPI.release_date ?? "",
-                cover: work.cover,
-                genres: workDataFromAPI.genres.map(
-                    (genre: { name: String }) => genre.name
-                ),
+                cover: work.cover
+                    ? work.cover
+                    : workDataFromAPI.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${workDataFromAPI.poster_path}`
+                    : "",
+                genres:
+                    workDataFromAPI.genres?.map(
+                        (genre: { name: String }) => genre.name
+                    ) ?? [],
                 people: transformedPeople,
                 metadata: {
                     places: "",
@@ -527,7 +534,7 @@ async function transformToWorkType(work: any) {
         case "game":
             transformedData = {
                 _id: apiId,
-                title: work.title,
+                title: work.title ? work.title : workDataFromAPI[0].title ?? "",
                 description: workDataFromAPI[0].summary ?? "",
                 published_at: workDataFromAPI[0].first_release_date
                     ? format(
@@ -535,9 +542,16 @@ async function transformToWorkType(work: any) {
                           "yyyy-MM-dd"
                       )
                     : "",
-                cover: work.cover,
+                cover: work.cover
+                    ? work.cover
+                    : workDataFromAPI[0].cover
+                    ? `https:${workDataFromAPI[0].cover.url.replace(
+                          "t_thumb",
+                          "t_cover_big"
+                      )}`
+                    : "",
                 genres:
-                    workDataFromAPI[0].genres.map(
+                    workDataFromAPI[0].genres?.map(
                         (genre: { name: any }) => genre.name
                     ) ?? [],
                 people: "",
@@ -557,47 +571,55 @@ async function transformToWorkType(work: any) {
 
 async function transformPeople(people: any[], type: String) {
     let results: any[] = [];
-    switch (type) {
-        case "book":
-            results = await Promise.all(
-                people.map(async (authorData) => {
-                    const authorPersonalData = await getBookAuthorFromAPI(
-                        authorData.author.key.replace("/authors/", "")
-                    );
-                    return {
-                        person_id: {
-                            _id: authorData.author.key.replace("/authors/", ""),
-                            name: authorPersonalData.name,
-                            surname: "",
-                        },
-                        role: authorData.type.key
-                            .replace("/type/", "")
-                            .replace("_role", ""),
-                        details: {},
-                    };
-                })
-            );
-            break;
-        case "movie":
-            results = await Promise.all(
-                people.map(async (person) => {
-                    return {
-                        person_id: {
-                            _id: person.id.toString(),
-                            name: person.name,
-                            surname: "",
-                        },
-                        role: person.known_for_department,
-                        details: {
-                            character: person.character || "",
-                            job: person.job || "",
-                        },
-                    };
-                })
-            );
-            break;
+    try {
+        switch (type) {
+            case "book":
+                results = await Promise.all(
+                    people.map(async (authorData) => {
+                        const authorPersonalData = await getBookAuthorFromAPI(
+                            authorData.author.key.replace("/authors/", "")
+                        );
+                        return {
+                            person_id: {
+                                _id: authorData.author.key.replace(
+                                    "/authors/",
+                                    ""
+                                ),
+                                name: authorPersonalData.name ?? "",
+                                surname: "",
+                            },
+                            role:
+                                authorData.type.key
+                                    .replace("/type/", "")
+                                    .replace("_role", "") ?? "",
+                            details: {},
+                        };
+                    })
+                );
+                break;
+            case "movie":
+                results = await Promise.all(
+                    people.map(async (person) => {
+                        return {
+                            person_id: {
+                                _id: person.id.toString(),
+                                name: person.name ?? "",
+                                surname: "",
+                            },
+                            role: person.known_for_department ?? "",
+                            details: {
+                                character: person.character || "",
+                                job: person.job || "",
+                            },
+                        };
+                    })
+                );
+                break;
+        }
+        return results;
+    } catch (error) {
+        return [];
     }
-    return results;
 }
 
 const convertDate = (dateString: string) => {
