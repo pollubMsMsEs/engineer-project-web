@@ -232,14 +232,10 @@ async function findWorkInstanceByUserIdAndApiId(
 
 async function getBookFromAPI(apiId: string) {
     try {
-        const response = await fetch(
+        const response = await axios.get(
             `https://openlibrary.org/works/${apiId}.json`
         );
-        if (!response.ok) {
-            throw new Error("Failed to fetch data from OpenLibrary");
-        }
-        const data = await response.json();
-        return data;
+        return response.data;
     } catch (error) {
         return [];
     }
@@ -248,14 +244,10 @@ async function getBookFromAPI(apiId: string) {
 async function getMovieFromAPI(apiId: string) {
     try {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
-        const response = await fetch(
+        const response = await axios.get(
             `https://api.themoviedb.org/3/movie/${apiId}?append_to_response=credits&api_key=${TMDB_API_KEY}`
         );
-        if (!response.ok) {
-            throw new Error("Failed to fetch data from TMDB");
-        }
-        const data = await response.json();
-        return data;
+        return response.data;
     } catch (error) {
         return [];
     }

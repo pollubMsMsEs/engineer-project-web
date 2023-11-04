@@ -3,8 +3,8 @@ export interface Work {
     cover?: string;
     type?: string;
     dev: boolean;
-    description: string;
-    published_at: Date;
+    description?: string;
+    published_at?: Date;
     genres: string[];
     metadata: MetaObject;
 }

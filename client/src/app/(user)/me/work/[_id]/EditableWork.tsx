@@ -34,7 +34,7 @@ export default function EditableWork({
                 />
             ) : (
                 <>
-                    <Work work={work} />
+                    <Work work={work} readOnly={false} />
                     <button
                         onClick={() => {
                             setIsEditable(true);

@@ -11,6 +11,7 @@ import { capitalize } from "radash";
 import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
+import Markdown from "react-markdown";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -44,7 +45,13 @@ function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
     );
 }
 
-export default function Work({ work }: { work: WorkFromAPIPopulated }) {
+export default function Work({
+    work,
+    readOnly,
+}: {
+    work: WorkFromAPIPopulated;
+    readOnly: boolean;
+}) {
     const peopleByRole = groupPeopleInWorkByRole(work.people);
 
     return (
@@ -66,11 +73,15 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
 
             <div>
                 <span className={styles["label"]}>Description: </span>
-                <span>{work?.description ?? ""}</span>
+                <span>
+                    <Markdown>{work?.description ?? ""}</Markdown>
+                </span>
             </div>
             <div>
                 <span className={styles["label"]}>Published at: </span>
-                {dayjs(work?.published_at).format("YYYY-MM-DD") ?? ""}
+                {work?.published_at
+                    ? dayjs(work.published_at).format("YYYY-MM-DD")
+                    : ""}
             </div>
             <div>
                 <span className={styles["label"]}>Genres: </span>
@@ -91,7 +102,11 @@ export default function Work({ work }: { work: WorkFromAPIPopulated }) {
                         <div className={styles["people"]}>
                             {people.map((p) => (
                                 <div key={p._id} className={styles["person"]}>
-                                    <Person person={p} details={p.details} />
+                                    <Person
+                                        person={p}
+                                        details={p.details}
+                                        readOnly={readOnly}
+                                    />
                                 </div>
                             ))}
                         </div>
