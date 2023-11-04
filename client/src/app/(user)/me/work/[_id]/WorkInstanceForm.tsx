@@ -14,6 +14,10 @@ import Select from "@/components/select/Select";
 import { statuses } from "@/modules/workInstanceStatus";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 import styles from "./workInstanceForm.module.scss";
+import {
+    handleResponseErrorWithToast,
+    tryExtractError,
+} from "@/modules/errorsHandling";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -103,16 +107,7 @@ export default function WorkInstanceForm({
             );
 
             if (!response.ok) {
-                let error = "Unknown error";
-
-                try {
-                    const result = await response.json();
-                    error = result?.errors?.[0].msg ?? error;
-                } catch (e) {
-                    console.log(e);
-                }
-
-                toast.error(`Couldn't save status changes: ${error}`);
+                handleResponseErrorWithToast(response);
             } else {
                 toast.success("Status updated succesfully");
             }

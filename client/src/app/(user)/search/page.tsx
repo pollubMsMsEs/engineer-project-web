@@ -14,6 +14,7 @@ import ClickableCard from "@/components/clickableCard/ClickableCard";
 import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
 import { toast } from "react-toastify";
 import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
+import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -66,22 +67,7 @@ export default function Search() {
         });
 
         if (!responseWorkFromAPI.ok) {
-            try {
-                const workFromAPI = await responseWorkFromAPI.json();
-                //TODO: 21 create global function?
-                if (workFromAPI.errors) {
-                    const { type, msg, path } = workFromAPI.errors[0];
-                    toast.error(`${type === "field" ? path + ": " : ""}${msg}`);
-                } else if (workFromAPI.message) {
-                    toast.error(workFromAPI.message);
-                } else if (workFromAPI.error) {
-                    toast.error(workFromAPI.error);
-                }
-            } catch (e) {
-                toast.error("Unknown error");
-                console.error(e);
-            }
-
+            handleResponseErrorWithToast(responseWorkFromAPI);
             return false;
         }
 
@@ -102,21 +88,7 @@ export default function Search() {
         });
 
         if (!responseInstance.ok) {
-            try {
-                const workInstance = await responseInstance.json();
-
-                if (workInstance.errors) {
-                    toast.error(workInstance.errors[0].msg);
-                } else if (workInstance.message) {
-                    toast.error(workInstance.message);
-                } else if (workInstance.error) {
-                    toast.error(workInstance.error);
-                }
-            } catch (e) {
-                toast.error("Unknown error");
-                console.error(e);
-            }
-
+            handleResponseErrorWithToast(responseInstance);
             return false;
         }
 

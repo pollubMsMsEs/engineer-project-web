@@ -1,5 +1,6 @@
 "use client";
 
+import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import { PersonFromAPI } from "@/types/types";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -9,15 +10,13 @@ async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
         method: "DELETE",
     });
-    const result = await response.json();
 
-    const msg = result?.errors?.[0]?.msg;
-    if (msg) {
-        toast.error(msg);
+    if (!response.ok) {
+        handleResponseErrorWithToast(response);
         return false;
+    } else {
+        return await response.json();
     }
-
-    return result;
 }
 
 export default function PersonList({ people }: { people: PersonFromAPI[] }) {
