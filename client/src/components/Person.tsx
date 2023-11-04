@@ -24,9 +24,11 @@ async function deletePerson(_id: string) {
 export default function Person({
     person,
     details,
+    readOnly,
 }: {
     person: PersonFromAPI;
     details?: MetaObject;
+    readOnly: boolean;
 }) {
     const router = useRouter();
 
@@ -45,24 +47,31 @@ export default function Person({
             <div>{person.surname}</div>
             {details && (
                 <div className={styles["person-details"]}>
-                    {Object.entries(details).map(([key, values]) => (
-                        <div key={key}>
-                            <span>
-                                {key.charAt(0).toUpperCase() + key.substring(1)}
-                                {": "}
-                            </span>
-                            <span>{values[0]}</span>
-                        </div>
-                    ))}
+                    {Object.entries(details)
+                        .filter(([key, values]) => (values as unknown) !== "")
+                        .map(([key, values]) => (
+                            <div key={key}>
+                                <span>
+                                    {key.charAt(0).toUpperCase() +
+                                        key.substring(1)}
+                                    {": "}
+                                </span>
+                                <span>
+                                    {Array.isArray(values) ? values[0] : values}
+                                </span>
+                            </div>
+                        ))}
                 </div>
             )}
-            <button
-                onClick={() => {
-                    deletePersonHandler(person._id);
-                }}
-            >
-                <Icon path={mdiTrashCan} size={1} />
-            </button>
+            {!readOnly && (
+                <button
+                    onClick={() => {
+                        deletePersonHandler(person._id);
+                    }}
+                >
+                    <Icon path={mdiTrashCan} size={1} />
+                </button>
+            )}
         </>
     );
 }

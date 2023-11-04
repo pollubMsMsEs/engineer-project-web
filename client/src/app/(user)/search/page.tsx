@@ -53,6 +53,8 @@ export default function Search() {
         const newWorkFromAPI = {
             api_id: work.api_key.replace("/works/", ""),
             type: work.type,
+            title: work.title,
+            cover: work.cover,
         };
 
         const responseWorkFromAPI = await fetch("/api/workFromAPI/create", {
@@ -66,9 +68,10 @@ export default function Search() {
         if (!responseWorkFromAPI.ok) {
             try {
                 const workFromAPI = await responseWorkFromAPI.json();
-
+                //TODO: 21 create global function?
                 if (workFromAPI.errors) {
-                    toast.error(workFromAPI.errors[0].msg);
+                    const { type, msg, path } = workFromAPI.errors[0];
+                    toast.error(`${type === "field" ? path + ": " : ""}${msg}`);
                 } else if (workFromAPI.message) {
                     toast.error(workFromAPI.message);
                 } else if (workFromAPI.error) {
