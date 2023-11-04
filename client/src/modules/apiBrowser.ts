@@ -1,4 +1,4 @@
-import { Work, WorkType } from "@/types/types";
+import { WorkType } from "@/types/types";
 
 export interface WorkFromAPIShort {
     api_key: string;
@@ -28,8 +28,6 @@ export async function searchWorks(
     }
 
     const result: WorkFromAPIShort[] = await response.json();
-
-    console.log(result);
 
     return result;
 }
