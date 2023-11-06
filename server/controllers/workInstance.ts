@@ -475,7 +475,7 @@ async function transformToWorkType(work: any) {
                 (await transformPeople(workDataFromAPI.authors, type)) ?? [];
 
             transformedData = {
-                _id: apiId,
+                _id: work._id,
                 title: work.title ? work.title : workDataFromAPI.title ?? "",
                 description:
                     workDataFromAPI.description?.value ??
@@ -512,7 +512,7 @@ async function transformToWorkType(work: any) {
                 (await transformPeople(peopleToTransform, type)) ?? [];
 
             transformedData = {
-                _id: apiId,
+                _id: work._id,
                 title: work.title ? work.title : workDataFromAPI.title ?? "",
                 description: workDataFromAPI.overview ?? "",
                 published_at: workDataFromAPI.release_date ?? "",
@@ -542,7 +542,7 @@ async function transformToWorkType(work: any) {
             break;
         case "game":
             transformedData = {
-                _id: apiId,
+                _id: work._id,
                 title: work.title ? work.title : workDataFromAPI.title ?? "",
                 description: workDataFromAPI.summary ?? "",
                 published_at: workDataFromAPI.first_release_date
@@ -641,8 +641,10 @@ async function transformPeople(people: any[], type: String) {
                             },
                             role: person.known_for_department ?? "",
                             details: {
-                                character: person.character || "",
-                                job: person.job || "",
+                                character: person.character
+                                    ? [person.character]
+                                    : [],
+                                job: person.job ? [person.job] : [],
                             },
                         };
                     })
