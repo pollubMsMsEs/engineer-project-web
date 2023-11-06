@@ -1,13 +1,13 @@
 "use client";
 
-import Work from "@/components/Work";
-import WorkForm from "@/components/WorkForm";
+import Work from "@/components/work/Work";
+import WorkForm from "@/components/workForm/WorkForm";
 import { WorkFromAPIPopulated } from "@/types/types";
 import { mdiPencil } from "@mdi/js";
 import Icon from "@mdi/react";
 import React, { useState } from "react";
 
-export default function EditableWork({
+export default function WorkEditable({
     _work,
     gridArea,
 }: {

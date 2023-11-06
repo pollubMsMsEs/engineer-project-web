@@ -4,8 +4,8 @@ import {
     PersonFromAPI,
     PersonInWork,
     Person as PersonType,
-} from "../types/types";
-import PersonDetailForm from "./PersonDetailForm";
+} from "../../types/types";
+import PersonDetailForm from "../personDetailForm/PersonDetailForm";
 import styles from "./personInWorkForm.module.scss";
 
 export type PersonInWorkFormType = PersonInWork & {

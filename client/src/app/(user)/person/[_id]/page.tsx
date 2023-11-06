@@ -1,4 +1,4 @@
-import Person from "@/components/Person";
+import Person from "@/components/person/Person";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import React from "react";
 

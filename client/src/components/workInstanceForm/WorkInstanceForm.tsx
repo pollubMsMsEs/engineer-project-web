@@ -7,17 +7,14 @@ import {
     WorkInstance,
     WorkInstanceFromAPI,
 } from "@/types/types";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import CompletionsList from "./CompletionsList";
+import React, { useRef, useState } from "react";
+import CompletionsList from "./completionsList/CompletionsList";
 import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
 import { statuses } from "@/modules/workInstanceStatus";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 import styles from "./workInstanceForm.module.scss";
-import {
-    handleResponseErrorWithToast,
-    tryExtractError,
-} from "@/modules/errorsHandling";
+import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 
 export default function WorkInstanceForm({
     workInstance,

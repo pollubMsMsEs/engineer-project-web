@@ -1,4 +1,4 @@
-import Logo from "@/components/Logo";
+import Logo from "@/components/logo/Logo";
 import { Metadata } from "next";
 
 import styles from "./page.module.scss";

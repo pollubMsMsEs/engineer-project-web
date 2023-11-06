@@ -5,8 +5,8 @@ import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
 import styles from "./workInstanceCard.module.scss";
 import Link from "next/link";
-import StatusSwitcher from "./StatusSwitcher";
-import WorkCard from "./workCard/WorkCard";
+import StatusSwitcher from "../statusSwitcher/StatusSwitcher";
+import WorkCard from "../workCard/WorkCard";
 
 export default function WorkInstanceCard({
     workInstance,

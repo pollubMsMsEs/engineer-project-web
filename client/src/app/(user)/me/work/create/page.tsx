@@ -1,7 +1,7 @@
 "use client";
 
-import ErrorsDisplay from "@/components/ErrorsDisplay";
-import WorkForm from "@/components/WorkForm";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
+import WorkForm from "@/components/workForm/WorkForm";
 import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";

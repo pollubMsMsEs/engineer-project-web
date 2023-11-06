@@ -1,6 +1,6 @@
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import React from "react";
-import PersonList from "./PersonList";
+import PersonList from "@/components/personList/PersonList";
 import styles from "./page.module.scss";
 
 export default async function PersonAll() {

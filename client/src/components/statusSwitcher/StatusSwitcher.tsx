@@ -11,7 +11,7 @@ import {
 } from "@mdi/js";
 import { toast } from "react-toastify";
 import styles from "./statusSwitcher.module.scss";
-import Select from "./select/Select";
+import Select from "../select/Select";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.completions.some((viewing) =>

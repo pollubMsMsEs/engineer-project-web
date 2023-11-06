@@ -9,18 +9,20 @@ import {
     WorkFromAPIPopulated,
     PersonFromAPI,
 } from "@/types/types";
-import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
+import PersonInWorkForm, {
+    PersonInWorkFormType,
+} from "../personInWorkForm/PersonInWorkForm";
 import dayjs from "dayjs";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./workForm.module.scss";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
-import FilePicker from "./filePicker/FilePicker";
+import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
 import { mdiDisc, mdiFloppy } from "@mdi/js";
 import Image from "next/image";
-import LoadingCircle from "./LoadingCircle";
+import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -278,12 +280,15 @@ export default function WorkForm({
         switch (fetchingState) {
             case "cover":
                 submitBtnText = (
-                    <LoadingCircle size="15px" text={`Uploading photo... `} />
+                    <LoadingDisplay size="15px" text={`Uploading photo... `} />
                 );
                 break;
             case "work":
                 submitBtnText = (
-                    <LoadingCircle size="15px" text={`Uploading ${type}... `} />
+                    <LoadingDisplay
+                        size="15px"
+                        text={`Uploading ${type}... `}
+                    />
                 );
                 break;
         }

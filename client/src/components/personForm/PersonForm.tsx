@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Person, PersonFromAPI } from "../types/types";
-import ErrorsDisplay from "../components/ErrorsDisplay";
+import { Person, PersonFromAPI } from "../../types/types";
+import ErrorsDisplay from "../errorsDisplay/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./personForm.module.scss";
 

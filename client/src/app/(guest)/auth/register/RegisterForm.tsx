@@ -4,9 +4,9 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import styles from "./registerForm.module.scss";
-import LoadingCircle from "@/components/LoadingCircle";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 
 export default function RegisterForm() {
     const [user, setUser] = useState({
@@ -78,7 +78,7 @@ export default function RegisterForm() {
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
             <button>
-                {isFetching ? <LoadingCircle size="15px" /> : "Register"}
+                {isFetching ? <LoadingDisplay size="15px" /> : "Register"}
             </button>
 
             <Link href="/auth/login">Already have an account? Login</Link>

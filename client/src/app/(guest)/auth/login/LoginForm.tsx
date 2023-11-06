@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./loginForm.module.scss";
-import LoadingCircle from "@/components/LoadingCircle";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
@@ -69,7 +69,7 @@ export default function LoginForm() {
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
             <button>
-                {isFetching ? <LoadingCircle size="15px" /> : "Login"}
+                {isFetching ? <LoadingDisplay size="15px" /> : "Login"}
             </button>
             <Link href="/auth/register">
                 Don&apos;t have an account? Register

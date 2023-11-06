@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LoadingCircle from "../LoadingCircle";
+import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import styles from "./clickableCard.module.scss";
 
 export default function ClickableCard({
@@ -26,7 +26,7 @@ export default function ClickableCard({
             <div className={styles["clickable-card__card"]}>{children}</div>
             {isLoading && (
                 <div className={styles["clickable-card__loading"]}>
-                    <LoadingCircle size="40px" />
+                    <LoadingDisplay size="40px" />
                 </div>
             )}
         </button>

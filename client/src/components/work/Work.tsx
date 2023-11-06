@@ -3,9 +3,9 @@ import {
     Person as PersonType,
     PersonInWork,
     WorkFromAPIPopulated,
-} from "../types/types";
+} from "../../types/types";
 import dayjs from "dayjs";
-import Person from "./Person";
+import Person from "../person/Person";
 import styles from "./work.module.scss";
 import { capitalize } from "radash";
 import Image from "next/image";

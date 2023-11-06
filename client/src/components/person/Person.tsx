@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { MetaObject, Person, PersonFromAPI } from "../types/types";
+import { MetaObject, Person, PersonFromAPI } from "../../types/types";
 import styles from "./person.module.scss";
 import Icon from "@mdi/react";
 import { mdiTrashCan } from "@mdi/js";
@@ -48,7 +48,7 @@ export default function Person({
             {details && (
                 <div className={styles["person-details"]}>
                     {Object.entries(details)
-                        .filter(([key, values]) => (values as unknown) !== "")
+                        .filter(([_, values]) => (values as unknown) !== "")
                         .map(([key, values]) => (
                             <div key={key}>
                                 <span>

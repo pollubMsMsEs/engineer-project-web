@@ -1,4 +1,4 @@
-import PersonForm from "@/components/PersonForm";
+import PersonForm from "@/components/personForm/PersonForm";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import React from "react";
 

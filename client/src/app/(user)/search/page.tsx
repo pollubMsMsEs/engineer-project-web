@@ -7,8 +7,8 @@ import { mdiPlus } from "@mdi/js";
 import Link from "next/link";
 import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
-import LoadingCircle from "@/components/LoadingCircle";
-import InstancesGrid from "@/components/InstancesGrid";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
+import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
 import WorkCard from "@/components/workCard/WorkCard";
 import ClickableCard from "@/components/clickableCard/ClickableCard";
 import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
@@ -167,7 +167,7 @@ export default function Search() {
                                 : "Works browser is unavailable"}
                         </InstancesGrid>
                     ) : (
-                        <LoadingCircle size="30px" />
+                        <LoadingDisplay size="30px" />
                     )}
                 </div>
             )}

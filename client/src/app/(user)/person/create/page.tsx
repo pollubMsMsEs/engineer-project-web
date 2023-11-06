@@ -1,4 +1,4 @@
-import PersonForm from "@/components/PersonForm";
+import PersonForm from "@/components/personForm/PersonForm";
 import React from "react";
 
 export default function PersonCreate() {
