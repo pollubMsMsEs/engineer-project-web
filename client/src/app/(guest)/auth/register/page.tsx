@@ -2,7 +2,7 @@ import Logo from "@/components/logo/Logo";
 import { Metadata } from "next";
 
 import styles from "./page.module.scss";
-import RegisterForm from "./RegisterForm";
+import RegisterForm from "@/components/registerForm/RegisterForm";
 
 export const metadata: Metadata = {
     title: "Register",

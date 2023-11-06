@@ -1,7 +1,7 @@
 import Logo from "@/components/logo/Logo";
 import { Metadata } from "next";
 import styles from "./page.module.scss";
-import LoginForm from "./LoginForm";
+import LoginForm from "@/components/loginForm/LoginForm";
 
 export const metadata: Metadata = {
     title: "Login",

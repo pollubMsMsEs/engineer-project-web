@@ -1,24 +1,30 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
-import styles from "./registerForm.module.scss";
+import Link from "next/link";
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import styles from "./loginForm.module.scss";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 
-export default function RegisterForm() {
+export default function LoginForm() {
     const [user, setUser] = useState({
-        name: "",
         email: "",
         password: "",
     });
     const [isFetching, setIsFetching] = useState(false);
 
     const [errors, setErrors] = useState<{ msg: string }[]>([]);
+    const [errorsKey, setErrorsKey] = useState(new Date().toUTCString());
     const router = useRouter();
     const pathname = usePathname();
+
+    useEffect(() => {
+        if (!isFetching) {
+            setErrorsKey(new Date().toUTCString());
+        }
+    }, [isFetching]);
 
     async function onSubmit() {
         try {
@@ -39,30 +45,21 @@ export default function RegisterForm() {
                 router.refresh();
             }
         } catch (error: any) {
-            setErrors(error.response.data.errors);
-
-            console.error(error.response);
+            console.error({ error });
         }
     }
 
     return (
         <form
-            className={styles["register-form-container"]}
+            className={styles[`login-form-contaier`]}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();
                 onSubmit();
             }}
         >
-            <h2>Register</h2>
-            <ErrorsDisplay errors={errors} />
-            <input
-                type="text"
-                placeholder="Enter your username"
-                required
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-            />
+            <h2>Login</h2>
+
             <input
                 type="email"
                 placeholder="Enter your email"
@@ -77,11 +74,13 @@ export default function RegisterForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
+            <ErrorsDisplay key={errorsKey} errors={errors} />
             <button>
-                {isFetching ? <LoadingDisplay size="15px" /> : "Register"}
+                {isFetching ? <LoadingDisplay size="1.3em" /> : "Login"}
             </button>
-
-            <Link href="/auth/login">Already have an account? Login</Link>
+            <Link href="/auth/register">
+                Don&apos;t have an account? Register
+            </Link>
         </form>
     );
 }

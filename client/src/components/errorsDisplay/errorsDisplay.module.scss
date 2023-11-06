@@ -1,3 +1,24 @@
 .errors-display {
-    background-color: #dc2626;
+    padding: 10px;
+    background-color: #b521219a;
+    border: 3px #b91c1c solid;
+    border-radius: 5px;
+    animation: border-flash 2s;
+}
+
+@keyframes border-flash {
+    0% {
+        border-color: #b91c1c;
+        transform: scale(100%);
+    }
+
+    20% {
+        border-color: #e34f4f;
+        transform: scale(102%);
+    }
+
+    100% {
+        border-color: #b91c1c;
+        transform: scale(100%);
+    }
 }
