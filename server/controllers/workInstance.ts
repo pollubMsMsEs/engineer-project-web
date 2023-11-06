@@ -641,8 +641,10 @@ async function transformPeople(people: any[], type: String) {
                             },
                             role: person.known_for_department ?? "",
                             details: {
-                                character: person.character || "",
-                                job: person.job || "",
+                                character: person.character
+                                    ? [person.character]
+                                    : [],
+                                job: person.job ? [person.job] : [],
                             },
                         };
                     })
