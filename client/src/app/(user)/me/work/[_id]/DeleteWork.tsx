@@ -27,7 +27,9 @@ export default function DeleteWork({
 
                 if (resultInstance.acknowledged) {
                     const responseWork = await fetch(
-                        `/api/work/${workInstance.work_id._id}`,
+                        `/api/${
+                            workInstance.from_api ? "workFromAPI" : "work"
+                        }/${workInstance.work_id._id}`,
                         {
                             method: "DELETE",
                         }
