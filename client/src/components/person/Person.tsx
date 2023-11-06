@@ -47,20 +47,17 @@ export default function Person({
             <div>{person.surname}</div>
             {details && (
                 <div className={styles["person-details"]}>
-                    {Object.entries(details)
-                        .filter(([_, values]) => (values as unknown) !== "")
-                        .map(([key, values]) => (
-                            <div key={key}>
-                                <span>
-                                    {key.charAt(0).toUpperCase() +
-                                        key.substring(1)}
-                                    {": "}
-                                </span>
-                                <span>
-                                    {Array.isArray(values) ? values[0] : values}
-                                </span>
-                            </div>
-                        ))}
+                    {Object.entries(details).map(([key, values]) => (
+                        <div key={key}>
+                            <span>
+                                {key.charAt(0).toUpperCase() + key.substring(1)}
+                                {": "}
+                            </span>
+                            <span>
+                                {Array.isArray(values) ? values[0] : values}
+                            </span>
+                        </div>
+                    ))}
                 </div>
             )}
             {!readOnly && (
