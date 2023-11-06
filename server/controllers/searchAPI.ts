@@ -92,7 +92,7 @@ async function searchBooks(query: string, page: number = 1): Promise<any[]> {
             (book: { title: any; cover_i: any; key: any }) => ({
                 title: book.title,
                 cover: book.cover_i
-                    ? `http://covers.openlibrary.org/b/id/${book.cover_i}.jpg`
+                    ? `https://covers.openlibrary.org/b/id/${book.cover_i}.jpg`
                     : "",
                 has_instance: false,
                 api_key: book.key.replace("/works/", ""),
