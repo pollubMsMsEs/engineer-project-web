@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Person, PersonFromAPI } from "../../types/types";
+import { ExtractedErrors, Person, PersonFromAPI } from "../../types/types";
 import ErrorsDisplay from "../errorsDisplay/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./personForm.module.scss";
+import { tryExtractErrors } from "@/modules/errorsHandling";
 
 export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const router = useRouter();
@@ -13,7 +14,7 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const [nick, setNick] = useState(person?.nick ?? "");
     const [surname, setSurname] = useState(person?.surname ?? "");
 
-    const [errors, setErrors] = useState([]);
+    const [errors, setErrors] = useState<ExtractedErrors | undefined>();
 
     async function submitForm() {
         const submittedPerson: Person & { _id: string | undefined } = {
@@ -39,13 +40,21 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                   body: JSON.stringify(submittedPerson),
               });
 
-        const result = await response.json();
+        if (!response.ok) {
+            try {
+                const result = await response.json();
+                const errors = tryExtractErrors(result);
 
-        if (result.errors) {
-            setErrors(result.errors);
-        } else {
-            router.push("/person/all");
+                setErrors(errors);
+            } catch (e) {
+                console.error(e);
+            }
+
+            return;
         }
+
+        setErrors(undefined);
+        router.push("/person/all");
     }
 
     return (

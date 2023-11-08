@@ -7,6 +7,8 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./loginForm.module.scss";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
+import { ExtractedErrors } from "@/types/types";
+import { tryExtractErrors } from "@/modules/errorsHandling";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
@@ -15,7 +17,7 @@ export default function LoginForm() {
     });
     const [isFetching, setIsFetching] = useState(false);
 
-    const [errors, setErrors] = useState<{ msg: string }[]>([]);
+    const [errors, setErrors] = useState<ExtractedErrors | undefined>();
     const [errorsKey, setErrorsKey] = useState(new Date().toUTCString());
     const router = useRouter();
     const pathname = usePathname();
@@ -37,10 +39,11 @@ export default function LoginForm() {
                 body: JSON.stringify(user),
             });
             const result = await response.json();
+            const errors = tryExtractErrors(result);
 
-            if (result.errors) {
+            setErrors(errors);
+            if (errors) {
                 setIsFetching(false);
-                setErrors(result.errors);
             } else {
                 router.refresh();
             }

@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import styles from "./registerForm.module.scss";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
+import { ExtractedErrors } from "@/types/types";
+import { tryExtractErrors } from "@/modules/errorsHandling";
 
 export default function RegisterForm() {
     const [user, setUser] = useState({
@@ -16,7 +18,7 @@ export default function RegisterForm() {
     });
     const [isFetching, setIsFetching] = useState(false);
 
-    const [errors, setErrors] = useState<{ msg: string }[]>([]);
+    const [errors, setErrors] = useState<ExtractedErrors | undefined>();
     const [errorsKey, setErrorsKey] = useState(new Date().toUTCString());
     const router = useRouter();
     const pathname = usePathname();
@@ -38,10 +40,11 @@ export default function RegisterForm() {
                 body: JSON.stringify(user),
             });
             const result = await response.json();
+            const errors = tryExtractErrors(result);
 
-            if (result.errors) {
+            setErrors(errors);
+            if (errors) {
                 setIsFetching(false);
-                setErrors(result.errors);
             } else {
                 router.refresh();
             }

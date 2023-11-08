@@ -53,3 +53,19 @@ export type WorkInstanceFromAPI<T = WorkFromAPI> = WorkInstance & {
     user_id: string;
     work_id: T;
 };
+
+export interface ErrorObject {
+    type: "field" | string;
+    value: string;
+    msg: string;
+    path: string;
+    location: string;
+}
+
+export type ObjectWithPotentialError =
+    | { message: string; acknowledged: false }
+    | { error: string }
+    | { errors: ErrorObject[] }
+    | object;
+
+export type ExtractedErrors = string | ErrorObject[];

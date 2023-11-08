@@ -3,6 +3,8 @@
 import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import WorkForm from "@/components/workForm/WorkForm";
 import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
+import { tryExtractErrors } from "@/modules/errorsHandling";
+import { ExtractedErrors, ObjectWithPotentialError } from "@/types/types";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -11,7 +13,9 @@ export default function MeWorkCreate() {
     const [fetchingState, setFetchingState] = useState<
         "cover" | "work" | false
     >(false);
-    const [errors, setErrors] = useState<any[]>([]);
+    const [errors, setErrors] = useState<ExtractedErrors | undefined>(
+        undefined
+    );
 
     return (
         <>
@@ -37,10 +41,9 @@ export default function MeWorkCreate() {
                     if (!response.ok) {
                         try {
                             const result = await response.json();
+                            const errors = tryExtractErrors(result);
 
-                            if (result.errors) {
-                                setErrors(result.errors);
-                            }
+                            setErrors(errors);
                         } catch (e) {
                             console.error(e);
                         } finally {
@@ -50,6 +53,7 @@ export default function MeWorkCreate() {
                         return;
                     }
 
+                    setErrors(undefined);
                     const result = await response.json();
 
                     if (result.acknowledged) {

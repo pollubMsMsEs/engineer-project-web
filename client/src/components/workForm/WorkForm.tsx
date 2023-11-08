@@ -8,6 +8,7 @@ import {
     Person,
     WorkFromAPIPopulated,
     PersonFromAPI,
+    ExtractedErrors,
 } from "@/types/types";
 import PersonInWorkForm, {
     PersonInWorkFormType,
@@ -23,6 +24,7 @@ import Icon from "@mdi/react";
 import { mdiDisc, mdiFloppy } from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
+import { tryExtractErrors } from "@/modules/errorsHandling";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -116,7 +118,9 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [errors, setErrors] = useState<any[]>([]);
+    const [errors, setErrors] = useState<ExtractedErrors | undefined>(
+        undefined
+    );
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
@@ -175,12 +179,9 @@ export default function WorkForm({
             if (!response.ok) {
                 try {
                     const result = await response.json();
+                    const errors = tryExtractErrors(result);
 
-                    if (result.errors) {
-                        setErrors(result.errors);
-                    } else if (result.message) {
-                        setErrors([{ msg: result.message }]);
-                    }
+                    setErrors(errors);
                 } catch (e) {
                     console.error(e);
                 } finally {
@@ -251,10 +252,9 @@ export default function WorkForm({
         if (!response.ok) {
             try {
                 const result = await response.json();
+                const errors = tryExtractErrors(result);
 
-                if (result.errors) {
-                    setErrors(result.errors);
-                }
+                setErrors(errors);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -524,8 +524,8 @@ export default function WorkForm({
                         </option>
                     ))}
                 </datalist>
-                <button type="submit">{submitBtnText}</button>
                 <ErrorsDisplay errors={errors} />
+                <button type="submit">{submitBtnText}</button>
             </form>
         </div>
     );
