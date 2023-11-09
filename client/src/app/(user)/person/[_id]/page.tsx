@@ -11,5 +11,5 @@ export default async function PersonDetails({
     const result = await response.json();
     console.log(response, result);
 
-    return <Person person={result.data} />;
+    return <Person person={result.data} readOnly={false} />;
 }
