@@ -1,4 +1,4 @@
-import Person from "@/components/Person";
+import Person from "@/components/person/Person";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import React from "react";
 
@@ -11,5 +11,5 @@ export default async function PersonDetails({
     const result = await response.json();
     console.log(response, result);
 
-    return <Person person={result.data} />;
+    return <Person person={result.data} readOnly={false} />;
 }

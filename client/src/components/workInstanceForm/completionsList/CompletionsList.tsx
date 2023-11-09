@@ -3,7 +3,7 @@ import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 import dayjs from "dayjs";
 import React from "react";
-import Completion from "./Completion";
+import Completion from "./completion/Completion";
 
 export default function CompletionsList({
     published_at,
@@ -21,8 +21,6 @@ export default function CompletionsList({
     ) => void;
     removeCompletion: (completion: { id: number; completion: Date }) => void;
 }) {
-    const getUniqueKey = useUniqueKey(completions.length);
-
     return (
         <div>
             <button type="button" onClick={addCompletion}>

@@ -1,6 +1,6 @@
-import styles from "./loadingCircle.module.scss";
+import styles from "./loadingDisplay.module.scss";
 
-export default function LoadingCircle({
+export default function LoadingDisplay({
     size,
     text,
 }: {
@@ -9,13 +9,13 @@ export default function LoadingCircle({
 }) {
     return (
         <div
-            className={styles["loading-circle"]}
+            className={styles["loading-display"]}
             style={{
                 height: size,
             }}
         >
             <div
-                className={styles["loading-circle__circle"]}
+                className={styles["loading-display__circle"]}
                 style={{
                     aspectRatio: "1 / 1",
                     height: "100%",

@@ -1,45 +1,43 @@
 "use client";
 
-import React from "react";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import React, { useEffect } from "react";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./loginForm.module.scss";
-import LoadingCircle from "@/components/LoadingCircle";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
+import { ExtractedErrors } from "@/types/types";
+import { tryExtractErrors } from "@/modules/errorsHandling";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
-    const [isFetching, setIsFetching] = useState(false);
-
-    const [errors, setErrors] = useState<{ msg: string }[]>([]);
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<true>();
     const router = useRouter();
     const pathname = usePathname();
 
     async function onSubmit() {
-        try {
-            setIsFetching(true);
-            const response = await fetch(`/api${pathname}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(user),
-            });
-            const result = await response.json();
+        setFetchingState(true);
 
-            if (result.errors) {
-                setIsFetching(false);
-                setErrors(result.errors);
-            } else {
-                router.refresh();
-            }
-        } catch (error: any) {
-            console.error({ error });
-        }
+        const response = await fetch(`/api${pathname}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
+
+        if (await handleResponse(response)) router.refresh();
     }
 
     return (
@@ -53,7 +51,6 @@ export default function LoginForm() {
         >
             <h2>Login</h2>
 
-            <ErrorsDisplay errors={errors} />
             <input
                 type="email"
                 placeholder="Enter your email"
@@ -68,8 +65,9 @@ export default function LoginForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
+            <ErrorsDisplay key={errorsKey} errors={errors} />
             <button>
-                {isFetching ? <LoadingCircle size="15px" /> : "Login"}
+                {fetchingState ? <LoadingDisplay size="1.3em" /> : "Login"}
             </button>
             <Link href="/auth/register">
                 Don&apos;t have an account? Register

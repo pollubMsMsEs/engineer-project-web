@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { MetaObject, Person, PersonFromAPI } from "../types/types";
+import { MetaObject, Person, PersonFromAPI } from "../../types/types";
 import styles from "./person.module.scss";
 import Icon from "@mdi/react";
 import { mdiTrashCan } from "@mdi/js";

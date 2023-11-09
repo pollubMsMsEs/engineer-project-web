@@ -2,11 +2,11 @@ import React from "react";
 import styles from "./page.module.scss";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
-import WorkInstanceForm from "./WorkInstanceForm";
-import EditableWork from "./EditableWork";
-import DeleteWork from "./DeleteWork";
+import WorkInstanceForm from "@/components/workInstanceForm/WorkInstanceForm";
+import WorkEditable from "@/components/workEditable/WorkEditable";
+import DeleteWork from "@/components/deleteWorkButton/DeleteWorkButton";
 import { notFound } from "next/navigation";
-import Work from "@/components/Work";
+import Work from "@/components/work/Work";
 
 export default async function WorkInstance({
     params,
@@ -36,7 +36,7 @@ export default async function WorkInstance({
             {workInstance.from_api ? (
                 <Work work={workInstance.work_id} readOnly />
             ) : (
-                <EditableWork _work={workInstance.work_id} />
+                <WorkEditable _work={workInstance.work_id} />
             )}
 
             <WorkInstanceForm workInstance={workInstance} />

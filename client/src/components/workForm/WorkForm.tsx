@@ -8,19 +8,23 @@ import {
     Person,
     WorkFromAPIPopulated,
     PersonFromAPI,
+    ExtractedErrors,
 } from "@/types/types";
-import PersonInWorkForm, { PersonInWorkFormType } from "./PersonInWorkForm";
+import PersonInWorkForm, {
+    PersonInWorkFormType,
+} from "../personInWorkForm/PersonInWorkForm";
 import dayjs from "dayjs";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./workForm.module.scss";
 import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
-import FilePicker from "./filePicker/FilePicker";
+import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
 import { mdiDisc, mdiFloppy } from "@mdi/js";
 import Image from "next/image";
-import LoadingCircle from "./LoadingCircle";
+import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
+import { tryExtractErrors } from "@/modules/errorsHandling";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -50,13 +54,19 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
 
 export default function WorkForm({
     work,
+    errors,
+    errorsKey,
     fetchingState,
     setFetchingState,
+    handleResponse,
     onSubmit,
 }: {
     work?: WorkFromAPIPopulated;
+    errors: ExtractedErrors | undefined;
+    errorsKey: string;
     fetchingState: "cover" | "work" | false;
     setFetchingState: (state: "cover" | "work" | false) => void;
+    handleResponse: (response: Response) => Promise<any>;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
@@ -114,7 +124,6 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [errors, setErrors] = useState<any[]>([]);
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
@@ -168,27 +177,9 @@ export default function WorkForm({
                 body: formData,
             });
 
-            console.log(response);
+            const result = await handleResponse(response);
 
-            if (!response.ok) {
-                try {
-                    const result = await response.json();
-
-                    if (result.errors) {
-                        setErrors(result.errors);
-                    } else if (result.message) {
-                        setErrors([{ msg: result.message }]);
-                    }
-                } catch (e) {
-                    console.error(e);
-                } finally {
-                    setFetchingState(false);
-                }
-
-                return false;
-            }
-
-            const result = await response.json();
+            if (!result) return false;
 
             if (result.acknowledged) {
                 setIsCoverNew(false);
@@ -246,23 +237,10 @@ export default function WorkForm({
                   body: JSON.stringify(submittedWork),
               });
 
-        if (!response.ok) {
-            try {
-                const result = await response.json();
+        const result = await handleResponse(response);
 
-                if (result.errors) {
-                    setErrors(result.errors);
-                }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setFetchingState(false);
-            }
+        if (!result) return;
 
-            return;
-        }
-
-        const result = await response.json();
         const updatedWork: WorkFromAPIPopulated = work
             ? result.updated
             : result.created;
@@ -278,12 +256,15 @@ export default function WorkForm({
         switch (fetchingState) {
             case "cover":
                 submitBtnText = (
-                    <LoadingCircle size="15px" text={`Uploading photo... `} />
+                    <LoadingDisplay size="15px" text={`Uploading photo... `} />
                 );
                 break;
             case "work":
                 submitBtnText = (
-                    <LoadingCircle size="15px" text={`Uploading ${type}... `} />
+                    <LoadingDisplay
+                        size="15px"
+                        text={`Uploading ${type}... `}
+                    />
                 );
                 break;
         }
@@ -370,7 +351,6 @@ export default function WorkForm({
                     type="date"
                     name="published_at"
                     id="published_at"
-                    required
                     value={publishedAt}
                     onChange={(e) => {
                         setPublishedAt(e.target.value);
@@ -521,8 +501,8 @@ export default function WorkForm({
                         </option>
                     ))}
                 </datalist>
+                <ErrorsDisplay key={errorsKey} errors={errors} />
                 <button type="submit">{submitBtnText}</button>
-                <ErrorsDisplay errors={errors} />
             </form>
         </div>
     );

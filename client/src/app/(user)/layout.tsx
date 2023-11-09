@@ -1,10 +1,10 @@
 import React from "react";
-import Logo from "@/components/Logo";
+import Logo from "@/components/logo/Logo";
 import styles from "./layout.module.scss";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import jwtDecode from "jwt-decode";
-import ToastContainerWrapper from "@/components/ToastContainerWrapper";
+import ToastContainerWrapper from "@/components/toastContainerWrapper/ToastContainerWrapper";
 import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
 

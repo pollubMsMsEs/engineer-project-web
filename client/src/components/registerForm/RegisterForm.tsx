@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import ErrorsDisplay from "@/components/ErrorsDisplay";
+import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import styles from "./registerForm.module.scss";
-import LoadingCircle from "@/components/LoadingCircle";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
+import { ExtractedErrors } from "@/types/types";
+import { tryExtractErrors } from "@/modules/errorsHandling";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
 
 export default function RegisterForm() {
     const [user, setUser] = useState({
@@ -14,35 +17,30 @@ export default function RegisterForm() {
         email: "",
         password: "",
     });
-    const [isFetching, setIsFetching] = useState(false);
 
-    const [errors, setErrors] = useState<{ msg: string }[]>([]);
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<true>();
+
     const router = useRouter();
     const pathname = usePathname();
 
     async function onSubmit() {
-        try {
-            setIsFetching(true);
-            const response = await fetch(`/api${pathname}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(user),
-            });
-            const result = await response.json();
+        setFetchingState(true);
 
-            if (result.errors) {
-                setIsFetching(false);
-                setErrors(result.errors);
-            } else {
-                router.refresh();
-            }
-        } catch (error: any) {
-            setErrors(error.response.data.errors);
+        const response = await fetch(`/api${pathname}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
 
-            console.error(error.response);
-        }
+        if (await handleResponse(response)) router.refresh();
     }
 
     return (
@@ -55,7 +53,7 @@ export default function RegisterForm() {
             }}
         >
             <h2>Register</h2>
-            <ErrorsDisplay errors={errors} />
+
             <input
                 type="text"
                 placeholder="Enter your username"
@@ -77,8 +75,9 @@ export default function RegisterForm() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
+            <ErrorsDisplay key={errorsKey} errors={errors} />
             <button>
-                {isFetching ? <LoadingCircle size="15px" /> : "Register"}
+                {fetchingState ? <LoadingDisplay size="1.3rem" /> : "Register"}
             </button>
 
             <Link href="/auth/login">Already have an account? Login</Link>
