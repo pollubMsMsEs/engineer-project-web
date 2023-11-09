@@ -54,13 +54,19 @@ async function getPeopleToPick(): Promise<PersonWithID[]> {
 
 export default function WorkForm({
     work,
+    errors,
+    errorsKey,
     fetchingState,
     setFetchingState,
+    handleResponse,
     onSubmit,
 }: {
     work?: WorkFromAPIPopulated;
+    errors: ExtractedErrors | undefined;
+    errorsKey: string;
     fetchingState: "cover" | "work" | false;
     setFetchingState: (state: "cover" | "work" | false) => void;
+    handleResponse: (response: Response) => Promise<any>;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
 }) {
     const router = useRouter();
@@ -118,9 +124,6 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [errors, setErrors] = useState<ExtractedErrors | undefined>(
-        undefined
-    );
 
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
@@ -174,24 +177,9 @@ export default function WorkForm({
                 body: formData,
             });
 
-            console.log(response);
+            const result = await handleResponse(response);
 
-            if (!response.ok) {
-                try {
-                    const result = await response.json();
-                    const errors = tryExtractErrors(result);
-
-                    setErrors(errors);
-                } catch (e) {
-                    console.error(e);
-                } finally {
-                    setFetchingState(false);
-                }
-
-                return false;
-            }
-
-            const result = await response.json();
+            if (!result) return false;
 
             if (result.acknowledged) {
                 setIsCoverNew(false);
@@ -249,22 +237,10 @@ export default function WorkForm({
                   body: JSON.stringify(submittedWork),
               });
 
-        if (!response.ok) {
-            try {
-                const result = await response.json();
-                const errors = tryExtractErrors(result);
+        const result = await handleResponse(response);
 
-                setErrors(errors);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setFetchingState(false);
-            }
+        if (!result) return;
 
-            return;
-        }
-
-        const result = await response.json();
         const updatedWork: WorkFromAPIPopulated = work
             ? result.updated
             : result.created;
@@ -355,6 +331,7 @@ export default function WorkForm({
                     type="text"
                     name="title"
                     id="title"
+                    required
                     value={title}
                     onChange={(e) => {
                         setTitle(e.target.value);
@@ -524,7 +501,7 @@ export default function WorkForm({
                         </option>
                     ))}
                 </datalist>
-                <ErrorsDisplay errors={errors} />
+                <ErrorsDisplay key={errorsKey} errors={errors} />
                 <button type="submit">{submitBtnText}</button>
             </form>
         </div>

@@ -9,47 +9,35 @@ import styles from "./loginForm.module.scss";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 import { ExtractedErrors } from "@/types/types";
 import { tryExtractErrors } from "@/modules/errorsHandling";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
-    const [isFetching, setIsFetching] = useState(false);
-
-    const [errors, setErrors] = useState<ExtractedErrors | undefined>();
-    const [errorsKey, setErrorsKey] = useState(new Date().toUTCString());
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<true>();
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        if (!isFetching) {
-            setErrorsKey(new Date().toUTCString());
-        }
-    }, [isFetching]);
-
     async function onSubmit() {
-        try {
-            setIsFetching(true);
-            const response = await fetch(`/api${pathname}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(user),
-            });
-            const result = await response.json();
-            const errors = tryExtractErrors(result);
+        setFetchingState(true);
 
-            setErrors(errors);
-            if (errors) {
-                setIsFetching(false);
-            } else {
-                router.refresh();
-            }
-        } catch (error: any) {
-            console.error({ error });
-        }
+        const response = await fetch(`/api${pathname}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+        });
+
+        if (await handleResponse(response)) router.refresh();
     }
 
     return (
@@ -79,7 +67,7 @@ export default function LoginForm() {
             />
             <ErrorsDisplay key={errorsKey} errors={errors} />
             <button>
-                {isFetching ? <LoadingDisplay size="1.3em" /> : "Login"}
+                {fetchingState ? <LoadingDisplay size="1.3em" /> : "Login"}
             </button>
             <Link href="/auth/register">
                 Don&apos;t have an account? Register

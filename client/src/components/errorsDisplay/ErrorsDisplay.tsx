@@ -1,6 +1,5 @@
-import { ExtractedErrors, ObjectWithPotentialError } from "@/types/types";
+import { ExtractedErrors } from "@/types/types";
 import styles from "./errorsDisplay.module.scss";
-import { tryExtractErrors } from "@/modules/errorsHandling";
 
 export default function ErrorsDisplay({
     errors,

@@ -1,27 +1,28 @@
 "use client";
 
-import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import WorkForm from "@/components/workForm/WorkForm";
 import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
-import { tryExtractErrors } from "@/modules/errorsHandling";
-import { ExtractedErrors, ObjectWithPotentialError } from "@/types/types";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
 
 export default function MeWorkCreate() {
     const router = useRouter();
-    const [fetchingState, setFetchingState] = useState<
-        "cover" | "work" | false
-    >(false);
-    const [errors, setErrors] = useState<ExtractedErrors | undefined>(
-        undefined
-    );
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<"cover" | "work">();
 
     return (
         <>
             <WorkForm
+                errors={errors}
+                errorsKey={errorsKey}
                 fetchingState={fetchingState}
                 setFetchingState={setFetchingState}
+                handleResponse={handleResponse}
                 onSubmit={async (work) => {
                     const workInstance = {
                         ...DEFAULT_WORK_INSTANCE,
@@ -38,30 +39,12 @@ export default function MeWorkCreate() {
                         body: JSON.stringify(workInstance),
                     });
 
-                    if (!response.ok) {
-                        try {
-                            const result = await response.json();
-                            const errors = tryExtractErrors(result);
+                    const result = await handleResponse(response);
+                    if (!result) return;
 
-                            setErrors(errors);
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            setFetchingState(false);
-                        }
-
-                        return;
-                    }
-
-                    setErrors(undefined);
-                    const result = await response.json();
-
-                    if (result.acknowledged) {
-                        router.push(`/me/work/${result.created._id}`);
-                    }
+                    router.push(`/me/work/${result.created._id}`);
                 }}
             />
-            <ErrorsDisplay errors={errors} />
         </>
     );
 }

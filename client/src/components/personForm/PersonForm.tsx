@@ -6,6 +6,8 @@ import ErrorsDisplay from "../errorsDisplay/ErrorsDisplay";
 import { useRouter } from "next/navigation";
 import styles from "./personForm.module.scss";
 import { tryExtractErrors } from "@/modules/errorsHandling";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
+import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 
 export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const router = useRouter();
@@ -13,10 +15,18 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const [name, setName] = useState(person?.name ?? "");
     const [nick, setNick] = useState(person?.nick ?? "");
     const [surname, setSurname] = useState(person?.surname ?? "");
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<true>();
 
-    const [errors, setErrors] = useState<ExtractedErrors | undefined>();
+    const buttonText = person?._id ? "Update" : "Add";
 
     async function submitForm() {
+        setFetchingState(true);
         const submittedPerson: Person & { _id: string | undefined } = {
             _id: person?._id,
             name,
@@ -40,20 +50,10 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                   body: JSON.stringify(submittedPerson),
               });
 
-        if (!response.ok) {
-            try {
-                const result = await response.json();
-                const errors = tryExtractErrors(result);
+        const result = await handleResponse(response);
 
-                setErrors(errors);
-            } catch (e) {
-                console.error(e);
-            }
+        if (!result) return;
 
-            return;
-        }
-
-        setErrors(undefined);
         router.push("/person/all");
     }
 
@@ -74,8 +74,8 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                     type="text"
                     name="name"
                     id="name"
-                    value={name}
                     required
+                    value={name}
                     onChange={(e) => {
                         setName(e.target.value);
                     }}
@@ -101,9 +101,15 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                         setSurname(e.target.value);
                     }}
                 />
-                <button type="submit">{person?._id ? "Update" : "Add"}</button>
+                <button type="submit">
+                    {fetchingState ? (
+                        <LoadingDisplay size="1.3rem" />
+                    ) : (
+                        buttonText
+                    )}
+                </button>
             </form>
-            <ErrorsDisplay errors={errors} />
+            <ErrorsDisplay key={errorsKey} errors={errors} />
         </div>
     );
 }

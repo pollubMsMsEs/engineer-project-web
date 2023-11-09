@@ -2,6 +2,7 @@
 
 import Work from "@/components/work/Work";
 import WorkForm from "@/components/workForm/WorkForm";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
 import { WorkFromAPIPopulated } from "@/types/types";
 import { mdiPencil } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -16,17 +17,24 @@ export default function WorkEditable({
 }) {
     const [isEditable, setIsEditable] = useState(false);
     const [work, setWork] = useState(_work);
-    const [fetchingState, setFetchingState] = useState<
-        "cover" | "work" | false
-    >(false);
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<"cover" | "work">();
 
     return (
         <div style={{ gridArea }}>
             {isEditable ? (
                 <WorkForm
                     work={work}
+                    errors={errors}
+                    errorsKey={errorsKey}
                     fetchingState={fetchingState}
                     setFetchingState={setFetchingState}
+                    handleResponse={handleResponse}
                     onSubmit={async (work) => {
                         setWork(work);
                         setIsEditable(false);
