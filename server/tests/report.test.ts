@@ -538,7 +538,20 @@ describe("getCompletedCount", () => {
 
         await handleReport(req, res);
 
-        const expected = 5;
+        const expected = [
+            {
+                day: "2021-01-01",
+                total: 2,
+            },
+            {
+                day: "2021-01-02",
+                total: 3,
+            },
+            {
+                day: "2021-01-03",
+                total: 2,
+            },
+        ];
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,
@@ -565,7 +578,20 @@ describe("getCompletedCount", () => {
 
         await handleReport(req, res);
 
-        const expected = 5;
+        const expected = [
+            {
+                day: "2021-01-01",
+                total: 2,
+            },
+            {
+                day: "2021-01-02",
+                total: 3,
+            },
+            {
+                day: "2021-01-03",
+                total: 2,
+            },
+        ];
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,

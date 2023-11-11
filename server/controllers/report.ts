@@ -417,20 +417,25 @@ async function getCompletedCount(req: Request | any) {
                 },
             },
             { $unwind: "$work_details.people.person_info" },
+            { $unwind: "$completions" },
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
             {
-                $group: {
-                    _id: null,
-                    completedCount: {
-                        $sum: {
-                            $cond: [
-                                { $gt: ["$number_of_completions", 0] },
-                                1,
-                                0,
-                            ],
+                $project: {
+                    completionDate: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$completions",
                         },
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$completionDate",
+                    completedCount: {
+                        $sum: 1,
                     },
                 },
             },
@@ -449,6 +454,7 @@ async function getCompletedCount(req: Request | any) {
                           },
                       },
                       { $unwind: "$work_details" },
+                      { $unwind: "$completions" },
                       ...(conditions.filter((cond) => !cond["$or"]).length > 0
                           ? [
                                 {
@@ -461,21 +467,20 @@ async function getCompletedCount(req: Request | any) {
                             ]
                           : []),
                       {
-                          $group: {
-                              _id: null,
-                              completedCount: {
-                                  $sum: {
-                                      $cond: [
-                                          {
-                                              $gt: [
-                                                  "$number_of_completions",
-                                                  0,
-                                              ],
-                                          },
-                                          1,
-                                          0,
-                                      ],
+                          $project: {
+                              completionDate: {
+                                  $dateToString: {
+                                      format: "%Y-%m-%d",
+                                      date: "$completions",
                                   },
+                              },
+                          },
+                      },
+                      {
+                          $group: {
+                              _id: "$completionDate",
+                              completedCount: {
+                                  $sum: 1,
                               },
                           },
                       },
@@ -488,11 +493,19 @@ async function getCompletedCount(req: Request | any) {
         { $facet: facetPipeline },
     ]).exec();
 
-    const worksResult = result[0].works?.[0];
-    const worksFromApiResult = result[0].worksFromAPI?.[0];
-    const totalCompletedCount =
-        (worksResult ? worksResult.completedCount : 0) +
-        (worksFromApiResult ? worksFromApiResult.completedCount : 0);
+    const combinedResults = [
+        ...(result[0].works ?? []),
+        ...(result[0].worksFromAPI ?? []),
+    ];
 
-    return totalCompletedCount;
+    const sumResults = combinedResults.reduce((acc, item) => {
+        acc[item._id] = (acc[item._id] || 0) + item.completedCount;
+        return acc;
+    }, {});
+
+    const sortedResults = Object.entries(sumResults)
+        .map(([date, count]) => ({ day: date, total: count }))
+        .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
+
+    return sortedResults;
 }
