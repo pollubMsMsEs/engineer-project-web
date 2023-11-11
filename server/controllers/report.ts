@@ -98,7 +98,7 @@ function generateQueryConditions(query: ReportQuery) {
     return conditions;
 }
 
-export async function getAverageCompletionTime(req: Request | any) {
+async function getAverageCompletionTime(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
