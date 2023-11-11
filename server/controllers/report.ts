@@ -74,19 +74,19 @@ function generateQueryConditions(query: ReportQuery) {
         conditions.push({
             $or: [
                 {
-                    "work_details.people.person_id.name": new RegExp(
+                    "work_details.people.person_info.name": new RegExp(
                         query.person,
                         "i"
                     ),
                 },
                 {
-                    "work_details.people.person_id.nick": new RegExp(
+                    "work_details.people.person_info.nick": new RegExp(
                         query.person,
                         "i"
                     ),
                 },
                 {
-                    "work_details.people.person_id.surname": new RegExp(
+                    "work_details.people.person_info.surname": new RegExp(
                         query.person,
                         "i"
                     ),
@@ -102,84 +102,97 @@ export async function getAverageCompletionTime(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
-    const result = await WorkInstance.aggregate([
-        {
-            $match: { user_id: userId },
-        },
-        {
-            $facet: {
-                works: [
-                    { $match: { onModel: "Work" } },
-                    {
-                        $lookup: {
-                            from: "works",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.length > 0
-                        ? [{ $match: { $and: conditions } }]
-                        : []),
-                    {
-                        $project: {
-                            completionTime: {
-                                $subtract: ["$finished_at", "$began_at"],
-                            },
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            total: { $sum: "$completionTime" },
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
-                worksFromAPI: [
-                    { $match: { onModel: "WorkFromAPI" } },
-                    {
-                        $lookup: {
-                            from: "worksFromAPI",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.filter((cond) => !cond["$or"]).length > 0
-                        ? [
-                              {
-                                  $match: {
-                                      $and: conditions.filter(
-                                          (cond) => !cond["$or"]
-                                      ),
-                                  },
-                              },
-                          ]
-                        : []),
-                    {
-                        $project: {
-                            completionTime: {
-                                $subtract: ["$finished_at", "$began_at"],
-                            },
-                        },
-                    },
-                    {
-                        $group: {
-                            _id: null,
-                            total: { $sum: "$completionTime" },
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
+    const isPersonQueryPresent = conditions.some((cond) => cond["$or"]);
+
+    const facetPipeline = {
+        works: [
+            { $match: { onModel: "Work" } },
+            {
+                $lookup: {
+                    from: "works",
+                    localField: "work_id",
+                    foreignField: "_id",
+                    as: "work_details",
+                },
             },
-        },
+            { $unwind: "$work_details" },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "work_details.people.person_id",
+                    foreignField: "_id",
+                    as: "work_details.people.person_info",
+                },
+            },
+            { $unwind: "$work_details.people.person_info" },
+            ...(conditions.length > 0
+                ? [{ $match: { $and: conditions } }]
+                : []),
+            {
+                $project: {
+                    completionTime: {
+                        $subtract: ["$finished_at", "$began_at"],
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$completionTime" },
+                    count: { $sum: 1 },
+                },
+            },
+        ],
+        ...(isPersonQueryPresent
+            ? {}
+            : {
+                  worksFromAPI: [
+                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $lookup: {
+                              from: "worksFromAPI",
+                              localField: "work_id",
+                              foreignField: "_id",
+                              as: "work_details",
+                          },
+                      },
+                      { $unwind: "$work_details" },
+                      ...(conditions.filter((cond) => !cond["$or"]).length > 0
+                          ? [
+                                {
+                                    $match: {
+                                        $and: conditions.filter(
+                                            (cond) => !cond["$or"]
+                                        ),
+                                    },
+                                },
+                            ]
+                          : []),
+                      {
+                          $project: {
+                              completionTime: {
+                                  $subtract: ["$finished_at", "$began_at"],
+                              },
+                          },
+                      },
+                      {
+                          $group: {
+                              _id: null,
+                              total: { $sum: "$completionTime" },
+                              count: { $sum: 1 },
+                          },
+                      },
+                  ],
+              }),
+    };
+
+    const result = await WorkInstance.aggregate([
+        { $match: { user_id: userId } },
+        { $facet: facetPipeline },
     ]).exec();
 
-    const worksResult = result[0].works[0];
-    const worksFromApiResult = result[0].worksFromAPI[0];
+    const worksResult = result[0].works?.[0];
+    const worksFromApiResult = result[0].worksFromAPI?.[0];
     const totalCompletionTime =
         (worksResult ? worksResult.total : 0) +
         (worksFromApiResult ? worksFromApiResult.total : 0);
@@ -194,70 +207,83 @@ async function getAverageRating(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
-    const result = await WorkInstance.aggregate([
-        {
-            $match: { user_id: userId },
-        },
-        {
-            $facet: {
-                works: [
-                    { $match: { onModel: "Work" } },
-                    {
-                        $lookup: {
-                            from: "works",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.length > 0
-                        ? [{ $match: { $and: conditions } }]
-                        : []),
-                    {
-                        $group: {
-                            _id: null,
-                            sumRating: { $sum: "$rating" },
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
-                worksFromAPI: [
-                    { $match: { onModel: "WorkFromAPI" } },
-                    {
-                        $lookup: {
-                            from: "worksFromAPI",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.filter((cond) => !cond["$or"]).length > 0
-                        ? [
-                              {
-                                  $match: {
-                                      $and: conditions.filter(
-                                          (cond) => !cond["$or"]
-                                      ),
-                                  },
-                              },
-                          ]
-                        : []),
-                    {
-                        $group: {
-                            _id: null,
-                            sumRating: { $sum: "$rating" },
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
+    const isPersonQueryPresent = conditions.some((cond) => cond["$or"]);
+
+    const facetPipeline = {
+        works: [
+            { $match: { onModel: "Work" } },
+            {
+                $lookup: {
+                    from: "works",
+                    localField: "work_id",
+                    foreignField: "_id",
+                    as: "work_details",
+                },
             },
-        },
+            { $unwind: "$work_details" },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "work_details.people.person_id",
+                    foreignField: "_id",
+                    as: "work_details.people.person_info",
+                },
+            },
+            { $unwind: "$work_details.people.person_info" },
+            ...(conditions.length > 0
+                ? [{ $match: { $and: conditions } }]
+                : []),
+            {
+                $group: {
+                    _id: null,
+                    sumRating: { $sum: "$rating" },
+                    count: { $sum: 1 },
+                },
+            },
+        ],
+        ...(isPersonQueryPresent
+            ? {}
+            : {
+                  worksFromAPI: [
+                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $lookup: {
+                              from: "worksFromAPI",
+                              localField: "work_id",
+                              foreignField: "_id",
+                              as: "work_details",
+                          },
+                      },
+                      { $unwind: "$work_details" },
+                      ...(conditions.filter((cond) => !cond["$or"]).length > 0
+                          ? [
+                                {
+                                    $match: {
+                                        $and: conditions.filter(
+                                            (cond) => !cond["$or"]
+                                        ),
+                                    },
+                                },
+                            ]
+                          : []),
+                      {
+                          $group: {
+                              _id: null,
+                              sumRating: { $sum: "$rating" },
+                              count: { $sum: 1 },
+                          },
+                      },
+                  ],
+              }),
+    };
+
+    const result = await WorkInstance.aggregate([
+        { $match: { user_id: userId } },
+        { $facet: facetPipeline },
     ]).exec();
 
-    const worksResult = result[0].works[0];
-    const worksFromApiResult = result[0].worksFromAPI[0];
+    const worksResult = result[0].works?.[0];
+    const worksFromApiResult = result[0].worksFromAPI?.[0];
     const totalRating =
         (worksResult ? worksResult.sumRating : 0) +
         (worksFromApiResult ? worksFromApiResult.sumRating : 0);
@@ -272,67 +298,83 @@ async function getCountByType(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
-    const result = await WorkInstance.aggregate([
-        {
-            $match: { user_id: userId },
-        },
-        {
-            $facet: {
-                works: [
-                    { $match: { onModel: "Work" } },
-                    {
-                        $lookup: {
-                            from: "works",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.length > 0
-                        ? [{ $match: { $and: conditions } }]
-                        : []),
-                    {
-                        $group: {
-                            _id: "$type",
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
-                worksFromAPI: [
-                    { $match: { onModel: "WorkFromAPI" } },
-                    {
-                        $lookup: {
-                            from: "worksFromAPI",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.filter((cond) => !cond["$or"]).length > 0
-                        ? [
-                              {
-                                  $match: {
-                                      $and: conditions.filter(
-                                          (cond) => !cond["$or"]
-                                      ),
-                                  },
-                              },
-                          ]
-                        : []),
-                    {
-                        $group: {
-                            _id: "$type",
-                            count: { $sum: 1 },
-                        },
-                    },
-                ],
+    const isPersonQueryPresent = conditions.some((cond) => cond["$or"]);
+
+    const facetPipeline = {
+        works: [
+            { $match: { onModel: "Work" } },
+            {
+                $lookup: {
+                    from: "works",
+                    localField: "work_id",
+                    foreignField: "_id",
+                    as: "work_details",
+                },
             },
-        },
+            { $unwind: "$work_details" },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "work_details.people.person_id",
+                    foreignField: "_id",
+                    as: "work_details.people.person_info",
+                },
+            },
+            { $unwind: "$work_details.people.person_info" },
+            ...(conditions.length > 0
+                ? [{ $match: { $and: conditions } }]
+                : []),
+            {
+                $group: {
+                    _id: "$type",
+                    count: { $sum: 1 },
+                },
+            },
+        ],
+        ...(isPersonQueryPresent
+            ? {}
+            : {
+                  worksFromAPI: [
+                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $lookup: {
+                              from: "worksFromAPI",
+                              localField: "work_id",
+                              foreignField: "_id",
+                              as: "work_details",
+                          },
+                      },
+                      { $unwind: "$work_details" },
+                      ...(conditions.filter((cond) => !cond["$or"]).length > 0
+                          ? [
+                                {
+                                    $match: {
+                                        $and: conditions.filter(
+                                            (cond) => !cond["$or"]
+                                        ),
+                                    },
+                                },
+                            ]
+                          : []),
+                      {
+                          $group: {
+                              _id: "$type",
+                              count: { $sum: 1 },
+                          },
+                      },
+                  ],
+              }),
+    };
+
+    const result = await WorkInstance.aggregate([
+        { $match: { user_id: userId } },
+        { $facet: facetPipeline },
     ]).exec();
 
-    const combinedResults = [...result[0].works, ...result[0].worksFromAPI];
+    const combinedResults = [
+        ...(result[0].works ?? []),
+        ...(result[0].worksFromAPI ?? []),
+    ];
 
     const countByType = combinedResults.reduce((acc, item) => {
         acc[item._id] = (acc[item._id] || 0) + item.count;
@@ -352,84 +394,102 @@ async function getCompletedCount(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
-    const result = await WorkInstance.aggregate([
-        {
-            $match: { user_id: userId },
-        },
-        {
-            $facet: {
-                works: [
-                    { $match: { onModel: "Work" } },
-                    {
-                        $lookup: {
-                            from: "works",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
+    const isPersonQueryPresent = conditions.some((cond) => cond["$or"]);
+
+    const facetPipeline = {
+        works: [
+            { $match: { onModel: "Work" } },
+            {
+                $lookup: {
+                    from: "works",
+                    localField: "work_id",
+                    foreignField: "_id",
+                    as: "work_details",
+                },
+            },
+            { $unwind: "$work_details" },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "work_details.people.person_id",
+                    foreignField: "_id",
+                    as: "work_details.people.person_info",
+                },
+            },
+            { $unwind: "$work_details.people.person_info" },
+            ...(conditions.length > 0
+                ? [{ $match: { $and: conditions } }]
+                : []),
+            {
+                $group: {
+                    _id: null,
+                    completedCount: {
+                        $sum: {
+                            $cond: [
+                                { $gt: ["$number_of_completions", 0] },
+                                1,
+                                0,
+                            ],
                         },
                     },
-                    { $unwind: "$work_details" },
-                    ...(conditions.length > 0
-                        ? [{ $match: { $and: conditions } }]
-                        : []),
-                    {
-                        $group: {
-                            _id: null,
-                            completedCount: {
-                                $sum: {
-                                    $cond: [
-                                        { $gt: ["$number_of_completions", 0] },
-                                        1,
-                                        0,
-                                    ],
+                },
+            },
+        ],
+        ...(isPersonQueryPresent
+            ? {}
+            : {
+                  worksFromAPI: [
+                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $lookup: {
+                              from: "worksFromAPI",
+                              localField: "work_id",
+                              foreignField: "_id",
+                              as: "work_details",
+                          },
+                      },
+                      { $unwind: "$work_details" },
+                      ...(conditions.filter((cond) => !cond["$or"]).length > 0
+                          ? [
+                                {
+                                    $match: {
+                                        $and: conditions.filter(
+                                            (cond) => !cond["$or"]
+                                        ),
+                                    },
                                 },
-                            },
-                        },
-                    },
-                ],
-                worksFromAPI: [
-                    { $match: { onModel: "WorkFromAPI" } },
-                    {
-                        $lookup: {
-                            from: "worksFromAPI",
-                            localField: "work_id",
-                            foreignField: "_id",
-                            as: "work_details",
-                        },
-                    },
-                    { $unwind: "$work_details" },
-                    ...(conditions.filter((cond) => !cond["$or"]).length > 0
-                        ? [
-                              {
-                                  $match: {
-                                      $and: conditions.filter(
-                                          (cond) => !cond["$or"]
-                                      ),
+                            ]
+                          : []),
+                      {
+                          $group: {
+                              _id: null,
+                              completedCount: {
+                                  $sum: {
+                                      $cond: [
+                                          {
+                                              $gt: [
+                                                  "$number_of_completions",
+                                                  0,
+                                              ],
+                                          },
+                                          1,
+                                          0,
+                                      ],
                                   },
                               },
-                          ]
-                        : []),
-                    {
-                        $group: {
-                            _id: null,
-                            completedCount: {
-                                $sum: {
-                                    $cond: [
-                                        { $gt: ["$number_of_completions", 0] },
-                                        1,
-                                        0,
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                ],
-            },
-        },
+                          },
+                      },
+                  ],
+              }),
+    };
+
+    const result = await WorkInstance.aggregate([
+        { $match: { user_id: userId } },
+        { $facet: facetPipeline },
     ]).exec();
 
-    const worksResult = result[0].works[0];
-    const worksFromApiResult = result[0].worksFromAPI[0];
+    const worksResult = result[0].works?.[0];
+    const worksFromApiResult = result[0].worksFromAPI?.[0];
     const totalCompletedCount =
         (worksResult ? worksResult.completedCount : 0) +
         (worksFromApiResult ? worksFromApiResult.completedCount : 0);
