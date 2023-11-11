@@ -5,6 +5,7 @@ import workFromAPIRouter from "./api/workFromAPI.js";
 import personRouter from "./api/person.js";
 import imageRouter from "./api/image.js";
 import searchRouter from "./api/searchAPI.js";
+import reportRouter from "./api/report.js";
 import { validationResult } from "express-validator";
 import { login, register } from "../controllers/user.js";
 import { isValid } from "../controllers/validate.js";
@@ -23,6 +24,7 @@ router.use("/workFromAPI", jwtMiddleware, workFromAPIRouter);
 router.use("/person", jwtMiddleware, personRouter);
 router.use("/image", imageRouter);
 router.use("/search", jwtMiddleware, searchRouter);
+router.use("/report", jwtMiddleware, reportRouter);
 
 router.use((err: any, req: Request, res: Response, next: NextFunction) => {
     const valResult = validationResult(req);
