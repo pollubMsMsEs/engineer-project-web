@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+    client:
+        build:
+            context: ./client
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        environment:
+            - API_ADDRESS=http://server:7777/api
+        depends_on:
+            - server
+
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        ports:
+            - "7777:7777"
+        environment:
+            - MONGODB=mongodb://db:27017/culture_bucket_list
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: mongo:7.0
+        restart: always
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo-data:/data/db
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'",
+                ]
+            interval: 10s
+            timeout: 10s
+            retries: 7
+            start_period: 40s
+
+volumes:
+    mongo-data:
