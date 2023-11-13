@@ -37,9 +37,13 @@ export async function handleReport(req: Request | any, res: Response) {
                     },
                 };
                 break;
-            case "completed_count":
-                result = await getCompletedCount(req);
-                responseData = { completed_count: result };
+            case "completions_by_date":
+                result = await getCompletionsByDate(req);
+                responseData = { completions_by_date: result };
+                break;
+            case "finished_count":
+                result = await getFinishedCount(req);
+                responseData = { finished_count: result };
                 break;
             default:
                 return res.status(400).json({
@@ -390,7 +394,7 @@ async function getCountByType(req: Request | any) {
     return finalResults;
 }
 
-async function getCompletedCount(req: Request | any) {
+async function getCompletionsByDate(req: Request | any) {
     const conditions = generateQueryConditions(req.query as ReportQuery);
     const userId = new mongoose.Types.ObjectId(req.auth._id);
 
@@ -508,4 +512,111 @@ async function getCompletedCount(req: Request | any) {
         .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
 
     return sortedResults;
+}
+
+async function getFinishedCount(req: Request | any) {
+    const conditions = generateQueryConditions(req.query as ReportQuery);
+    const userId = new mongoose.Types.ObjectId(req.auth._id);
+
+    const isPersonQueryPresent = conditions.some((cond) => cond["$or"]);
+
+    const facetPipeline = {
+        works: [
+            { $match: { onModel: "Work" } },
+            {
+                $lookup: {
+                    from: "works",
+                    localField: "work_id",
+                    foreignField: "_id",
+                    as: "work_details",
+                },
+            },
+            { $unwind: "$work_details" },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "work_details.people.person_id",
+                    foreignField: "_id",
+                    as: "work_details.people.person_info",
+                },
+            },
+            { $unwind: "$work_details.people.person_info" },
+            ...(conditions.length > 0
+                ? [{ $match: { $and: conditions } }]
+                : []),
+            {
+                $group: {
+                    _id: null,
+                    completedCount: {
+                        $sum: {
+                            $cond: [
+                                { $gt: ["$number_of_completions", 0] },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                },
+            },
+        ],
+        ...(isPersonQueryPresent
+            ? {}
+            : {
+                  worksFromAPI: [
+                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $lookup: {
+                              from: "worksFromAPI",
+                              localField: "work_id",
+                              foreignField: "_id",
+                              as: "work_details",
+                          },
+                      },
+                      { $unwind: "$work_details" },
+                      ...(conditions.filter((cond) => !cond["$or"]).length > 0
+                          ? [
+                                {
+                                    $match: {
+                                        $and: conditions.filter(
+                                            (cond) => !cond["$or"]
+                                        ),
+                                    },
+                                },
+                            ]
+                          : []),
+                      {
+                          $group: {
+                              _id: null,
+                              completedCount: {
+                                  $sum: {
+                                      $cond: [
+                                          {
+                                              $gt: [
+                                                  "$number_of_completions",
+                                                  0,
+                                              ],
+                                          },
+                                          1,
+                                          0,
+                                      ],
+                                  },
+                              },
+                          },
+                      },
+                  ],
+              }),
+    };
+
+    const result = await WorkInstance.aggregate([
+        { $match: { user_id: userId } },
+        { $facet: facetPipeline },
+    ]).exec();
+
+    const worksResult = result[0].works?.[0];
+    const worksFromApiResult = result[0].worksFromAPI?.[0];
+    const totalCompletedCount =
+        (worksResult ? worksResult.completedCount : 0) +
+        (worksFromApiResult ? worksFromApiResult.completedCount : 0);
+
+    return totalCompletedCount;
 }

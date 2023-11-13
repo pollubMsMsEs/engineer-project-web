@@ -396,7 +396,7 @@ describe("getAverageCompletionTime", () => {
 });
 
 describe("getAverageRating", () => {
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (bez query)", async () => {
+    it("powinno zwrócić średnią ocenę dla wszystkich dzieł (bez query)", async () => {
         const req = {
             query: {},
             params: { reportType: "average_rating" },
@@ -423,7 +423,7 @@ describe("getAverageRating", () => {
             average_rating: expected,
         });
     });
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (z query)", async () => {
+    it("powinno zwrócić średnią ocenę dla wszystkich dzieł (z query)", async () => {
         const req = {
             query: { type: "book,movie,game" },
             params: { reportType: "average_rating" },
@@ -453,7 +453,7 @@ describe("getAverageRating", () => {
 });
 
 describe("getCountByType", () => {
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (bez query)", async () => {
+    it("powinno zwrócić liczbę dzieł według typu (bez query)", async () => {
         const req = {
             query: {},
             params: { reportType: "count_by_type" },
@@ -484,7 +484,7 @@ describe("getCountByType", () => {
             count_by_type: expected,
         });
     });
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (z query)", async () => {
+    it("powinno zwrócić liczbę dzieł według typu (z query)", async () => {
         const req = {
             query: { type: "book,movie,game" },
             params: { reportType: "count_by_type" },
@@ -517,11 +517,11 @@ describe("getCountByType", () => {
     });
 });
 
-describe("getCompletedCount", () => {
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (bez query)", async () => {
+describe("getFinishedCount", () => {
+    it("powinno zwrócić liczbę ukończonych dzieł (bez query)", async () => {
         const req = {
             query: {},
-            params: { reportType: "completed_count" },
+            params: { reportType: "finished_count" },
             auth: {
                 _id: userId,
             },
@@ -538,30 +538,47 @@ describe("getCompletedCount", () => {
 
         await handleReport(req, res);
 
-        const expected = [
-            {
-                day: "2021-01-01",
-                total: 2,
-            },
-            {
-                day: "2021-01-02",
-                total: 3,
-            },
-            {
-                day: "2021-01-03",
-                total: 2,
-            },
-        ];
+        const expected = 5;
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,
-            completed_count: expected,
+            finished_count: expected,
         });
     });
-    it("powinno zwrócić średni czas ukończenia dla wszystkich dzieł (z query)", async () => {
+    it("powinno zwrócić liczbę ukończonych dzieł (z query)", async () => {
         const req = {
-            query: { type: "book,movie,game" },
-            params: { reportType: "completed_count" },
+            query: { type: "book" },
+            params: { reportType: "finished_count" },
+            auth: {
+                _id: userId,
+            },
+        };
+
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        } as any;
+
+        res.json.mockImplementation((data: any) => {
+            return { ...data };
+        });
+
+        await handleReport(req, res);
+
+        const expected = 2;
+
+        expect(res.json).toHaveBeenCalledWith({
+            acknowledged: true,
+            finished_count: expected,
+        });
+    });
+});
+
+describe("getCompletionsByDate", () => {
+    it("powinno zwrócić listę ukończeń dzieł według daty (bez query)", async () => {
+        const req = {
+            query: {},
+            params: { reportType: "completions_by_date" },
             auth: {
                 _id: userId,
             },
@@ -595,7 +612,47 @@ describe("getCompletedCount", () => {
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,
-            completed_count: expected,
+            completions_by_date: expected,
+        });
+    });
+    it("powinno zwrócić listę ukończeń dzieł według daty (z query)", async () => {
+        const req = {
+            query: { type: "book" },
+            params: { reportType: "completions_by_date" },
+            auth: {
+                _id: userId,
+            },
+        };
+
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        } as any;
+
+        res.json.mockImplementation((data: any) => {
+            return { ...data };
+        });
+
+        await handleReport(req, res);
+
+        const expected = [
+            {
+                day: "2021-01-01",
+                total: 1,
+            },
+            {
+                day: "2021-01-02",
+                total: 1,
+            },
+            {
+                day: "2021-01-03",
+                total: 1,
+            },
+        ];
+
+        expect(res.json).toHaveBeenCalledWith({
+            acknowledged: true,
+            completions_by_date: expected,
         });
     });
 });
