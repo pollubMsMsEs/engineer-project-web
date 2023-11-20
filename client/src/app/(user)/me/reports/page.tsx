@@ -10,6 +10,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import Icon from "@mdi/react";
 import { mdiClock, mdiMarkerCheck } from "@mdi/js";
+import {
+    Chart as ChartJS,
+    DoughnutController,
+    ArcElement,
+    Tooltip,
+    Legend,
+} from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+
+ChartJS.register(DoughnutController, ArcElement, Tooltip, Legend);
 
 /*average_completion_time
 average_rating
@@ -63,12 +73,37 @@ export default function Reports() {
         setCountByType(countByType.count_by_type);
     }, []);
 
+    const countByTypeData = {
+        labels: ["Books", "Movies", "Games"],
+        datasets: [
+            {
+                label: "Count",
+                data: [
+                    countByType?.book,
+                    countByType?.movie,
+                    countByType?.game,
+                ],
+                backgroundColor: ["#10b981", "#ef4444", "#2563eb"],
+                hoverOffset: 4,
+            },
+        ],
+    };
+
     useEffect(() => {
         updateReports();
     }, [updateReports]);
 
     return (
         <div className={styles["reports"]}>
+            <ReportContainer
+                title="Count by types"
+                value={countByType}
+                gridArea="c1"
+            >
+                <div className={styles["reports__chart"]}>
+                    <Doughnut data={countByTypeData} />
+                </div>
+            </ReportContainer>
             <ReportContainer
                 title="Average completion time"
                 value={averageCompletionTime}

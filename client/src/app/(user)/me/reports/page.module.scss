@@ -1,10 +1,21 @@
 .reports {
     display: grid;
-    grid-auto-flow: column;
+    grid-template:
+        "c1 a1" 1fr
+        "c1 a2" 1fr
+        "c1 a3" 1fr
+        "c2 c2" auto / 1fr 1fr;
+    gap: 30px;
+    margin: 25px 0;
 
     &__inline {
         display: flex;
         gap: 10px;
         align-items: center;
+    }
+
+    &__chart {
+        position: relative;
+        display: grid;
     }
 }
