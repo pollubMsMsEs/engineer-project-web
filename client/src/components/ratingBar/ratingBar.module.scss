@@ -4,6 +4,8 @@
     width: min-content;
 
     &__star {
+        display: grid;
+        place-items: center;
         color: white;
 
         &--selected,
