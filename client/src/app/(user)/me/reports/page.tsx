@@ -41,6 +41,8 @@ export default function Reports() {
         movie: number;
         game: number;
     }>();
+    const [completionsByDate, setCompletionsByDate] =
+        useState<{ day: Date; total: number }[]>();
 
     const updateReports = useCallback(async () => {
         const [
@@ -48,6 +50,7 @@ export default function Reports() {
             averageRating,
             finishedCount,
             countByType,
+            completionsByDate,
         ] = await Promise.all(
             (
                 await Promise.all([
@@ -63,6 +66,9 @@ export default function Reports() {
                     fetch("/api/report/count_by_type", {
                         method: "GET",
                     }),
+                    fetch("/api/report/completions_by_date", {
+                        method: "GET",
+                    }),
                 ])
             ).map(async (response) => await response.json())
         );
@@ -71,9 +77,20 @@ export default function Reports() {
         setAverageRating(averageRating.average_rating);
         setFinishedCount(finishedCount.finished_count);
         setCountByType(countByType.count_by_type);
+        setCompletionsByDate(
+            (
+                completionsByDate.completions_by_date as {
+                    day: string;
+                    total: number;
+                }[]
+            ).map((completion) => ({
+                day: new Date(completion.day),
+                total: completion.total,
+            }))
+        );
     }, []);
 
-    const countByTypeData = {
+    const countByTypeChartData = {
         labels: ["Books", "Movies", "Games"],
         datasets: [
             {
@@ -89,6 +106,10 @@ export default function Reports() {
         ],
     };
 
+    const completionsByMonth = "Da";
+
+    const completionsByDateChartData = {};
+
     useEffect(() => {
         updateReports();
     }, [updateReports]);
@@ -96,12 +117,12 @@ export default function Reports() {
     return (
         <div className={styles["reports"]}>
             <ReportContainer
-                title="Count by types"
+                title="Collection"
                 value={countByType}
                 gridArea="c1"
             >
                 <div className={styles["reports__chart"]}>
-                    <Doughnut data={countByTypeData} />
+                    <Doughnut data={countByTypeChartData} />
                 </div>
             </ReportContainer>
             <ReportContainer
@@ -129,6 +150,15 @@ export default function Reports() {
                 <div className={styles["reports__inline"]}>
                     <Icon path={mdiMarkerCheck} size={1} />
                     <span>{finishedCount!}</span>
+                </div>
+            </ReportContainer>
+            <ReportContainer
+                title="Finished count"
+                value={finishedCount}
+                gridArea="c2"
+            >
+                <div className={styles["reports__chart"]}>
+                    <Doughnut data={countByTypeChartData} />
                 </div>
             </ReportContainer>
         </div>
