@@ -28,8 +28,12 @@ services:
         restart: always
         ports:
             - "27017:27017"
+        environment:
+            - MONGO_LOG_LEVEL=warn
         volumes:
             - mongo-data:/data/db
+            - ./mongo.conf:/etc/mongo/mongo.conf
+        command: mongod --config /etc/mongo/mongo.conf
         healthcheck:
             test:
                 [
