@@ -17,9 +17,11 @@ export default function ReportContainer({
             className={styles["report-container"]}
             style={{ gridArea: gridArea }}
         >
-            {value ? (
+            {value != null ? (
                 <>
-                    <div>{title}</div>
+                    <div className={styles["report-container__title"]}>
+                        {title}
+                    </div>
                     <div>{children}</div>
                 </>
             ) : (

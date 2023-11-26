@@ -4,7 +4,7 @@
         "c1 a1" 1fr
         "c1 a2" 1fr
         "c1 a3" 1fr
-        "c2 c2" auto / 1fr 1fr;
+        "c2 c2" max-content / 1fr 1fr;
     gap: 30px;
     margin: 25px 0;
 
@@ -17,5 +17,9 @@
     &__chart {
         position: relative;
         display: grid;
+
+        &--bar {
+            aspect-ratio: 688 / 344;
+        }
     }
 }

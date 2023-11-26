@@ -12,14 +12,29 @@ import Icon from "@mdi/react";
 import { mdiClock, mdiMarkerCheck } from "@mdi/js";
 import {
     Chart as ChartJS,
+    BarController,
     DoughnutController,
+    BarElement,
     ArcElement,
+    CategoryScale,
+    LinearScale,
     Tooltip,
     Legend,
+    Colors,
 } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 
-ChartJS.register(DoughnutController, ArcElement, Tooltip, Legend);
+ChartJS.register(
+    BarController,
+    DoughnutController,
+    BarElement,
+    ArcElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+    Colors
+);
 
 /*average_completion_time
 average_rating
@@ -27,6 +42,23 @@ finished_count
 count_by_type
 completions_by_date
 */
+
+function getMonths() {
+    return [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+}
 
 export default function Reports() {
     dayjs.extend(duration);
@@ -106,9 +138,24 @@ export default function Reports() {
         ],
     };
 
-    const completionsByMonth = "Da";
+    const initialValue = getMonths().map((_) => 0);
 
-    const completionsByDateChartData = {};
+    const completionsByMonth = completionsByDate?.reduce((acc, completion) => {
+        acc[completion.day.getMonth()] += completion.total;
+
+        return acc;
+    }, initialValue);
+
+    //TODO: Colors are not pretty
+    const completionsByMonthChartData = {
+        labels: getMonths(),
+        datasets: [
+            {
+                label: "Completions By Months",
+                data: completionsByMonth,
+            },
+        ],
+    };
 
     useEffect(() => {
         updateReports();
@@ -132,7 +179,9 @@ export default function Reports() {
                 <div className={styles["reports__inline"]}>
                     <Icon path={mdiClock} size={1} />
                     <span>
-                        {dayjs.duration(averageCompletionTime!).humanize()}
+                        {averageCompletionTime !== 0
+                            ? dayjs.duration(averageCompletionTime!).humanize()
+                            : "N/A"}
                     </span>
                 </div>
             </ReportContainer>
@@ -153,12 +202,14 @@ export default function Reports() {
                 </div>
             </ReportContainer>
             <ReportContainer
-                title="Finished count"
-                value={finishedCount}
+                title="Completions by month"
+                value={completionsByMonth}
                 gridArea="c2"
             >
-                <div className={styles["reports__chart"]}>
-                    <Doughnut data={countByTypeChartData} />
+                <div
+                    className={`${styles["reports__chart"]} ${styles["reports__chart--bar"]}`}
+                >
+                    <Bar data={completionsByMonthChartData} />
                 </div>
             </ReportContainer>
         </div>

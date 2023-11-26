@@ -1,4 +1,9 @@
 .report-container {
     display: grid;
+    place-content: stretch;
     place-items: center;
+
+    &__title {
+        text-align: center;
+    }
 }
