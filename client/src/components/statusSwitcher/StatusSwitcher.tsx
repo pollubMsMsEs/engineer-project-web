@@ -1,7 +1,7 @@
 "use client";
 
 import { statuses } from "@/modules/workInstanceStatus";
-import { WorkInstanceFromAPI } from "@/types/types";
+import { WorkInstanceFromAPI, WorkInstanceStatus } from "@/types/types";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
@@ -46,12 +46,21 @@ export default function StatusSwitcher({
             return;
 
         const debounce = setTimeout(async () => {
-            const updatedWorkInstance = {
+            const didBegan = status === "doing" || status === "completed";
+            const didFinished = status === "completed";
+
+            const updatedWorkInstance: WorkInstanceFromAPI<string> = {
                 ..._workInstance,
                 work_id: _workInstance.work_id._id,
                 status,
                 number_of_completions: _workInstance.number_of_completions ?? 0,
                 completions: [...(_workInstance.completions ?? [])],
+                began_at:
+                    _workInstance.began_at ??
+                    (didBegan ? new Date() : undefined),
+                finished_at:
+                    _workInstance.finished_at ??
+                    (didFinished ? new Date() : undefined),
             };
 
             const addedNewViewing =
@@ -107,7 +116,7 @@ export default function StatusSwitcher({
                     value={status}
                     options={Object.entries(statuses[_workInstance.type])}
                     onChange={(value) => {
-                        setStatus(value);
+                        setStatus(value as WorkInstanceStatus);
                     }}
                 />
             </div>
