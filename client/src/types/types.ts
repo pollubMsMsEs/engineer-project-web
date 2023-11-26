@@ -25,10 +25,14 @@ export interface WorkInstance {
     description?: string;
     number_of_completions: number;
     completions: Date[];
-    status: string;
+    status: WorkInstanceStatus;
     type: WorkType;
     from_api: boolean;
+    began_at?: Date;
+    finished_at?: Date;
 }
+
+export type WorkInstanceStatus = "wishlist" | "todo" | "doing" | "completed";
 
 export type WorkType = "movie" | "book" | "game";
 

@@ -6,6 +6,7 @@ import {
     WorkFromAPIPopulated,
     WorkInstance,
     WorkInstanceFromAPI,
+    WorkInstanceStatus,
 } from "@/types/types";
 import React, { useRef, useState } from "react";
 import CompletionsList from "./completionsList/CompletionsList";
@@ -81,6 +82,9 @@ export default function WorkInstanceForm({
 
     useUnmountedEffect(() => {
         async function updateInstance() {
+            const didBegan = status === "doing" || status === "completed";
+            const didFinished = status === "completed";
+
             const newInstance: WorkInstance = {
                 ...workInstance,
                 rating,
@@ -90,6 +94,12 @@ export default function WorkInstanceForm({
                     (completion) => completion.completion
                 ),
                 status,
+                began_at:
+                    workInstance.began_at ??
+                    (didBegan ? new Date() : undefined),
+                finished_at:
+                    workInstance.finished_at ??
+                    (didFinished ? new Date() : undefined),
             };
 
             const response = await fetch(
@@ -148,7 +158,7 @@ export default function WorkInstanceForm({
                     value={status}
                     options={Object.entries(statuses[workInstance.type])}
                     onChange={(value) => {
-                        setStatus(value);
+                        setStatus(value as WorkInstanceStatus);
                     }}
                 />
             </div>

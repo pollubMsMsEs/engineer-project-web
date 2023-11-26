@@ -203,10 +203,7 @@ export const createOne = [
             if (body.began_at && body.finished_at) {
                 const beganDate = new Date(body.began_at);
                 const finishedDate = new Date(body.finished_at);
-                if (
-                    isAfter(beganDate, finishedDate) ||
-                    isEqual(beganDate, finishedDate)
-                ) {
+                if (isAfter(beganDate, finishedDate)) {
                     return false;
                 }
             }
@@ -345,10 +342,7 @@ export const updateOne = [
             if (body.began_at && body.finished_at) {
                 const beganDate = new Date(body.began_at);
                 const finishedDate = new Date(body.finished_at);
-                if (
-                    isAfter(beganDate, finishedDate) ||
-                    isEqual(beganDate, finishedDate)
-                ) {
+                if (isAfter(beganDate, finishedDate)) {
                     return false;
                 }
             }
