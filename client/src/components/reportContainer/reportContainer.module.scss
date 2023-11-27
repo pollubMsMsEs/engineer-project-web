@@ -1,9 +1,21 @@
 .report-container {
     display: grid;
     place-content: stretch;
-    place-items: center;
+    place-items: stretch;
 
     &__title {
         text-align: center;
+    }
+
+    &__chart {
+        display: grid;
+
+        &--stretch {
+            place-items: stretch;
+        }
+
+        &--center {
+            place-items: center;
+        }
     }
 }

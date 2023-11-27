@@ -17,9 +17,14 @@
     &__chart {
         position: relative;
         display: grid;
+        place-items: center;
 
         &--bar {
-            aspect-ratio: 688 / 344;
+            max-height: 600px;
+        }
+
+        &--doughnut {
+            max-height: 300px;
         }
     }
 }

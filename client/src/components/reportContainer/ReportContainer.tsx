@@ -7,10 +7,12 @@ export default function ReportContainer({
     value,
     gridArea,
     children,
+    chartPosition,
 }: React.PropsWithChildren<{
     title: string;
     value: any | undefined;
     gridArea?: string;
+    chartPosition: "center" | "stretch";
 }>) {
     return (
         <div
@@ -22,7 +24,13 @@ export default function ReportContainer({
                     <div className={styles["report-container__title"]}>
                         {title}
                     </div>
-                    <div>{children}</div>
+                    <div
+                        className={`${styles["report-container__chart"]} ${
+                            styles[`report-container__chart--${chartPosition}`]
+                        }`}
+                    >
+                        {children}
+                    </div>
                 </>
             ) : (
                 <LoadingDisplay size="30px" />

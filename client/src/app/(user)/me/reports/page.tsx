@@ -146,7 +146,6 @@ export default function Reports() {
         return acc;
     }, initialValue);
 
-    //TODO: Colors are not pretty
     const completionsByMonthChartData = {
         labels: getMonths(),
         datasets: [
@@ -155,6 +154,38 @@ export default function Reports() {
                 data: completionsByMonth,
             },
         ],
+    };
+    const completionsByMonthChartOptions = {
+        plugins: {
+            legend: {
+                display: false,
+            },
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    color: "#ffffff",
+                },
+            },
+            y: {
+                grid: {
+                    color: "#3f3f3f",
+                },
+                ticks: {
+                    stepSize: 1,
+                    color: "#ffffff",
+                },
+            },
+        },
+        backgroundColor: [
+            "#10b981",
+            "#ef4444",
+            "#2563eb",
+        ] as any /* welp ¯\_(ツ)_/¯ */,
+        borderColor: "#ffffff",
     };
 
     useEffect(() => {
@@ -167,14 +198,22 @@ export default function Reports() {
                 title="Collection"
                 value={countByType}
                 gridArea="c1"
+                chartPosition="stretch"
             >
-                <div className={styles["reports__chart"]}>
+                <div
+                    className={
+                        styles["reports__chart"] +
+                        " " +
+                        styles["reports__chart--doughnut"]
+                    }
+                >
                     <Doughnut data={countByTypeChartData} />
                 </div>
             </ReportContainer>
             <ReportContainer
                 title="Average completion time"
                 value={averageCompletionTime}
+                chartPosition="center"
             >
                 <div className={styles["reports__inline"]}>
                     <Icon path={mdiClock} size={1} />
@@ -185,7 +224,11 @@ export default function Reports() {
                     </span>
                 </div>
             </ReportContainer>
-            <ReportContainer title="Average rating" value={averageRating}>
+            <ReportContainer
+                title="Average rating"
+                value={averageRating}
+                chartPosition="center"
+            >
                 <div className={styles["reports__inline"]}>
                     <RatingBar
                         value={Math.floor(averageRating!)}
@@ -195,7 +238,11 @@ export default function Reports() {
                     <span>{averageRating!}</span>
                 </div>
             </ReportContainer>
-            <ReportContainer title="Finished count" value={finishedCount}>
+            <ReportContainer
+                title="Finished count"
+                value={finishedCount}
+                chartPosition="center"
+            >
                 <div className={styles["reports__inline"]}>
                     <Icon path={mdiMarkerCheck} size={1} />
                     <span>{finishedCount!}</span>
@@ -205,11 +252,15 @@ export default function Reports() {
                 title="Completions by month"
                 value={completionsByMonth}
                 gridArea="c2"
+                chartPosition="stretch"
             >
                 <div
                     className={`${styles["reports__chart"]} ${styles["reports__chart--bar"]}`}
                 >
-                    <Bar data={completionsByMonthChartData} />
+                    <Bar
+                        data={completionsByMonthChartData}
+                        options={completionsByMonthChartOptions}
+                    />
                 </div>
             </ReportContainer>
         </div>
