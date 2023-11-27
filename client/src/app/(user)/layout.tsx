@@ -10,6 +10,20 @@ import { mdiMagnify } from "@mdi/js";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
+    const routes = [
+        {
+            href: "/",
+            title: "Home",
+        },
+        {
+            href: "/person/all",
+            title: "People table",
+        },
+        {
+            href: "/me/reports",
+            title: "Reports",
+        },
+    ];
 
     return (
         <div className={styles["default-layout"]}>
@@ -28,8 +42,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 </div>
             </header>
             <aside className={styles["default-layout-aside"]}>
-                <a href="/">Home</a>
-                <a href="/person/all">People table</a>
+                {routes.map((route) => (
+                    <a key={route.href} href={route.href}>
+                        {route.title}
+                    </a>
+                ))}
             </aside>
             <main className={styles["default-layout-main"]}>{children}</main>
             <ToastContainerWrapper />

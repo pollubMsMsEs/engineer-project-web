@@ -6,10 +6,12 @@ export default function RatingBar({
     value,
     maxValue,
     setValue,
+    readOnly = false,
 }: {
     value: number;
     maxValue: number;
-    setValue: (value: number) => void;
+    readOnly?: boolean;
+    setValue?: (value: number) => void;
 }) {
     const [hovered, setHovered] = useState(false);
     const stars: any[] = [];
@@ -20,25 +22,32 @@ export default function RatingBar({
                 key={i}
                 selected={i === value && !hovered}
                 onClick={() => {
-                    setValue(i);
+                    if (setValue) {
+                        setValue(i);
+                    }
                 }}
+                readOnly={readOnly}
             />
         );
     }
 
     stars.reverse();
 
-    return (
-        <div
-            className={styles["rating-bar"]}
-            onMouseEnter={() => {
-                setHovered(true);
-            }}
-            onMouseLeave={() => {
-                setHovered(false);
-            }}
-        >
-            {stars}
-        </div>
-    );
+    if (readOnly) {
+        return <div className={`${styles["rating-bar"]}`}>{stars}</div>;
+    } else {
+        return (
+            <div
+                className={styles["rating-bar"]}
+                onMouseEnter={() => {
+                    setHovered(true);
+                }}
+                onMouseLeave={() => {
+                    setHovered(false);
+                }}
+            >
+                {stars}
+            </div>
+        );
+    }
 }
