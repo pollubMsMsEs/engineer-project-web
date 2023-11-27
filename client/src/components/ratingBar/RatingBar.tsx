@@ -26,6 +26,7 @@ export default function RatingBar({
                         setValue(i);
                     }
                 }}
+                readOnly={readOnly}
             />
         );
     }
@@ -33,7 +34,7 @@ export default function RatingBar({
     stars.reverse();
 
     if (readOnly) {
-        return <div className={styles["rating-bar"]}>{stars}</div>;
+        return <div className={`${styles["rating-bar"]}`}>{stars}</div>;
     } else {
         return (
             <div

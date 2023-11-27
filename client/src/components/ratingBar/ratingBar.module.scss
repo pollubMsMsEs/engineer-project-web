@@ -9,12 +9,12 @@
         color: white;
 
         &--selected,
-        &:hover {
+        &--interactable:hover {
             color: #fbc02d;
         }
 
         &--selected ~ &,
-        &:hover ~ & {
+        &--interactable:hover ~ & {
             color: #fbc02d;
         }
     }
