@@ -509,7 +509,7 @@ export default function WorkForm({
                     ))}
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <Button type="submit" size="big">
+                <Button type="submit" style="major" size="big">
                     {submitBtnText}
                 </Button>
             </form>

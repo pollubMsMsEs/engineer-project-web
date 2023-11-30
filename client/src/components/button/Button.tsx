@@ -5,6 +5,7 @@ export default function Button({
     children,
     type = "button",
     size = "medium",
+    style = "normal",
     squared = false,
     round = false,
     width,
@@ -13,6 +14,7 @@ export default function Button({
 }: React.PropsWithChildren<{
     type?: "submit" | "button" | "reset";
     size?: "small" | "medium" | "big" | "large";
+    style?: "icon" | "normal" | "major";
     squared?: boolean;
     round?: boolean;
     width?: string;
@@ -22,6 +24,7 @@ export default function Button({
     let className = styles["button"];
 
     className += ` ${styles[`button--size-${size}`]}`;
+    className += ` ${styles[`button--style-${style}`]}`;
     className += squared ? ` ${styles["button--squared"]}` : "";
     className += round ? ` ${styles["button--round"]}` : "";
 
