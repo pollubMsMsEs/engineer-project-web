@@ -21,10 +21,11 @@ import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
 import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
-import { mdiDisc, mdiFloppy } from "@mdi/js";
+import { mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
+import Button from "../button/Button";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -376,8 +377,11 @@ export default function WorkForm({
                 <header className={styles["people-header"]}>
                     <h3>People</h3>
                     {peopleToPick && (
-                        <button
-                            type="button"
+                        <Button
+                            padding="2px"
+                            width="30px"
+                            squared
+                            round
                             onClick={() => {
                                 setPeople((prevPeople) => {
                                     return [
@@ -392,8 +396,8 @@ export default function WorkForm({
                                 });
                             }}
                         >
-                            +
-                        </button>
+                            <Icon path={mdiPlusThick} />
+                        </Button>
                     )}
                 </header>
 
@@ -417,8 +421,11 @@ export default function WorkForm({
                 </div>
                 <div className={styles["metadata-header"]}>
                     <h3>Metadata</h3>
-                    <button
-                        type="button"
+                    <Button
+                        padding="2px"
+                        width="30px"
+                        squared
+                        round
                         onClick={() => {
                             setMetadata((prev) => {
                                 return {
@@ -431,8 +438,8 @@ export default function WorkForm({
                             });
                         }}
                     >
-                        +
-                    </button>
+                        <Icon path={mdiPlusThick} />
+                    </Button>
                 </div>
                 <div>
                     {metadata &&
@@ -502,7 +509,9 @@ export default function WorkForm({
                     ))}
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <button type="submit">{submitBtnText}</button>
+                <Button type="submit" size="big">
+                    {submitBtnText}
+                </Button>
             </form>
         </div>
     );

@@ -4,6 +4,7 @@
 
     .people-header {
         display: flex;
+        gap: 8px;
         align-items: center;
     }
 
@@ -15,6 +16,7 @@
 
     .metadata-header {
         display: flex;
+        gap: 8px;
         align-items: center;
     }
 }
