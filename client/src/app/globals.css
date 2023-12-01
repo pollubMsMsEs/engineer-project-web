@@ -7,6 +7,9 @@
     --main-400: #34d399;
     --main-500: #10b981;
     --main-600: #059669;
+    --main-700: #047857;
+    --main-800: #065f46;
+    --main-950: #022c22;
     --bkg-100: #f4f4f5;
     --bkg-200: #e5e7eb;
     --bkg-400: #a1a1aa;
@@ -15,6 +18,10 @@
     --bkg-750: #2b2b2e;
     --bkg-800: #27272a;
     --bkg-900: #18181b;
+    --error-background: #b521219a;
+    --error-border: #b91c1c;
+    --error-border-highlighted: #e34f4f;
+    --black-tint: rgb(0 0 0 / 45%);
     --text: var(--bkg-200);
 }
 

@@ -6,7 +6,7 @@
     text-align: center;
     appearance: none;
     background: url("menu-down.svg") no-repeat right 2px center;
-    background-color: rgb(177 177 177 / 20.5%);
+    background-color: var(--bkg-800);
     border: none;
     border-radius: 5px;
     box-shadow: 0 0 1em 0 rgb(0 0 0 / 20%);
@@ -16,6 +16,6 @@
     }
 
     &__option {
-        background-color: rgb(54 54 54);
+        background-color: var(--bkg-800);
     }
 }
