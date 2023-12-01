@@ -14,6 +14,7 @@ import {
     fromUnixTime,
     parse,
 } from "date-fns";
+import { query } from "express-validator";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
@@ -114,6 +115,29 @@ export const getOne = [
             } else {
                 res.json({ data: workInstance });
             }
+        } catch (e: any) {
+            return next(e);
+        }
+    },
+];
+
+export const countAllForCurrentUserByTypeAndStatus = [
+    query("type").isString().withMessage("Type must be a string"),
+    query("status").isString().withMessage("Status must be a string"),
+    async function (req: Request | any, res: Response, next: NextFunction) {
+        try {
+            if (!req.query.type || !req.query.status) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Both 'type' and 'status' query parameters are required",
+                });
+            }
+
+            const workInstances = await WorkInstance.count({
+                user_id: req.auth._id,
+                $and: [{ type: req.query.type }, { status: req.query.status }],
+            }).exec();
+            res.json({ acknowledged: true, count: workInstances });
         } catch (e: any) {
             return next(e);
         }
