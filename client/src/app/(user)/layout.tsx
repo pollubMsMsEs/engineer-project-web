@@ -43,7 +43,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </header>
             <aside className={styles["default-layout-aside"]}>
                 {routes.map((route) => (
-                    <a key={route.href} href={route.href}>
+                    <a
+                        className={styles["default-layout-aside__link"]}
+                        key={route.href}
+                        href={route.href}
+                    >
                         {route.title}
                     </a>
                 ))}

@@ -1,8 +1,8 @@
 .status-switcher {
     display: flex;
-    gap: 30px;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    padding: 0 10px;
 
     &__select-wrapper {
         width: 70%;
