@@ -1,6 +1,6 @@
 "use client";
 
-import { statuses } from "@/modules/workInstanceStatus";
+import { STATUSES } from "@/constantValues";
 import { WorkInstanceFromAPI, WorkInstanceStatus } from "@/types/types";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -114,7 +114,7 @@ export default function StatusSwitcher({
                     name={"status"}
                     id={`status-${_workInstance._id}`}
                     value={status}
-                    options={Object.entries(statuses[_workInstance.type])}
+                    options={Object.entries(STATUSES[_workInstance.type])}
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
                     }}

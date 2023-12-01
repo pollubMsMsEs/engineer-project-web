@@ -12,7 +12,7 @@ import React, { useRef, useState } from "react";
 import CompletionsList from "./completionsList/CompletionsList";
 import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
-import { statuses } from "@/modules/workInstanceStatus";
+import { STATUSES } from "@/constantValues";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 import styles from "./workInstanceForm.module.scss";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
@@ -156,7 +156,7 @@ export default function WorkInstanceForm({
                     name={"status"}
                     id={`status`}
                     value={status}
-                    options={Object.entries(statuses[workInstance.type])}
+                    options={Object.entries(STATUSES[workInstance.type])}
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
                     }}

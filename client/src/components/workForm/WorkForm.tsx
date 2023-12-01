@@ -9,6 +9,7 @@ import {
     WorkFromAPIPopulated,
     PersonFromAPI,
     ExtractedErrors,
+    WorkType,
 } from "@/types/types";
 import PersonInWorkForm, {
     PersonInWorkFormType,
@@ -27,6 +28,7 @@ import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import Button from "../button/Button";
 import Select from "../select/Select";
+import { TYPES } from "@/constantValues";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -78,8 +80,10 @@ export default function WorkForm({
     const [coverFile, setCoverFile] = useState<File>();
     const [isCoverNew, setIsCoverNew] = useState(false);
 
-    const [type, setType] = useState(
-        work?.type ?? searchParams.get("type") ?? ""
+    const [type, setType] = useState<WorkType>(
+        work?.type ??
+            (searchParams.get("type") as WorkType | undefined) ??
+            "book"
     );
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
@@ -321,13 +325,9 @@ export default function WorkForm({
                         name="status"
                         id="status"
                         value={type}
-                        options={[
-                            ["book", "Book"],
-                            ["movie", "Movie"],
-                            ["game", "Game"],
-                        ]}
+                        options={TYPES}
                         onChange={(value) => {
-                            setType(value);
+                            setType(value as WorkType);
                         }}
                     />
                 )}

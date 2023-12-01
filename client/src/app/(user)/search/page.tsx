@@ -13,8 +13,9 @@ import WorkCard from "@/components/workCard/WorkCard";
 import ClickableCard from "@/components/clickableCard/ClickableCard";
 import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
 import { toast } from "react-toastify";
-import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
+import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
+import Select from "@/components/select/Select";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -114,21 +115,18 @@ export default function Search() {
                         doDebouncedSearch(newQuery, type);
                     }}
                 />
-                <select
-                    className={styles["search__select"]}
+                <Select
                     name="type"
                     id="type"
                     value={type}
-                    onChange={(e) => {
-                        const newType = assertCorrectType(e.target.value);
+                    options={TYPES}
+                    width="150px"
+                    onChange={(value) => {
+                        const newType = assertCorrectType(value);
                         setType(assertCorrectType(newType));
                         doDebouncedSearch(query, newType);
                     }}
-                >
-                    <option value="book">Book</option>
-                    <option value="movie">Movie</option>
-                    <option value="game">Game</option>
-                </select>
+                />
                 <Link
                     href={{
                         pathname: "/me/work/create",
