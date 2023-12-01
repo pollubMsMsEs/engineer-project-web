@@ -1,7 +1,7 @@
 export interface Work {
     title: string;
     cover?: string;
-    type?: string;
+    type: WorkType;
     dev: boolean;
     description?: string;
     published_at?: Date;
