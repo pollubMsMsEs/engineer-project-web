@@ -6,7 +6,11 @@ export default function Logo() {
     return (
         <h1 className={styles["logo"]}>
             <span>Popculture Database</span>
-            <Icon path={mdiMovieOpen} color={"#34d399"} size={"3rem"} />
+            <Icon
+                className={styles["logo__icon"]}
+                path={mdiMovieOpen}
+                size={"3rem"}
+            />
         </h1>
     );
 }
