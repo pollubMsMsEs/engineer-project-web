@@ -1,3 +1,12 @@
+.all {
+    display: grid;
+    place-content: center;
+    place-items: center;
+    height: 100%;
+    padding: 20px;
+    border: 2px solid #27272a;
+}
+
 .work-form {
     display: grid;
     justify-content: start;

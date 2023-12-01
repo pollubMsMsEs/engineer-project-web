@@ -5,6 +5,7 @@ import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
 import { WorkFromAPIPopulated } from "@/types/types";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.scss";
 
 export default function MeWorkCreate() {
     const router = useRouter();
@@ -39,7 +40,7 @@ export default function MeWorkCreate() {
     }
 
     return (
-        <>
+        <div className={styles["create"]}>
             <WorkForm
                 errors={errors}
                 errorsKey={errorsKey}
@@ -48,6 +49,6 @@ export default function MeWorkCreate() {
                 handleResponse={handleResponse}
                 onSubmit={onSubmit}
             />
-        </>
+        </div>
     );
 }

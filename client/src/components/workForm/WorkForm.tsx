@@ -26,6 +26,7 @@ import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import Button from "../button/Button";
+import Select from "../select/Select";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -272,7 +273,7 @@ export default function WorkForm({
     }
 
     return (
-        <div>
+        <div className={styles["all"]}>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -316,16 +317,19 @@ export default function WorkForm({
                 {work ? (
                     <div>{capitalize(work.type ?? "")}</div>
                 ) : (
-                    <select
-                        onChange={(e) => {
-                            setType(e.target.value);
-                        }}
+                    <Select
+                        name="status"
+                        id="status"
                         value={type}
-                    >
-                        <option value="book">Book</option>
-                        <option value="movie">Movie</option>
-                        <option value="game">Game</option>
-                    </select>
+                        options={[
+                            ["book", "Book"],
+                            ["movie", "Movie"],
+                            ["game", "Game"],
+                        ]}
+                        onChange={(value) => {
+                            setType(value);
+                        }}
+                    />
                 )}
                 <label htmlFor="title">Title: </label>
                 <input
@@ -509,7 +513,7 @@ export default function WorkForm({
                     ))}
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <Button type="submit" style="major" size="big">
+                <Button type="submit" style="normal" size="big">
                     {submitBtnText}
                 </Button>
             </form>
