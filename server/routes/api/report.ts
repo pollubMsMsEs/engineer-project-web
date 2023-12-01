@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { handleReport } from "../../controllers/report.js";
+import {
+    handleReport,
+    getCompletionsSortedByDate,
+} from "../../controllers/report.js";
 
 const router = Router();
 
+router.get("/completions", getCompletionsSortedByDate);
 router.get("/:reportType", handleReport);
 
 export default router;
