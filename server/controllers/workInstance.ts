@@ -123,21 +123,27 @@ export const getOne = [
 
 export const countAllForCurrentUserByTypeAndStatus = [
     query("type").isString().withMessage("Type must be a string"),
-    query("status").isString().withMessage("Status must be a string"),
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
-            if (!req.query.type || !req.query.status) {
+            if (!req.query.type) {
                 return res.status(400).json({
                     acknowledged: false,
-                    errors: "Both 'type' and 'status' query parameters are required",
+                    errors: "Query parameter 'type' is required",
                 });
             }
+            const userId = new mongoose.Types.ObjectId(req.auth._id);
 
-            const workInstances = await WorkInstance.count({
-                user_id: req.auth._id,
-                $and: [{ type: req.query.type }, { status: req.query.status }],
-            }).exec();
-            res.json({ acknowledged: true, count: workInstances });
+            const workInstances = await WorkInstance.aggregate([
+                { $match: { user_id: userId, type: req.query.type } },
+                { $group: { _id: "$status", count: { $sum: 1 } } },
+            ]).exec();
+
+            const statusCounts = workInstances.reduce((acc, curr) => {
+                acc[curr._id] = curr.count;
+                return acc;
+            }, {});
+
+            res.json({ acknowledged: true, data: statusCounts });
         } catch (e: any) {
             return next(e);
         }
