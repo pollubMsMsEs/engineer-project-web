@@ -3,7 +3,6 @@
     display: grid;
     place-items: center;
     width: 100%;
-    aspect-ratio: 3/4;
 
     /* MDI icon */
     svg {
@@ -12,7 +11,7 @@
 
     /* NEXT image */
     &__img {
-        object-fit: cover;
+        object-fit: fill;
         object-position: top;
 
         &--rounded-corners-top {

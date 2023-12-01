@@ -5,12 +5,14 @@ import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
 
 export default function ImageContainer({
-    cover,
+    src,
     alt,
+    aspectRatio,
     roundedCornersTop = false,
 }: {
-    cover?: string;
+    src?: string;
     alt: string;
+    aspectRatio: string;
     roundedCornersTop?: boolean;
 }) {
     let imgClassList = styles["img-container__img"];
@@ -20,11 +22,14 @@ export default function ImageContainer({
     }
 
     return (
-        <div className={styles["img-container"]}>
-            {cover ? (
+        <div
+            className={styles["img-container"]}
+            style={{ aspectRatio: aspectRatio }}
+        >
+            {src ? (
                 <Image
                     className={imgClassList}
-                    src={cover}
+                    src={src}
                     alt={alt}
                     sizes="100%"
                     fill
