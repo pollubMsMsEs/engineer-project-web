@@ -15,15 +15,20 @@ export default function ImageContainer({
     aspectRatio: string;
     roundedCornersTop?: boolean;
 }) {
-    let imgClassList = styles["img-container__img"];
+    let containerClassList = styles["img-container"];
+    containerClassList += !src ? ` ${styles["img-container--border"]}` : "";
+    containerClassList += roundedCornersTop
+        ? ` ${styles["img-container--rounded-corners-top"]}`
+        : "";
 
-    if (roundedCornersTop) {
-        imgClassList = `${imgClassList} ${styles["img-container__img--rounded-corners-top"]}`;
-    }
+    let imgClassList = styles["img-container__img"];
+    imgClassList += roundedCornersTop
+        ? `${imgClassList} ${styles["img-container__img--rounded-corners-top"]}`
+        : "";
 
     return (
         <div
-            className={styles["img-container"]}
+            className={containerClassList}
             style={{ aspectRatio: aspectRatio }}
         >
             {src ? (

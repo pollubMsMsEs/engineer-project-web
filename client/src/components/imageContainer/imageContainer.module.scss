@@ -1,12 +1,16 @@
 .img-container {
     position: relative;
+    box-sizing: border-box;
     display: grid;
     place-items: center;
     width: 100%;
 
-    /* MDI icon */
-    svg {
-        padding: 20%;
+    &--border {
+        border: 2px solid var(--bkg-700);
+    }
+
+    &--rounded-corners-top {
+        border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
     }
 
     /* NEXT image */
@@ -15,7 +19,13 @@
         object-position: top;
 
         &--rounded-corners-top {
-            border-radius: 20px 20px 0 0;
+            border-radius: var(--card-border-radius) var(--card-border-radius) 0
+                0;
         }
+    }
+
+    /* MDI icon */
+    svg {
+        padding: 20%;
     }
 }

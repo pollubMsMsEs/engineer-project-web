@@ -11,7 +11,7 @@ export default function ClickableCard({
     const [isLoading, setIsLoading] = useState(false);
 
     return (
-        <button
+        <a
             className={styles["clickable-card"]}
             onClick={async () => {
                 setIsLoading(true);
@@ -29,6 +29,6 @@ export default function ClickableCard({
                     <LoadingDisplay size="40px" />
                 </div>
             )}
-        </button>
+        </a>
     );
 }

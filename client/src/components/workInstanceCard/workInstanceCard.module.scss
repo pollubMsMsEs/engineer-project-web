@@ -5,7 +5,7 @@
     justify-content: space-between;
     padding: 0 0 10px;
     background-color: var(--bkg-800);
-    border-radius: 20px;
+    border-radius: var(--card-border-radius);
 
     &__link-wrapper {
         display: flex;

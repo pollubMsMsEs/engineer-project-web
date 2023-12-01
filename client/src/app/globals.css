@@ -25,6 +25,7 @@
     --black-tint: rgb(0 0 0 / 45%);
     --text: var(--bkg-200);
     --active: var(--main-500);
+    --card-border-radius: 10px;
 }
 
 a {

@@ -2,6 +2,7 @@ import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import React from "react";
 import PersonList from "@/components/personList/PersonList";
 import styles from "./page.module.scss";
+import Button from "@/components/button/Button";
 
 export default async function PersonAll() {
     const response = await fetchAPIFromServerComponent("/person/all", 0);
@@ -10,7 +11,7 @@ export default async function PersonAll() {
     return (
         <>
             <a href="/person/create">
-                <button className={styles["button"]}>Add person</button>
+                <Button>Add person</Button>
             </a>
             <table>
                 <thead>
@@ -24,7 +25,7 @@ export default async function PersonAll() {
                 <PersonList people={result} />
             </table>
             <a href="/person/create">
-                <button className={styles["button"]}>Add person</button>
+                <Button>Add person</Button>
             </a>
         </>
     );
