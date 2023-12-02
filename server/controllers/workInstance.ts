@@ -14,6 +14,7 @@ import {
     fromUnixTime,
     parse,
 } from "date-fns";
+import { query } from "express-validator";
 const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
@@ -114,6 +115,35 @@ export const getOne = [
             } else {
                 res.json({ data: workInstance });
             }
+        } catch (e: any) {
+            return next(e);
+        }
+    },
+];
+
+export const countAllForCurrentUserByTypeAndStatus = [
+    query("type").isString().withMessage("Type must be a string"),
+    async function (req: Request | any, res: Response, next: NextFunction) {
+        try {
+            if (!req.query.type) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Query parameter 'type' is required",
+                });
+            }
+            const userId = new mongoose.Types.ObjectId(req.auth._id);
+
+            const workInstances = await WorkInstance.aggregate([
+                { $match: { user_id: userId, type: req.query.type } },
+                { $group: { _id: "$status", count: { $sum: 1 } } },
+            ]).exec();
+
+            const statusCounts = workInstances.reduce((acc, curr) => {
+                acc[curr._id] = curr.count;
+                return acc;
+            }, {});
+
+            res.json({ acknowledged: true, data: statusCounts });
         } catch (e: any) {
             return next(e);
         }
