@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useRef, useState } from "react";
 import styles from "./page.module.scss";
 import Icon from "@mdi/react";
-import { mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiPlusThick } from "@mdi/js";
 import Link from "next/link";
 import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
@@ -120,7 +120,7 @@ export default function Search() {
                     id="type"
                     value={type}
                     options={TYPES}
-                    width="150px"
+                    fontSize="1.6rem"
                     onChange={(value) => {
                         const newType = assertCorrectType(value);
                         setType(assertCorrectType(newType));
@@ -136,7 +136,8 @@ export default function Search() {
                     }}
                     className={styles["search__add-manualy"]}
                 >
-                    <Icon path={mdiPlus} size={1} /> Add manually
+                    <Icon path={mdiPlusThick} size={1} />{" "}
+                    <span>Add manually</span>
                 </Link>
             </div>
             {query !== "" && (

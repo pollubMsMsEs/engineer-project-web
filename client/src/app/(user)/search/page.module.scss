@@ -4,7 +4,9 @@
 
     &__form {
         display: flex;
-        width: 100%;
+        gap: 20px;
+        align-items: center;
+        margin: 20px;
     }
 
     &__input {
@@ -14,6 +16,7 @@
 
     &__add-manualy {
         display: flex;
+        gap: 10px;
         align-items: center;
     }
 

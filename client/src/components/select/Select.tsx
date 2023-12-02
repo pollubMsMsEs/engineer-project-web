@@ -6,7 +6,7 @@ export default function Select({
     id,
     value,
     options,
-    width,
+    fontSize,
     onChange,
 }: {
     className?: string;
@@ -14,7 +14,7 @@ export default function Select({
     id: string;
     value: string;
     options: [string, string][];
-    width: string;
+    fontSize?: string;
     onChange: (value: string) => void;
 }) {
     return (
@@ -24,7 +24,7 @@ export default function Select({
             id={id}
             value={value}
             style={{
-                width,
+                fontSize,
             }}
             onChange={(e) => {
                 onChange(e.target.value);
