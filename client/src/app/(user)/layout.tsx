@@ -15,6 +15,7 @@ import {
     mdiHome,
     mdiMagnify,
 } from "@mdi/js";
+import NavLink from "@/components/navLink/NavLink";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
@@ -23,6 +24,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
             href: "/",
             title: "Home",
             icon: mdiHome,
+        },
+        {
+            href: "/search",
+            title: "Search",
+            icon: mdiMagnify,
         },
         {
             href: "/person/all",
@@ -41,9 +47,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
             <header className={styles["default-layout-header"]}>
                 <Logo />
                 <div className={styles["default-layout-header__user"]}>
-                    <Link href={"/search"}>
-                        <Icon path={mdiMagnify} size={1.2} />
-                    </Link>
+                    <NavLink href="/search" icon={mdiMagnify} title="Search" />
+
                     <span
                         className={styles["default-layout-header__user-name"]}
                     >
@@ -54,14 +59,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </header>
             <aside className={styles["default-layout-aside"]}>
                 {routes.map((route) => (
-                    <a
-                        className={styles["default-layout-aside__link"]}
+                    <NavLink
                         key={route.href}
                         href={route.href}
-                    >
-                        <Icon path={route.icon} />
-                        <span>{route.title}</span>
-                    </a>
+                        icon={route.icon}
+                        title={route.title}
+                    />
                 ))}
             </aside>
             <main className={styles["default-layout-main"]}>{children}</main>

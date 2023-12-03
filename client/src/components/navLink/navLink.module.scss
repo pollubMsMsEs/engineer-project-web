@@ -1,0 +1,14 @@
+.nav-link {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-size: 1.6rem;
+
+    svg {
+        height: 1.3em;
+    }
+
+    &--active {
+        color: var(--main-500);
+    }
+}

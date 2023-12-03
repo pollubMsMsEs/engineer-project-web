@@ -8,21 +8,10 @@
 .default-layout-aside {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
     padding: 10px 30px;
-    font-size: 1.6rem;
     background-color: var(--bkg-800);
     border-right: 1px solid var(--bkg-600);
-
-    &__link {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-
-        svg {
-            height: 1.2em;
-        }
-    }
 }
 
 .default-layout-main {
