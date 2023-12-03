@@ -6,7 +6,15 @@ import { cookies } from "next/headers";
 import jwtDecode from "jwt-decode";
 import ToastContainerWrapper from "@/components/toastContainerWrapper/ToastContainerWrapper";
 import Icon from "@mdi/react";
-import { mdiMagnify } from "@mdi/js";
+import {
+    mdiAccount,
+    mdiChartArc,
+    mdiChartBar,
+    mdiChartBox,
+    mdiChartDonut,
+    mdiHome,
+    mdiMagnify,
+} from "@mdi/js";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
@@ -14,14 +22,17 @@ export default function Layout({ children }: React.PropsWithChildren) {
         {
             href: "/",
             title: "Home",
+            icon: mdiHome,
         },
         {
             href: "/person/all",
-            title: "People table",
+            title: "People",
+            icon: mdiAccount,
         },
         {
             href: "/me/reports",
             title: "Reports",
+            icon: mdiChartBox,
         },
     ];
 
@@ -48,7 +59,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
                         key={route.href}
                         href={route.href}
                     >
-                        {route.title}
+                        <Icon path={route.icon} />
+                        <span>{route.title}</span>
                     </a>
                 ))}
             </aside>
