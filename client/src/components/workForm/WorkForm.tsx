@@ -22,7 +22,7 @@ import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
 import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
-import { mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
+import { mdiCancel, mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
@@ -64,6 +64,7 @@ export default function WorkForm({
     setFetchingState,
     handleResponse,
     onSubmit,
+    onCancel,
 }: {
     work?: WorkFromAPIPopulated;
     errors: ExtractedErrors | undefined;
@@ -72,6 +73,7 @@ export default function WorkForm({
     setFetchingState: (state: "cover" | "work" | false) => void;
     handleResponse: (response: Response) => Promise<any>;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
+    onCancel?: () => void;
 }) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -513,9 +515,18 @@ export default function WorkForm({
                     ))}
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <Button type="submit" style="normal" size="big">
-                    {submitBtnText}
-                </Button>
+                <div className={styles["buttons"]}>
+                    <Button type="submit" style="normal" size="big">
+                        {submitBtnText}
+                    </Button>
+                    <Button onClick={onCancel}>
+                        <Icon
+                            path={mdiCancel}
+                            size={"2em"}
+                            style={{ color: "#ef4444" }}
+                        />
+                    </Button>
+                </div>
             </form>
         </div>
     );

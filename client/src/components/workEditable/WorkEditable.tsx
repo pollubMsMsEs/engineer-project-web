@@ -39,6 +39,9 @@ export default function WorkEditable({
                         setWork(work);
                         setIsEditable(false);
                     }}
+                    onCancel={() => {
+                        setIsEditable(false);
+                    }}
                 />
             ) : (
                 <>

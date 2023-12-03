@@ -48,6 +48,9 @@ export default function MeWorkCreate() {
                 setFetchingState={setFetchingState}
                 handleResponse={handleResponse}
                 onSubmit={onSubmit}
+                onCancel={() => {
+                    router.push("/");
+                }}
             />
         </div>
     );
