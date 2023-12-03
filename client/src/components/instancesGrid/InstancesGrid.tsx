@@ -5,9 +5,9 @@ export default function InstancesGrid({
     children,
 }: React.PropsWithChildren<{ title?: string }>) {
     return (
-        <div>
-            {title && <h2>{title}</h2>}
-            <div className={styles["grid"]}>{children}</div>
+        <div className={styles["grid"]}>
+            {title && <h2 className={styles["grid__title"]}>{title}</h2>}
+            <div className={styles["grid__children"]}>{children}</div>
         </div>
     );
 }
