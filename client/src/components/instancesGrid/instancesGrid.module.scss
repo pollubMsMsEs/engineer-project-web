@@ -4,9 +4,21 @@
     padding: 20px;
 
     &__title {
-        display: grid;
-        place-items: center;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
         margin: 0;
+        font-size: 2rem;
+    }
+
+    &__icon {
+        height: 1em;
+
+        &--game-icon {
+            height: 1.2em;
+            margin-bottom: -5px;
+        }
     }
 
     &__children {

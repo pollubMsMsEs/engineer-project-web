@@ -5,7 +5,13 @@ import WorkInstanceCard from "@/components/workInstanceCard/WorkInstanceCard";
 import TooltipWrapper from "@/components/tooltipWrapper/TooltipWrapper";
 import Link from "next/link";
 import Icon from "@mdi/react";
-import { mdiPlus } from "@mdi/js";
+import {
+    mdiBook,
+    mdiBookOpenVariant,
+    mdiController,
+    mdiMovieOpen,
+    mdiPlus,
+} from "@mdi/js";
 import styles from "./page.module.scss";
 import AddCard from "../../components/addCard/AddCard";
 
@@ -42,7 +48,7 @@ export default async function Home() {
 
     return (
         <div className={styles["collection"]}>
-            <InstancesGrid title="Books">
+            <InstancesGrid title="Books" iconPath={mdiBookOpenVariant}>
                 {books.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -51,7 +57,7 @@ export default async function Home() {
                 ))}
                 <AddCard workType="book" />
             </InstancesGrid>
-            <InstancesGrid title="Movies">
+            <InstancesGrid title="Movies" iconPath={mdiMovieOpen}>
                 {movies.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -60,7 +66,11 @@ export default async function Home() {
                 ))}
                 <AddCard workType="movie" />
             </InstancesGrid>
-            <InstancesGrid title="Computer Games">
+            <InstancesGrid
+                title="Computer Games"
+                iconPath={mdiController}
+                gameIcon
+            >
                 {games.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
