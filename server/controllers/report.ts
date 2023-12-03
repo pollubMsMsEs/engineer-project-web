@@ -129,6 +129,12 @@ async function getAverageCompletionTime(req: Request | any) {
                 },
             },
             { $unwind: "$work_details.people.person_info" },
+            {
+                $match: {
+                    finished_at: { $exists: true },
+                    began_at: { $exists: true },
+                },
+            },
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
@@ -161,6 +167,12 @@ async function getAverageCompletionTime(req: Request | any) {
                           },
                       },
                       { $unwind: "$work_details" },
+                      {
+                          $match: {
+                              finished_at: { $exists: true },
+                              began_at: { $exists: true },
+                          },
+                      },
                       ...(conditions.filter((cond) => !cond["$or"]).length > 0
                           ? [
                                 {
@@ -234,6 +246,11 @@ async function getAverageRating(req: Request | any) {
                 },
             },
             { $unwind: "$work_details.people.person_info" },
+            {
+                $match: {
+                    rating: { $gte: 1 },
+                },
+            },
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
@@ -259,6 +276,11 @@ async function getAverageRating(req: Request | any) {
                           },
                       },
                       { $unwind: "$work_details" },
+                      {
+                          $match: {
+                              rating: { $gte: 1 },
+                          },
+                      },
                       ...(conditions.filter((cond) => !cond["$or"]).length > 0
                           ? [
                                 {
