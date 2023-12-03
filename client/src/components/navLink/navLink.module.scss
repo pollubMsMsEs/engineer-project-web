@@ -8,6 +8,16 @@
         height: 1.3em;
     }
 
+    &--style {
+        &-centered {
+            flex-direction: column;
+
+            svg {
+                height: 2.5em;
+            }
+        }
+    }
+
     &--active {
         color: var(--main-500);
     }

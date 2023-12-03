@@ -5,18 +5,22 @@ import React from "react";
 import styles from "./navlink.module.scss";
 import Icon from "@mdi/react";
 import { usePathname } from "next/navigation";
+import { UrlObject } from "url";
 
 export default function NavLink({
     href,
     icon,
     title,
+    style,
 }: {
-    href: string;
+    href: string | UrlObject;
     icon: string;
     title: string;
+    style: "centered" | "inline";
 }) {
     const pathname = usePathname();
     let classList = styles["nav-link"];
+    classList += ` ${styles[`nav-link--style-${style}`]}`;
 
     classList += pathname === href ? ` ${styles["nav-link--active"]}` : "";
 

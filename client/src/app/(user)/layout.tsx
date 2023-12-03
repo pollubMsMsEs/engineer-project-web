@@ -47,8 +47,6 @@ export default function Layout({ children }: React.PropsWithChildren) {
             <header className={styles["default-layout-header"]}>
                 <Logo />
                 <div className={styles["default-layout-header__user"]}>
-                    <NavLink href="/search" icon={mdiMagnify} title="Search" />
-
                     <span
                         className={styles["default-layout-header__user-name"]}
                     >
@@ -64,6 +62,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                         href={route.href}
                         icon={route.icon}
                         title={route.title}
+                        style="centered"
                     />
                 ))}
             </aside>

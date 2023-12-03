@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import Select from "@/components/select/Select";
+import NavLink from "@/components/navLink/NavLink";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -127,18 +128,17 @@ export default function Search() {
                         doDebouncedSearch(query, newType);
                     }}
                 />
-                <Link
+                <NavLink
                     href={{
                         pathname: "/me/work/create",
                         query: {
                             type,
                         },
                     }}
-                    className={styles["search__add-manualy"]}
-                >
-                    <Icon path={mdiPlusThick} size={1} />{" "}
-                    <span>Add manually</span>
-                </Link>
+                    title="Add manually"
+                    icon={mdiPlusThick}
+                    style="inline"
+                />
             </div>
             {query !== "" && (
                 <div className={styles["search__results"]}>
