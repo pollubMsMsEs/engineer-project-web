@@ -1,5 +1,6 @@
 .all {
     display: grid;
+    gap: 10px;
     place-content: center;
     place-items: center;
     height: 100%;
@@ -9,6 +10,7 @@
 
 .work-form {
     display: grid;
+    gap: 2em;
     justify-content: start;
 
     .people-header {

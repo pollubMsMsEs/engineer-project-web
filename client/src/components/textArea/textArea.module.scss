@@ -1,0 +1,18 @@
+.text-area {
+    position: relative;
+    z-index: 1;
+
+    &__label {
+        position: absolute;
+        top: 0;
+        left: 10px;
+        z-index: -1;
+        font-size: 1.1rem;
+        color: var(--bkg-400);
+        transition: top 0.5s;
+
+        &--active {
+            top: calc(-1em - 10px);
+        }
+    }
+}
