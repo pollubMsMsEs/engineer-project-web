@@ -67,7 +67,7 @@ export default function LoginForm() {
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
             <ErrorsDisplay key={errorsKey} errors={errors} />
-            <Button>
+            <Button type="submit">
                 {fetchingState ? <LoadingDisplay size="1.3em" /> : "Login"}
             </Button>
             <Link href="/auth/register">

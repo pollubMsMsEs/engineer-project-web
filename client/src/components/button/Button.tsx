@@ -25,7 +25,7 @@ export default function Button({
     round?: boolean;
     width?: string;
     padding?: string;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
     dataTooltipId?: string;
     dataTooltipContent?: string;
 }>) {
