@@ -106,7 +106,7 @@ export default function Reports() {
         );
 
         setAverageCompletionTime(averageCompletionTime.average_completion_time);
-        setAverageRating(averageRating.average_rating);
+        setAverageRating(Math.round(averageRating.average_rating * 100) / 100);
         setFinishedCount(finishedCount.finished_count);
         setCountByType(countByType.count_by_type);
         setCompletionsByDate(
