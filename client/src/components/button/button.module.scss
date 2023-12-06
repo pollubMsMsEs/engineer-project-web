@@ -31,7 +31,6 @@
         }
 
         &-big {
-            padding: 0.6em 1.2em;
             font-size: 1.3rem;
         }
 
@@ -88,6 +87,20 @@
         }
 
         &-major {
+            background-color: var(--main-600);
+            border: 2px solid var(--main-950);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
+        }
+
+        &-major-gradient {
             background-color: var(--active);
             border: 2px solid var(--main-950);
 

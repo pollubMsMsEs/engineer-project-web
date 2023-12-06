@@ -19,7 +19,7 @@ export default function Button({
     type?: "submit" | "button" | "reset";
     disabled?: boolean;
     size?: "small" | "medium" | "big" | "large";
-    style?: "icon" | "normal" | "major";
+    style?: "icon" | "normal" | "major" | "major-gradient";
     customStyle?: React.CSSProperties;
     squared?: boolean;
     round?: boolean;

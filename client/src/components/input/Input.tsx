@@ -5,6 +5,7 @@ export default function Input({
     id,
     type,
     name,
+    placeholder,
     label,
     labelDisplay = "onFocus",
     value,
@@ -14,6 +15,7 @@ export default function Input({
     id?: string;
     type: string;
     name: string;
+    placeholder?: string;
     label: string;
     labelDisplay?: "never" | "onFocus" | "onValue" | "always";
     value: any;
@@ -50,9 +52,10 @@ export default function Input({
             <span className={labelClassName}>{label}</span>
             <input
                 id={id}
+                className={styles["input__input"]}
                 type={type}
                 name={name}
-                placeholder={label}
+                placeholder={placeholder ?? label}
                 required={required}
                 value={value}
                 onChange={(e) => {

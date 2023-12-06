@@ -11,6 +11,7 @@ import { ExtractedErrors } from "@/types/types";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
 import Button from "../button/Button";
+import Input from "../input/Input";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
@@ -43,7 +44,7 @@ export default function LoginForm() {
 
     return (
         <form
-            className={styles[`login-form-contaier`]}
+            className={styles[`auth-form`]}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();
@@ -52,22 +53,34 @@ export default function LoginForm() {
         >
             <h2>Login</h2>
 
-            <input
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-            />
-            <input
-                type="password"
-                placeholder="Enter your password"
-                required
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-            />
+            <div className={styles[`auth-form__inputs`]}>
+                <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    label="Email"
+                    labelDisplay="always"
+                    placeholder="Enter your email"
+                    required
+                    value={user.email}
+                    onChange={(value: any) =>
+                        setUser({ ...user, email: value })
+                    }
+                />
+                <Input
+                    id="password"
+                    type="password"
+                    name="password"
+                    label="Password"
+                    labelDisplay="always"
+                    placeholder="Enter your password"
+                    required
+                    value={user.password}
+                    onChange={(value) => setUser({ ...user, password: value })}
+                />
+            </div>
             <ErrorsDisplay key={errorsKey} errors={errors} />
-            <Button type="submit">
+            <Button type="submit" style="major" size="big">
                 {fetchingState ? <LoadingDisplay size="1.3em" /> : "Login"}
             </Button>
             <Link href="/auth/register">
