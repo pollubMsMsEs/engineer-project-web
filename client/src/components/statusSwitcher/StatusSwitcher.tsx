@@ -114,8 +114,11 @@ export default function StatusSwitcher({
                 <Select
                     name={"status"}
                     id={`status-${_workInstance._id}`}
+                    label="Status"
+                    labelDisplay="never"
                     value={status}
                     options={Object.entries(STATUSES[_workInstance.type])}
+                    fontSize="1.1rem"
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
                     }}
@@ -139,7 +142,7 @@ export default function StatusSwitcher({
                             ? mdiCheckboxMarkedCircleOutline
                             : mdiCheckboxMarkedCirclePlusOutline
                     }
-                    size={1}
+                    size={1.2}
                 />
             </Button>
         </div>

@@ -326,8 +326,9 @@ export default function WorkForm({
                     <div>{capitalize(work.type ?? "")}</div>
                 ) : (
                     <Select
-                        name="status"
-                        id="status"
+                        name="type"
+                        id="type"
+                        label="Type"
                         value={type}
                         options={TYPES}
                         onChange={(value) => {
@@ -359,7 +360,7 @@ export default function WorkForm({
                     type="date"
                     name="published_at"
                     label="Published at"
-                    labelBehaviour="always"
+                    labelDisplay="always"
                     value={publishedAt}
                     onChange={(value: any) => {
                         setPublishedAt(value);

@@ -119,6 +119,7 @@ export default function Search() {
                 <Select
                     name="type"
                     id="type"
+                    label="Type"
                     value={type}
                     options={TYPES}
                     fontSize="1.6rem"

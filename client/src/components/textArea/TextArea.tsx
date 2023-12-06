@@ -31,7 +31,7 @@ export default function TextArea({
             displayLabel = false;
             break;
         case "slidingOnFocus":
-            displayLabel = focused && value !== "";
+            displayLabel = focused;
             break;
         case "slidingOnValue":
             displayLabel = value !== "";

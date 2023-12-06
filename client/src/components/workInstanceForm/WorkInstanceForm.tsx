@@ -155,6 +155,7 @@ export default function WorkInstanceForm({
                 <Select
                     name={"status"}
                     id={`status`}
+                    label="Status"
                     value={status}
                     options={Object.entries(STATUSES[workInstance.type])}
                     onChange={(value) => {

@@ -6,7 +6,7 @@ export default function Input({
     type,
     name,
     label,
-    labelBehaviour = "slidingOnFocus",
+    labelDisplay = "onFocus",
     value,
     onChange,
     required = false,
@@ -15,7 +15,7 @@ export default function Input({
     type: string;
     name: string;
     label: string;
-    labelBehaviour?: "never" | "slidingOnFocus" | "slidingOnValue" | "always";
+    labelDisplay?: "never" | "onFocus" | "onValue" | "always";
     value: any;
     onChange: (value: any, event: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
@@ -28,14 +28,14 @@ export default function Input({
 
     let displayLabel = false;
 
-    switch (labelBehaviour) {
+    switch (labelDisplay) {
         case "never":
             displayLabel = false;
             break;
-        case "slidingOnFocus":
+        case "onFocus":
             displayLabel = focused;
             break;
-        case "slidingOnValue":
+        case "onValue":
             displayLabel = value !== "";
             break;
         case "always":

@@ -68,6 +68,7 @@ input {
 }
 
 input:hover {
+    cursor: pointer;
     border: 2px solid var(--main-600);
 }
 
