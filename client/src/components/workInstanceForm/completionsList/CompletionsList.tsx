@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import dayjs from "dayjs";
 import React from "react";
 import Completion from "./completion/Completion";
+import Button from "@/components/button/Button";
 
 export default function CompletionsList({
     published_at,
@@ -23,9 +24,9 @@ export default function CompletionsList({
 }) {
     return (
         <div>
-            <button type="button" onClick={addCompletion}>
+            <Button type="button" onClick={addCompletion}>
                 Add new <Icon path={mdiPlus} size={1} />
-            </button>
+            </Button>
             <div>
                 {completions.map((completion) => {
                     return (

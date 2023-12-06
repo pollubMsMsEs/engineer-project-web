@@ -8,6 +8,7 @@ import styles from "./personForm.module.scss";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
+import Button from "../button/Button";
 
 export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const router = useRouter();
@@ -101,13 +102,13 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                         setSurname(e.target.value);
                     }}
                 />
-                <button type="submit">
+                <Button type="submit">
                     {fetchingState ? (
                         <LoadingDisplay size="1.3rem" />
                     ) : (
                         buttonText
                     )}
-                </button>
+                </Button>
             </form>
             <ErrorsDisplay key={errorsKey} errors={errors} />
         </div>

@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import styles from "./statusSwitcher.module.scss";
 import Select from "../select/Select";
+import Button from "../button/Button";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.completions.some((viewing) =>
@@ -121,14 +122,16 @@ export default function StatusSwitcher({
                 />
             </div>
 
-            <button
-                className={styles["status-switcher__view-button"]}
-                disabled={viewedToday}
+            <Button
+                disabled={viewedToday} //className={styles["status-switcher__view-button"]}
+                style="icon"
+                squared
+                round
                 onClick={() => {
                     setViewedToday(true);
                 }}
-                data-tooltip-id="tooltip-add-viewing"
-                data-tooltip-content={viewedToday ? "" : "Complete today"}
+                dataTooltipId="tooltip-add-viewing"
+                dataTooltipContent={viewedToday ? "" : "Complete today"}
             >
                 <Icon
                     path={
@@ -138,7 +141,7 @@ export default function StatusSwitcher({
                     }
                     size={1}
                 />
-            </button>
+            </Button>
         </div>
     );
 }

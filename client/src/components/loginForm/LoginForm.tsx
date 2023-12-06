@@ -10,6 +10,7 @@ import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 import { ExtractedErrors } from "@/types/types";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
+import Button from "../button/Button";
 
 export default function LoginForm() {
     const [user, setUser] = useState({
@@ -66,9 +67,9 @@ export default function LoginForm() {
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
             <ErrorsDisplay key={errorsKey} errors={errors} />
-            <button>
+            <Button>
                 {fetchingState ? <LoadingDisplay size="1.3em" /> : "Login"}
-            </button>
+            </Button>
             <Link href="/auth/register">
                 Don&apos;t have an account? Register
             </Link>

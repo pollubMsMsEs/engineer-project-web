@@ -5,6 +5,7 @@ import {
     PersonInWork,
     Person as PersonType,
 } from "../../types/types";
+import Button from "../button/Button";
 import PersonDetailForm from "../personDetailForm/PersonDetailForm";
 import styles from "./personInWorkForm.module.scss";
 
@@ -77,15 +78,14 @@ export default function PersonInWorkForm({
                         } ${personToPick.surname}`}</option>
                     ))}
                 </select>
-                <button
+                <Button
                     type="button"
-                    className={styles["delete-person-button"]}
                     onClick={() => {
                         deletePersonCallback(person);
                     }}
                 >
                     -
-                </button>
+                </Button>
             </div>
 
             <label htmlFor={`role${index}`}>Role</label>
@@ -113,7 +113,7 @@ export default function PersonInWorkForm({
             )}
             <header className={styles["details"]}>
                 <h4>Details</h4>
-                <button
+                <Button
                     type="button"
                     onClick={() => {
                         const uniqueKey = getUniqueKey();
@@ -127,7 +127,7 @@ export default function PersonInWorkForm({
                     }}
                 >
                     +
-                </button>
+                </Button>
             </header>
             <div className={styles["details-container"]}>
                 {person.formDetails &&

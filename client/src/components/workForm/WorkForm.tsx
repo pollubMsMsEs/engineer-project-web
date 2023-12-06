@@ -308,10 +308,10 @@ export default function WorkForm({
                         setIsCoverNew(true);
                     }}
                 />
-                {false && ( // this will be usefull if endpoint for updating image will exist
-                    <button type="submit" disabled={!coverFile}>
+                {false && ( //  disabled={!coverFile} this will be usefull if endpoint for updating image will exist
+                    <Button type="submit">
                         <Icon path={mdiFloppy} size={1} />
-                    </button>
+                    </Button>
                 )}
             </form>
             <form

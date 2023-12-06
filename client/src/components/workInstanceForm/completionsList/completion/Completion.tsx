@@ -1,3 +1,4 @@
+import Button from "@/components/button/Button";
 import dayjs from "dayjs";
 import React from "react";
 
@@ -26,14 +27,14 @@ export default function Completion({
                     editCompletion(completion, new Date(e.target.value));
                 }}
             />
-            <button
+            <Button
                 type="button"
                 onClick={() => {
                     removeCompletion(completion);
                 }}
             >
                 -
-            </button>
+            </Button>
         </div>
     );
 }

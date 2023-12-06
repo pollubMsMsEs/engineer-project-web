@@ -1,3 +1,4 @@
+import Button from "../button/Button";
 import styles from "./personDetailForm.module.scss";
 
 export default function PersonDetailForm({
@@ -47,15 +48,14 @@ export default function PersonDetailForm({
                     }}
                 />
             )}
-            <button
-                className={styles["delete-button"]}
+            <Button
                 type="button"
                 onClick={() => {
                     deleteDetailCallback(uniqueKey);
                 }}
             >
                 -
-            </button>
+            </Button>
         </div>
     );
 }

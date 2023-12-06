@@ -17,6 +17,10 @@
         aspect-ratio: 1 / 1;
     }
 
+    &--round {
+        border-radius: 50%;
+    }
+
     &--size {
         &-small {
             font-size: 0.8rem;
@@ -37,24 +41,64 @@
         }
     }
 
-    &--round {
-        border-radius: 50%;
-    }
-
     &--style {
         &-icon {
+            padding: 0.2em;
             background-color: none;
             border: none;
+            box-shadow: none;
+
+            &:not(:disabled):hover {
+                color: var(--active);
+            }
+
+            &:not(:disabled):active {
+                color: var(--main-700);
+            }
+        }
+
+        &--icon-border {
+            padding: 0.2em;
+            background-color: transparent;
+            border: 1px solid var(--bkg-700);
+            box-shadow: none;
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
         }
 
         &-normal {
             background-color: var(--bkg-800);
             border: 1px solid var(--bkg-700);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
         }
 
         &-major {
             background-color: var(--active);
             border: 2px solid var(--main-950);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
 
             &::before {
                 position: absolute;
@@ -74,12 +118,7 @@
         }
     }
 
-    &:hover {
-        border-color: var(--active);
-        transform: scale(102%);
-    }
-
-    &:active {
-        background-color: var(--main-800);
+    &:disabled {
+        color: var(--text-disabled);
     }
 }

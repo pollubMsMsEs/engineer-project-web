@@ -7,6 +7,7 @@ import { WorkFromAPIPopulated } from "@/types/types";
 import { mdiPencil } from "@mdi/js";
 import Icon from "@mdi/react";
 import React, { useState } from "react";
+import Button from "../button/Button";
 
 export default function WorkEditable({
     _work,
@@ -46,13 +47,13 @@ export default function WorkEditable({
             ) : (
                 <>
                     <Work work={work} readOnly={false} />
-                    <button
+                    <Button
                         onClick={() => {
                             setIsEditable(true);
                         }}
                     >
                         <Icon path={mdiPencil} size={1} />
-                    </button>
+                    </Button>
                 </>
             )}
         </div>
