@@ -18,6 +18,7 @@ import styles from "./workInstanceForm.module.scss";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import Input from "../input/Input";
 import TextArea from "../textArea/TextArea";
+import dayjs from "dayjs";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -42,6 +43,12 @@ export default function WorkInstanceForm({
     );
     const [numberOfCompletions, setNumberOfCompletions] = useState(
         workInstance.number_of_completions ?? 0
+    );
+    const [beganAt, setBeganAt] = useState<Date | undefined>(
+        workInstance.began_at
+    );
+    const [finishedAt, setFinishedAt] = useState<Date | undefined>(
+        workInstance.finished_at
     );
     const [status, setStatus] = useState(workInstance.status ?? "");
 
@@ -87,6 +94,17 @@ export default function WorkInstanceForm({
             const didBegan = status === "doing" || status === "completed";
             const didFinished = status === "completed";
 
+            const _beganAt = beganAt ?? (didBegan ? new Date() : undefined);
+            if (_beganAt !== beganAt) {
+                setBeganAt(_beganAt);
+            }
+
+            const _finishedAt =
+                finishedAt ?? (didFinished ? new Date() : undefined);
+            if (_finishedAt !== finishedAt) {
+                setFinishedAt(_finishedAt);
+            }
+
             const newInstance: WorkInstance = {
                 ...workInstance,
                 rating,
@@ -96,12 +114,8 @@ export default function WorkInstanceForm({
                     (completion) => completion.completion
                 ),
                 status,
-                began_at:
-                    workInstance.began_at ??
-                    (didBegan ? new Date() : undefined),
-                finished_at:
-                    workInstance.finished_at ??
-                    (didFinished ? new Date() : undefined),
+                began_at: _beganAt,
+                finished_at: _finishedAt,
             };
 
             const response = await fetch(
@@ -147,9 +161,12 @@ export default function WorkInstanceForm({
         numberOfCompletions,
         completions,
         status,
+        beganAt,
+        finishedAt,
     ]);
 
     const isCompleted = numberOfCompletions > 0 || status === "completed";
+    const isBegan = status === "doing";
 
     return (
         <form className={styles["work-instance"]}>
@@ -165,8 +182,38 @@ export default function WorkInstanceForm({
                     }}
                 />
             </div>
+            {(isBegan || isCompleted) && (
+                <Input
+                    type="date"
+                    id="beganAt"
+                    name="beganAt"
+                    label="Began at"
+                    value={dayjs(beganAt).format("YYYY-MM-DD")}
+                    max={
+                        finishedAt
+                            ? dayjs(finishedAt).format("YYYY-MM-DD")
+                            : dayjs().format("YYYY-MM-DD")
+                    }
+                    onChange={(value) => {
+                        setBeganAt(new Date(value));
+                    }}
+                />
+            )}
+
             {isCompleted && (
                 <>
+                    <Input
+                        type="date"
+                        id="finishedAt"
+                        name="finishedAt"
+                        label="Finished at"
+                        value={dayjs(finishedAt).format("YYYY-MM-DD")}
+                        min={beganAt && dayjs(beganAt).format("YYYY-MM-DD")}
+                        max={dayjs().format("YYYY-MM-DD")}
+                        onChange={(value) => {
+                            setFinishedAt(new Date(value));
+                        }}
+                    />
                     <Input
                         type="number"
                         id="numberOfCompletions"
