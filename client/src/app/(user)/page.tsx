@@ -14,6 +14,7 @@ import {
 } from "@mdi/js";
 import styles from "./page.module.scss";
 import AddCard from "../../components/addCard/AddCard";
+import { getTypeIcon } from "@/modules/ui";
 
 export const revalidate = 0;
 
@@ -48,7 +49,7 @@ export default async function Home() {
 
     return (
         <div className={styles["collection"]}>
-            <InstancesGrid title="Books" iconPath={mdiBookOpenVariant}>
+            <InstancesGrid title="Books" iconPath={getTypeIcon("book").path}>
                 {books.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -57,7 +58,7 @@ export default async function Home() {
                 ))}
                 <AddCard workType="book" />
             </InstancesGrid>
-            <InstancesGrid title="Movies" iconPath={mdiMovieOpen}>
+            <InstancesGrid title="Movies" iconPath={getTypeIcon("movie").path}>
                 {movies.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -68,7 +69,7 @@ export default async function Home() {
             </InstancesGrid>
             <InstancesGrid
                 title="Computer Games"
-                iconPath={mdiController}
+                iconPath={getTypeIcon("game").path}
                 gameIcon
             >
                 {games.map((workInstance) => (

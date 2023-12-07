@@ -1,10 +1,21 @@
 .work-container {
-    > h2 {
+    > h5 {
+        margin-top: 0;
+    }
+
+    &__title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
         margin: 10px 0 2px;
     }
 
-    > h5 {
-        margin-top: 0;
+    &__icon {
+        height: 1.2em;
+
+        &--big {
+            height: 1.4em;
+        }
     }
 
     &__image {

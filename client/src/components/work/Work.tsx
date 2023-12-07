@@ -12,6 +12,7 @@ import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
 import Markdown from "react-markdown";
+import { getTypeIcon } from "@/modules/ui";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -54,10 +55,17 @@ export default function Work({
 }) {
     const peopleByRole = groupPeopleInWorkByRole(work.people);
 
+    const icon = getTypeIcon(work.type);
+    let iconClass = styles["work-container__icon"];
+
+    iconClass += icon.big ? ` ${styles["work-container__icon--big"]}` : "";
+
     return (
         <div className={styles["work-container"]}>
-            <h2>{work.title}</h2>
-            <h5>{capitalize(work.type ?? "")}</h5>
+            <h2 className={styles["work-container__title"]}>
+                <Icon path={icon.path} className={iconClass} />
+                <span>{work.title}</span>
+            </h2>
             <div className={styles["work-container__image"]}>
                 {work.cover ? (
                     <Image
