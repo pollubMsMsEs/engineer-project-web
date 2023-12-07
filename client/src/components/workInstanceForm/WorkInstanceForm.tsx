@@ -16,6 +16,8 @@ import { STATUSES } from "@/constantValues";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 import styles from "./workInstanceForm.module.scss";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
+import Input from "../input/Input";
+import TextArea from "../textArea/TextArea";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -165,11 +167,14 @@ export default function WorkInstanceForm({
             </div>
             {isCompleted && (
                 <>
-                    <input
+                    <Input
                         type="number"
+                        id="numberOfCompletions"
+                        name="numberOfCompletions"
+                        label="Number of completions"
                         value={numberOfCompletions}
-                        onChange={(e) => {
-                            let value = Number.parseInt(e.target.value);
+                        onChange={(rawValue) => {
+                            let value = Number.parseInt(rawValue);
                             if (Number.isNaN(value)) value = 0;
                             if (value < completions.length) {
                                 toast.warning(
@@ -194,12 +199,10 @@ export default function WorkInstanceForm({
                         removeCompletion={removeCompletion}
                     />
 
-                    <textarea
-                        className={styles["work-instance__description"]}
+                    <TextArea
                         name="description"
                         id="description"
-                        cols={30}
-                        rows={10}
+                        label="Notes"
                         onChange={(e) => {
                             setDescription(e.target.value);
                         }}

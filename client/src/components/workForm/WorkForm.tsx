@@ -462,10 +462,12 @@ export default function WorkForm({
                             Object.entries(metadata).map(
                                 ([reactKey, metadata], index) => (
                                     <div key={reactKey}>
-                                        <input
+                                        <Input
                                             type="text"
+                                            id={`metakey${index}`}
                                             name={`metakey${index}`}
                                             value={metadata.key}
+                                            label="Key"
                                             required
                                             onChange={(e) => {
                                                 setMetadata((prev) => {
@@ -479,10 +481,12 @@ export default function WorkForm({
                                                 });
                                             }}
                                         />
-                                        <input
+                                        <Input
                                             type="text"
+                                            id={`metavalue${index}`}
                                             name={`metavalue${index}`}
                                             value={metadata.values.join(" ")}
+                                            label="Value"
                                             required
                                             onChange={(e) => {
                                                 if (

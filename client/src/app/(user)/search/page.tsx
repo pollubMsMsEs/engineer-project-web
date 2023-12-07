@@ -17,6 +17,7 @@ import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import Select from "@/components/select/Select";
 import NavLink from "@/components/navLink/NavLink";
+import Input from "@/components/input/Input";
 
 function assertCorrectType(type: any, defaultType: WorkType = "book") {
     if (type === "book" || type === "movie" || type === "game") {
@@ -40,6 +41,8 @@ export default function Search() {
     const searchDebounce = useRef<NodeJS.Timeout>();
 
     function doDebouncedSearch(query: string, type: WorkType) {
+        if (query === "") return;
+
         setIsFetching(true);
 
         if (searchDebounce.current != undefined) {
@@ -106,12 +109,16 @@ export default function Search() {
     return (
         <div className={styles["search"]}>
             <div className={styles["search__form"]}>
-                <input
-                    className={styles["search__input"]}
+                <Input
+                    id="search"
+                    name="search"
+                    label="Search"
+                    labelDisplay="never"
                     type="text"
                     value={query}
-                    onChange={(e) => {
-                        const newQuery = e.target.value;
+                    className={styles["search__input"]}
+                    onChange={(value) => {
+                        const newQuery = value;
                         setQuery(newQuery);
                         doDebouncedSearch(newQuery, type);
                     }}

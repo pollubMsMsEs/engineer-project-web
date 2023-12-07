@@ -6,6 +6,7 @@ import {
     Person as PersonType,
 } from "../../types/types";
 import Button from "../button/Button";
+import Input from "../input/Input";
 import PersonDetailForm from "../personDetailForm/PersonDetailForm";
 import styles from "./personInWorkForm.module.scss";
 
@@ -92,15 +93,17 @@ export default function PersonInWorkForm({
             {person.person_id === "" ? (
                 <span>Pick person to set role</span>
             ) : (
-                <input
+                <Input
                     type="text"
                     id={`role${index}`}
+                    name={`role${index}`}
                     list="people-roles"
                     value={person.role}
+                    label="Role"
                     required
-                    onChange={(e) => {
-                        person.role = e.target.value;
-                        setEditedRoleCallback(e.target.value);
+                    onChange={(value) => {
+                        person.role = value;
+                        setEditedRoleCallback(value);
                         editPersonCallback(person);
                     }}
                     onFocus={(e) => {

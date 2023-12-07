@@ -1,4 +1,5 @@
 import Button from "@/components/button/Button";
+import Input from "@/components/input/Input";
 import dayjs from "dayjs";
 import React from "react";
 
@@ -18,13 +19,16 @@ export default function Completion({
 }) {
     return (
         <div>
-            <input
+            <Input
                 type="date"
+                name="completion"
+                label=""
+                labelDisplay="never"
                 value={dayjs(completion.completion).format("YYYY-MM-DD")}
                 min={dayjs(published_at).format("YYYY-MM-DD")}
                 max={dayjs().format("YYYY-MM-DD")}
-                onChange={(e) => {
-                    editCompletion(completion, new Date(e.target.value));
+                onChange={(value) => {
+                    editCompletion(completion, new Date(value));
                 }}
             />
             <Button
