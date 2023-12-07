@@ -41,13 +41,12 @@ export default function Search() {
     const searchDebounce = useRef<NodeJS.Timeout>();
 
     function doDebouncedSearch(query: string, type: WorkType) {
-        if (query === "") return;
-
-        setIsFetching(true);
-
         if (searchDebounce.current != undefined) {
             clearTimeout(searchDebounce.current);
         }
+        if (query === "") return;
+
+        setIsFetching(true);
 
         searchDebounce.current = setTimeout(async () => {
             setFoundWorks(await searchWorks(query, type));

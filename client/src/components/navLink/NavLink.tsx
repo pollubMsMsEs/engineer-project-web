@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
-import styles from "./navlink.module.scss";
+import styles from "./navLink.module.scss";
 import Icon from "@mdi/react";
 import { usePathname } from "next/navigation";
 import { UrlObject } from "url";
