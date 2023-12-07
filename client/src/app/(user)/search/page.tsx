@@ -2,17 +2,13 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useRef, useState } from "react";
 import styles from "./page.module.scss";
-import Icon from "@mdi/react";
-import { mdiPlus, mdiPlusThick } from "@mdi/js";
-import Link from "next/link";
+import { mdiPlusThick } from "@mdi/js";
 import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
 import WorkCard from "@/components/workCard/WorkCard";
 import ClickableCard from "@/components/clickableCard/ClickableCard";
-import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
-import { toast } from "react-toastify";
 import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import Select from "@/components/select/Select";

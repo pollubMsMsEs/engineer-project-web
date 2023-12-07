@@ -25,7 +25,7 @@ export default function Completion({
                 label=""
                 labelDisplay="never"
                 value={dayjs(completion.completion).format("YYYY-MM-DD")}
-                min={dayjs(published_at).format("YYYY-MM-DD")}
+                min={published_at && dayjs(published_at).format("YYYY-MM-DD")}
                 max={dayjs().format("YYYY-MM-DD")}
                 onChange={(value) => {
                     editCompletion(completion, new Date(value));
