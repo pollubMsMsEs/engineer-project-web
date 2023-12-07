@@ -49,6 +49,7 @@ export default function TextArea({
         <label htmlFor={id} className={styles["text-area"]}>
             <span className={labelClassName}>{label}</span>
             <textarea
+                className={styles["text-area__text-area"]}
                 id={id}
                 name={name}
                 placeholder={label}

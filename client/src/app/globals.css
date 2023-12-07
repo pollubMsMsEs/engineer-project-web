@@ -56,16 +56,3 @@ h1 {
     font-size: 3.2em;
     line-height: 1.1;
 }
-
-textarea {
-    padding: 0.3em 0.6em;
-    font-size: 1.3rem;
-    color: var(--text);
-    background-color: var(--bkg-800);
-    border: 2px solid transparent;
-    border-radius: 5px;
-}
-
-textarea:hover {
-    border: 2px solid var(--main-600);
-}
