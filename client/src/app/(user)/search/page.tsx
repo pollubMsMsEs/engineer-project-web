@@ -104,20 +104,6 @@ export default function Search() {
     return (
         <div className={styles["search"]}>
             <div className={styles["search__form"]}>
-                <Input
-                    id="search"
-                    name="search"
-                    label="Search"
-                    labelDisplay="never"
-                    type="text"
-                    value={query}
-                    className={styles["search__input"]}
-                    onChange={(value) => {
-                        const newQuery = value;
-                        setQuery(newQuery);
-                        doDebouncedSearch(newQuery, type);
-                    }}
-                />
                 <Select
                     name="type"
                     id="type"
@@ -131,6 +117,21 @@ export default function Search() {
                         doDebouncedSearch(query, newType);
                     }}
                 />
+                <Input
+                    id="search"
+                    name="search"
+                    label="Search by title"
+                    labelDisplay="never"
+                    type="text"
+                    value={query}
+                    className={styles["search__input"]}
+                    onChange={(value) => {
+                        const newQuery = value;
+                        setQuery(newQuery);
+                        doDebouncedSearch(newQuery, type);
+                    }}
+                />
+                <span className={styles["search__divider"]}>Or</span>
                 <NavLink
                     href={{
                         pathname: "/me/work/create",
@@ -138,7 +139,7 @@ export default function Search() {
                             type,
                         },
                     }}
-                    title="Add manually"
+                    title="Create new"
                     icon={mdiPlusThick}
                     style="inline"
                 />

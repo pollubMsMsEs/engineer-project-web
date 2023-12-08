@@ -14,6 +14,7 @@ import {
     mdiChartDonut,
     mdiHome,
     mdiMagnify,
+    mdiPlusThick,
 } from "@mdi/js";
 import NavLink from "@/components/navLink/NavLink";
 
@@ -27,8 +28,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
         },
         {
             href: "/search",
-            title: "Search",
-            icon: mdiMagnify,
+            title: "New",
+            icon: mdiPlusThick,
         },
         {
             href: "/person/all",
