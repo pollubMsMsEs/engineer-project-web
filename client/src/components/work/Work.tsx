@@ -12,7 +12,8 @@ import Image from "next/image";
 import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
 import Markdown from "react-markdown";
-import { getTypeIcon } from "@/modules/ui";
+import { getAspectRatio, getTypeIcon } from "@/modules/ui";
+import ImageContainer from "../imageContainer/ImageContainer";
 
 type PeopleByRole = {
     [role: string]: (PersonType & {
@@ -66,19 +67,11 @@ export default function Work({
                 <Icon path={icon.path} className={iconClass} />
                 <span>{work.title}</span>
             </h2>
-            <div className={styles["work-container__image"]}>
-                {work.cover ? (
-                    <Image
-                        src={work.cover}
-                        alt="Work cover"
-                        sizes="100%"
-                        fill
-                    />
-                ) : (
-                    <Icon path={mdiImageOff} />
-                )}
-            </div>
-
+            <ImageContainer
+                src={work.cover}
+                alt="Work cover"
+                aspectRatio={getAspectRatio(work.type)}
+            />
             <div>
                 <span className={styles["label"]}>Description: </span>
                 <span>

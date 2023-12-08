@@ -3,6 +3,7 @@ import React from "react";
 import ImageContainer from "../imageContainer/ImageContainer";
 import styles from "./workCard.module.scss";
 import { WorkType } from "@/types/types";
+import { getAspectRatio } from "@/modules/ui";
 
 export default function WorkCard({
     work,
@@ -11,19 +12,7 @@ export default function WorkCard({
     work: { title?: string; cover?: string; type: WorkType };
     roundedCornersTop?: boolean;
 }) {
-    let aspectRatio;
-
-    switch (work.type) {
-        case "book":
-            aspectRatio = "1/1.575";
-            break;
-        case "movie":
-            aspectRatio = "2/3";
-            break;
-        case "game":
-            aspectRatio = "3/4";
-            break;
-    }
+    const aspectRatio = getAspectRatio(work.type);
 
     return (
         <div className={styles["work-card"]}>

@@ -7,12 +7,16 @@ import { mdiImageOff } from "@mdi/js";
 export default function ImageContainer({
     src,
     alt,
+    width,
+    height,
     aspectRatio,
     roundedCornersTop = false,
 }: {
     src?: string;
     alt: string;
-    aspectRatio: string;
+    width?: string;
+    height?: string;
+    aspectRatio?: string;
     roundedCornersTop?: boolean;
 }) {
     let containerClassList = styles["img-container"];
@@ -29,7 +33,7 @@ export default function ImageContainer({
     return (
         <div
             className={containerClassList}
-            style={{ aspectRatio: aspectRatio }}
+            style={{ width, height, aspectRatio }}
         >
             {src ? (
                 <Image

@@ -11,3 +11,14 @@ export function getTypeIcon(workType: WorkType) {
             return { path: mdiController, big: true };
     }
 }
+
+export function getAspectRatio(workType: WorkType) {
+    switch (workType) {
+        case "book":
+            return "1/1.575";
+        case "movie":
+            return "2/3";
+        case "game":
+            return "3/4";
+    }
+}

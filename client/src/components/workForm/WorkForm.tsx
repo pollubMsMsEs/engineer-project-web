@@ -31,6 +31,8 @@ import Select from "../select/Select";
 import { TYPES } from "@/constantValues";
 import Input from "../input/Input";
 import TextArea from "../textArea/TextArea";
+import ImageContainer from "../imageContainer/ImageContainer";
+import { getAspectRatio } from "@/modules/ui";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -289,14 +291,13 @@ export default function WorkForm({
                 }}
             >
                 {(coverFile || cover) && (
-                    <Image
+                    <ImageContainer
                         src={
                             coverFile ? URL.createObjectURL(coverFile) : cover!
                         }
                         alt="Work cover"
-                        width={300}
-                        height={400}
-                        style={{ objectFit: "cover" }}
+                        width="300px"
+                        aspectRatio={getAspectRatio(type)}
                     />
                 )}
                 <FilePicker
