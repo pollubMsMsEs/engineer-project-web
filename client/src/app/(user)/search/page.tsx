@@ -162,7 +162,11 @@ export default function Search() {
                                                   };
                                               }}
                                           >
-                                              <WorkCard work={work} />
+                                              <WorkCard
+                                                  work={work}
+                                                  roundedCornersTop
+                                                  roundedCornersBottom
+                                              />
                                           </ClickableCard>
                                       );
                                   })

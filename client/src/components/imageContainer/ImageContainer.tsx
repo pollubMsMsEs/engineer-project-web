@@ -11,6 +11,7 @@ export default function ImageContainer({
     height,
     aspectRatio,
     roundedCornersTop = false,
+    roundedCornersBottom = false,
 }: {
     src?: string;
     alt: string;
@@ -18,6 +19,7 @@ export default function ImageContainer({
     height?: string;
     aspectRatio?: string;
     roundedCornersTop?: boolean;
+    roundedCornersBottom?: boolean;
 }) {
     let containerClassList = styles["img-container"];
     containerClassList += !src ? ` ${styles["img-container--no-img"]}` : "";
@@ -27,7 +29,10 @@ export default function ImageContainer({
 
     let imgClassList = styles["img-container__img"];
     imgClassList += roundedCornersTop
-        ? `${imgClassList} ${styles["img-container__img--rounded-corners-top"]}`
+        ? ` ${styles["img-container__img--rounded-corners-top"]}`
+        : "";
+    imgClassList += roundedCornersBottom
+        ? ` ${styles["img-container__img--rounded-corners-bottom"]}`
         : "";
 
     return (

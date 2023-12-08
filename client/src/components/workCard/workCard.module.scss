@@ -4,8 +4,19 @@
     width: 100%;
     height: 100%;
 
-    &--top-border-radius {
-        border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
+    &__image {
+        border: 2px solid var(--bkg-800);
+        box-shadow: 0 2px 20px 5px rgb(0 0 0 / 37.9%);
+
+        &--rounded-corners-top {
+            border-top-left-radius: var(--card-border-radius);
+            border-top-right-radius: var(--card-border-radius);
+        }
+
+        &--rounded-corners-bottom {
+            border-bottom-right-radius: var(--card-border-radius);
+            border-bottom-left-radius: var(--card-border-radius);
+        }
     }
 
     &__title {
