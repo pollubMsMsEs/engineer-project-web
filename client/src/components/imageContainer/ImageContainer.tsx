@@ -20,7 +20,7 @@ export default function ImageContainer({
     roundedCornersTop?: boolean;
 }) {
     let containerClassList = styles["img-container"];
-    containerClassList += !src ? ` ${styles["img-container--border"]}` : "";
+    containerClassList += !src ? ` ${styles["img-container--no-img"]}` : "";
     containerClassList += roundedCornersTop
         ? ` ${styles["img-container--rounded-corners-top"]}`
         : "";

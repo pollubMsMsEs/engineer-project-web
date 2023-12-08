@@ -9,8 +9,10 @@
         gap: 5px;
         justify-content: space-between;
         padding: 0 0 5px;
-        background-color: var(--bkg-800);
+        background-color: transparent;
+        border: 2px solid var(--bkg-800);
         border-radius: var(--card-border-radius);
+        box-shadow: 0 2px 20px 5px rgb(0 0 0 / 37.9%);
     }
 
     &__title {

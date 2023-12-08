@@ -5,8 +5,8 @@
     place-items: center;
     width: 100%;
 
-    &--border {
-        border: 2px solid var(--bkg-700);
+    &--no-img {
+        background-color: var(--bkg-800);
     }
 
     &--rounded-corners-top {
