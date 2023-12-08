@@ -38,6 +38,7 @@ export default function WorkInstanceCard({
                         alt="Work cover"
                         roundedCornersTop
                         aspectRatio={aspectRatio}
+                        zoomOnHover
                     />
                 </Link>
                 <StatusSwitcher workInstance={workInstance} />

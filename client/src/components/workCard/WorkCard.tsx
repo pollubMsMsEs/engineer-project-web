@@ -9,10 +9,12 @@ export default function WorkCard({
     work,
     roundedCornersTop = false,
     roundedCornersBottom = false,
+    zoomOnHover = false,
 }: {
     work: { title?: string; cover?: string; type: WorkType };
     roundedCornersTop?: boolean;
     roundedCornersBottom?: boolean;
+    zoomOnHover?: boolean;
 }) {
     const aspectRatio = getAspectRatio(work.type);
 
@@ -33,6 +35,7 @@ export default function WorkCard({
                     roundedCornersTop={roundedCornersTop}
                     roundedCornersBottom={roundedCornersBottom}
                     aspectRatio={aspectRatio}
+                    zoomOnHover={zoomOnHover}
                 />
             </div>
             <div className={styles["work-card__title"]}>{work.title}</div>

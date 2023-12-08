@@ -7,10 +7,8 @@ import {
 import dayjs from "dayjs";
 import Person from "../person/Person";
 import styles from "./work.module.scss";
-import { capitalize } from "radash";
-import Image from "next/image";
 import Icon from "@mdi/react";
-import { mdiImageOff } from "@mdi/js";
+import { mdiAccountGroup, mdiCalendar, mdiCardText, mdiLabel } from "@mdi/js";
 import Markdown from "react-markdown";
 import { getAspectRatio, getTypeIcon } from "@/modules/ui";
 import ImageContainer from "../imageContainer/ImageContainer";
@@ -73,48 +71,68 @@ export default function Work({
                 aspectRatio={getAspectRatio(work.type)}
             />
             <div>
-                <span className={styles["label"]}>Description: </span>
                 <span>
                     <Markdown>{work?.description ?? ""}</Markdown>
                 </span>
             </div>
-            <div>
-                <span className={styles["label"]}>Published at: </span>
-                {work?.published_at
-                    ? dayjs(work.published_at).format("YYYY-MM-DD")
-                    : ""}
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <Icon path={mdiCalendar} size={1} />
+                <span>
+                    {work?.published_at
+                        ? dayjs(work.published_at).format("YYYY-MM-DD")
+                        : "Unknown"}
+                </span>
             </div>
-            <div>
-                <span className={styles["label"]}>Genres: </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <Icon path={mdiLabel} size={1} />
                 <span>
                     {work?.genres.reduce((acc, genre) => {
                         return `${acc}${genre}, `;
                     }, "") ?? ""}
                 </span>
             </div>
+
             <div className={styles["roles"]}>
-                {peopleByRole.map(([role, people]) => (
-                    <div key={role}>
-                        <h3>
-                            {role.charAt(0).toUpperCase() +
-                                role.substring(1) +
-                                "(s)"}
-                        </h3>
-                        <div className={styles["people"]}>
-                            {people.map((p) => (
-                                <div key={p._id} className={styles["person"]}>
-                                    <Person
-                                        person={p}
-                                        details={p.details}
-                                        readOnly={readOnly}
-                                    />
-                                </div>
-                            ))}
+                <span
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                    }}
+                >
+                    <Icon path={mdiAccountGroup} size={2} />
+                    <h3>People</h3>
+                </span>
+                <div>
+                    {peopleByRole.map(([role, people]) => (
+                        <div key={role}>
+                            <h3>
+                                {role.charAt(0).toUpperCase() +
+                                    role.substring(1) +
+                                    "(s)"}
+                            </h3>
+                            <div className={styles["people"]}>
+                                {people.map((p) => (
+                                    <div
+                                        key={p._id}
+                                        className={styles["person"]}
+                                    >
+                                        <Person
+                                            person={p}
+                                            details={p.details}
+                                            readOnly={readOnly}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-            <h3>Metadata</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <Icon path={mdiCardText} size={2} />
+                <h3>Metadata</h3>
+            </div>
             <div className={styles["metadata"]}>
                 {Object.entries(work.metadata).map(([key, values]) => (
                     <div key={key}>

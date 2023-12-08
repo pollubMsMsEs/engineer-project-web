@@ -167,6 +167,7 @@ export default function Search() {
                                                   work={work}
                                                   roundedCornersTop
                                                   roundedCornersBottom
+                                                  zoomOnHover
                                               />
                                           </ClickableCard>
                                       );

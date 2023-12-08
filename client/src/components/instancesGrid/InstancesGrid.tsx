@@ -19,10 +19,10 @@ export default function InstancesGrid({
         <div className={styles["grid"]}>
             {(title || iconPath) && (
                 <h2 className={styles["grid__title"]}>
-                    {title && <span>{title}</span>}
                     {iconPath && (
                         <Icon className={iconClassList} path={iconPath} />
                     )}
+                    {title && <span>{title}</span>}
                 </h2>
             )}
             <div className={styles["grid__children"]}>{children}</div>

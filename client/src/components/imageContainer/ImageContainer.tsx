@@ -12,6 +12,7 @@ export default function ImageContainer({
     aspectRatio,
     roundedCornersTop = false,
     roundedCornersBottom = false,
+    zoomOnHover = false,
 }: {
     src?: string;
     alt: string;
@@ -20,6 +21,7 @@ export default function ImageContainer({
     aspectRatio?: string;
     roundedCornersTop?: boolean;
     roundedCornersBottom?: boolean;
+    zoomOnHover?: boolean;
 }) {
     let containerClassList = styles["img-container"];
     containerClassList += !src ? ` ${styles["img-container--no-img"]}` : "";
@@ -34,6 +36,7 @@ export default function ImageContainer({
     imgClassList += roundedCornersBottom
         ? ` ${styles["img-container__img--rounded-corners-bottom"]}`
         : "";
+    imgClassList += zoomOnHover ? ` ${styles["img-container__img--zoom"]}` : "";
 
     return (
         <div
