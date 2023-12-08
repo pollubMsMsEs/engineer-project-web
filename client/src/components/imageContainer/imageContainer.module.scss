@@ -4,6 +4,7 @@
     display: grid;
     place-items: center;
     width: 100%;
+    overflow: hidden;
 
     &--no-img {
         background-color: var(--bkg-800);
@@ -17,6 +18,7 @@
     &__img {
         object-fit: fill;
         object-position: top;
+        transition: transform 0.5s;
 
         &--rounded-corners-top {
             border-top-left-radius: var(--card-border-radius);
@@ -26,6 +28,10 @@
         &--rounded-corners-bottom {
             border-bottom-right-radius: var(--card-border-radius);
             border-bottom-left-radius: var(--card-border-radius);
+        }
+
+        &:hover {
+            transform: scale(1.05);
         }
     }
 
