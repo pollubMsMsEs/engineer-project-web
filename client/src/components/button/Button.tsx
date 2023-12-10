@@ -7,6 +7,7 @@ export default function Button({
     disabled = false,
     size = "medium",
     style = "normal",
+    className,
     customStyle,
     squared = false,
     round = false,
@@ -20,6 +21,7 @@ export default function Button({
     disabled?: boolean;
     size?: "small" | "medium" | "big" | "large";
     style?: "icon" | "normal" | "major" | "major-gradient";
+    className?: string;
     customStyle?: React.CSSProperties;
     squared?: boolean;
     round?: boolean;
@@ -29,19 +31,20 @@ export default function Button({
     dataTooltipId?: string;
     dataTooltipContent?: string;
 }>) {
-    let className = styles["button"];
+    let buttonClassName = styles["button"];
 
-    className += ` ${styles[`button--size-${size}`]}`;
-    className += ` ${styles[`button--style-${style}`]}`;
-    className += squared ? ` ${styles["button--squared"]}` : "";
-    className += round ? ` ${styles["button--round"]}` : "";
+    buttonClassName += ` ${className}`;
+    buttonClassName += ` ${styles[`button--size-${size}`]}`;
+    buttonClassName += ` ${styles[`button--style-${style}`]}`;
+    buttonClassName += squared ? ` ${styles["button--squared"]}` : "";
+    buttonClassName += round ? ` ${styles["button--round"]}` : "";
 
     return (
         <button
             style={{ ...customStyle, padding, width }}
             type={type}
             disabled={disabled}
-            className={className}
+            className={buttonClassName}
             onClick={onClick}
             data-tooltip-id={dataTooltipId}
             data-tooltip-content={dataTooltipContent}

@@ -1,5 +1,5 @@
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: var(--font);
     color: var(--text);
 
     --main-50: #ecfdf5;
@@ -24,6 +24,7 @@
     --error-border-highlighted: #e34f4f;
     --black-tint: rgb(0 0 0 / 45%);
     --text: var(--bkg-200);
+    --font: inter, system-ui, avenir, helvetica, arial, sans-serif;
     --text-secondary: var(--bkg-400);
     --text-disabled: var(--bkg-600);
     --active: var(--main-500);
