@@ -27,7 +27,16 @@
         grid-column: 1 / -1;
         gap: 10px;
         align-items: center;
-        margin: 10px 0 2px;
+        justify-self: stretch;
+        margin: 10px 0 0;
+        font-size: 2rem;
+
+        &__buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
     }
 
     &__icon {
@@ -46,6 +55,10 @@
     &__description {
         grid-area: description;
         max-width: 400px;
+
+        > p:first-child {
+            margin-top: 0;
+        }
     }
 
     &__minor-stats {

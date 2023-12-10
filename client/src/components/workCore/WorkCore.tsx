@@ -7,7 +7,13 @@ import Markdown from "react-markdown";
 import { getAspectRatio, getTypeIcon } from "@/modules/ui";
 import ImageContainer from "../imageContainer/ImageContainer";
 
-export default function WorkCore({ work }: { work: WorkFromAPIPopulated }) {
+export default function WorkCore({
+    work,
+    titleButtons,
+}: {
+    work: WorkFromAPIPopulated;
+    titleButtons?: React.ReactNode;
+}) {
     const icon = getTypeIcon(work.type);
     let iconClass = styles["work-core__icon"];
 
@@ -18,6 +24,9 @@ export default function WorkCore({ work }: { work: WorkFromAPIPopulated }) {
             <h2 className={styles["work-core__title"]}>
                 <Icon path={icon.path} className={iconClass} />
                 <span>{work.title}</span>
+                <span className={styles["work-core__title__buttons"]}>
+                    {titleButtons}
+                </span>
             </h2>
             <ImageContainer
                 className={styles["work-core__cover"]}

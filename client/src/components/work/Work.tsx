@@ -1,170 +1,89 @@
+"use client";
+
 import {
     MetaObject,
     Person as PersonType,
     PersonInWork,
     WorkFromAPIPopulated,
+    WorkInstanceFromAPI,
 } from "../../types/types";
 import dayjs from "dayjs";
 import Person from "../person/Person";
 import styles from "./work.module.scss";
 import Icon from "@mdi/react";
-import { mdiAccountGroup, mdiCalendar, mdiCardText, mdiLabel } from "@mdi/js";
+import {
+    mdiAccountGroup,
+    mdiCalendar,
+    mdiCardText,
+    mdiLabel,
+    mdiPencil,
+} from "@mdi/js";
 import Markdown from "react-markdown";
 import { getAspectRatio, getTypeIcon } from "@/modules/ui";
 import ImageContainer from "../imageContainer/ImageContainer";
-
-type PeopleByRole = {
-    [role: string]: (PersonType & {
-        _id: string;
-        details?: MetaObject;
-    })[];
-};
-
-type PersonInWorkFromAPI = PersonInWork & {
-    person_id: PersonType & { _id: string };
-};
-
-function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
-    return Object.entries(
-        people
-            .filter((p) => p?.person_id?._id)
-            .reduce((peopleByRole: PeopleByRole, person) => {
-                const newPerson = {
-                    ...person.person_id,
-                    details: person.details,
-                };
-
-                if (person.role in peopleByRole) {
-                    peopleByRole[person.role].push(newPerson);
-                } else {
-                    peopleByRole[person.role] = [newPerson];
-                }
-
-                return peopleByRole;
-            }, {})
-    );
-}
+import WorkCore from "../workCore/WorkCore";
+import WorkPeople from "../workPeople/WorkPeople";
+import WorkMetadata from "../workMetadata/WorkMetadata";
+import DeleteWork from "../deleteWorkButton/DeleteWorkButton";
+import Button from "../button/Button";
+import { useState } from "react";
+import Modal from "../modal/Modal";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
+import WorkForm from "../workForm/WorkForm";
 
 export default function Work({
-    work,
-    readOnly,
+    work: _work,
+    workInstance,
 }: {
     work: WorkFromAPIPopulated;
-    readOnly: boolean;
+    workInstance:
+        | WorkInstanceFromAPI
+        | WorkInstanceFromAPI<WorkFromAPIPopulated>;
 }) {
-    const peopleByRole = groupPeopleInWorkByRole(work.people);
-
-    const icon = getTypeIcon(work.type);
-    let iconClass = styles["work-container__icon"];
-
-    iconClass += icon.big ? ` ${styles["work-container__icon--big"]}` : "";
+    const [work, setWork] = useState(_work);
+    const [editOpen, setEditOpen] = useState(false);
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<"cover" | "work">();
 
     return (
-        <div className={styles["work-container"]}>
-            <h2 className={styles["work-container__title"]}>
-                <Icon path={icon.path} className={iconClass} />
-                <span>{work.title}</span>
-            </h2>
-            <ImageContainer
-                className={styles["work-container__cover"]}
-                src={work.cover}
-                alt="Work cover"
-                aspectRatio={getAspectRatio(work.type)}
+        <>
+            <WorkCore
+                work={work}
+                titleButtons={
+                    <>
+                        {!workInstance.from_api && (
+                            <Button onClick={() => setEditOpen(!editOpen)}>
+                                <Icon path={mdiPencil} size={1} />
+                            </Button>
+                        )}
+                        <DeleteWork workInstance={workInstance} />
+                    </>
+                }
             />
-            <div className={styles["work-container__description"]}>
-                <Markdown>{work?.description ?? ""}</Markdown>
-            </div>
-            <div className={styles["work-container__minor-stats"]}>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
+            <WorkPeople work={work} readOnly />
+            <WorkMetadata work={work} />
+            <Modal isOpen={editOpen} setIsOpen={setEditOpen} size="screen">
+                <WorkForm
+                    work={work}
+                    errors={errors}
+                    errorsKey={errorsKey}
+                    fetchingState={fetchingState}
+                    setFetchingState={setFetchingState}
+                    handleResponse={handleResponse}
+                    onSubmit={async (work) => {
+                        setWork(work);
+                        setEditOpen(false);
                     }}
-                >
-                    <Icon path={mdiCalendar} size={1} />
-                    <span>
-                        {work?.published_at
-                            ? dayjs(work.published_at).format("YYYY-MM-DD")
-                            : "Unknown"}
-                    </span>
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
+                    onCancel={() => {
+                        setEditOpen(false);
                     }}
-                >
-                    <Icon path={mdiLabel} size={1} />
-                    <span>
-                        {work?.genres.reduce((acc, genre) => {
-                            return `${acc}${genre}, `;
-                        }, "") ?? ""}
-                    </span>
-                </div>
-            </div>
-
-            <div className={styles["work-container__people"]}>
-                <span
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                    }}
-                >
-                    <Icon path={mdiAccountGroup} size={2} />
-                    <h3>People</h3>
-                </span>
-                <div>
-                    {peopleByRole.map(([role, people]) => (
-                        <div key={role}>
-                            <h3>
-                                {role.charAt(0).toUpperCase() +
-                                    role.substring(1) +
-                                    "(s)"}
-                            </h3>
-                            <div className={styles["people"]}>
-                                {people.map((p) => (
-                                    <div
-                                        key={p._id}
-                                        className={styles["person"]}
-                                    >
-                                        <Person
-                                            person={p}
-                                            details={p.details}
-                                            readOnly={readOnly}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className={styles["work-container__metadata"]}>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                    }}
-                >
-                    <Icon path={mdiCardText} size={2} />
-                    <h3>Metadata</h3>
-                </div>
-                <div>
-                    {Object.entries(work.metadata).map(([key, values]) => (
-                        <div key={key}>
-                            <span>
-                                {key.charAt(0).toUpperCase() + key.substring(1)}
-                                {": "}
-                            </span>
-                            <span>{values[0]}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+                />
+            </Modal>
+        </>
     );
 }
