@@ -5,6 +5,7 @@ import Icon from "@mdi/react";
 import { mdiImageOff } from "@mdi/js";
 
 export default function ImageContainer({
+    className,
     src,
     alt,
     width,
@@ -14,6 +15,7 @@ export default function ImageContainer({
     roundedCornersBottom = false,
     zoomOnHover = false,
 }: {
+    className?: string;
     src?: string;
     alt: string;
     width?: string;
@@ -24,6 +26,7 @@ export default function ImageContainer({
     zoomOnHover?: boolean;
 }) {
     let containerClassList = styles["img-container"];
+    containerClassList += ` ${className}`;
     containerClassList += !src ? ` ${styles["img-container--no-img"]}` : "";
     containerClassList += roundedCornersTop
         ? ` ${styles["img-container--rounded-corners-top"]}`

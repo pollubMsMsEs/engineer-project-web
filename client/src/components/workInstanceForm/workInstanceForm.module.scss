@@ -1,5 +1,6 @@
 .work-instance {
     display: grid;
+    grid-area: instance;
     grid-template-columns: 1fr 1fr;
     align-content: start;
     align-items: start;

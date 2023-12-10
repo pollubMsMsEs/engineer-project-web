@@ -66,33 +66,46 @@ export default function Work({
                 <span>{work.title}</span>
             </h2>
             <ImageContainer
+                className={styles["work-container__cover"]}
                 src={work.cover}
                 alt="Work cover"
                 aspectRatio={getAspectRatio(work.type)}
             />
-            <div>
-                <span>
-                    <Markdown>{work?.description ?? ""}</Markdown>
-                </span>
+            <div className={styles["work-container__description"]}>
+                <Markdown>{work?.description ?? ""}</Markdown>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <Icon path={mdiCalendar} size={1} />
-                <span>
-                    {work?.published_at
-                        ? dayjs(work.published_at).format("YYYY-MM-DD")
-                        : "Unknown"}
-                </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <Icon path={mdiLabel} size={1} />
-                <span>
-                    {work?.genres.reduce((acc, genre) => {
-                        return `${acc}${genre}, `;
-                    }, "") ?? ""}
-                </span>
+            <div className={styles["work-container__minor-stats"]}>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                    }}
+                >
+                    <Icon path={mdiCalendar} size={1} />
+                    <span>
+                        {work?.published_at
+                            ? dayjs(work.published_at).format("YYYY-MM-DD")
+                            : "Unknown"}
+                    </span>
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                    }}
+                >
+                    <Icon path={mdiLabel} size={1} />
+                    <span>
+                        {work?.genres.reduce((acc, genre) => {
+                            return `${acc}${genre}, `;
+                        }, "") ?? ""}
+                    </span>
+                </div>
             </div>
 
-            <div className={styles["roles"]}>
+            <div className={styles["work-container__people"]}>
                 <span
                     style={{
                         display: "flex",
@@ -129,20 +142,28 @@ export default function Work({
                     ))}
                 </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Icon path={mdiCardText} size={2} />
-                <h3>Metadata</h3>
-            </div>
-            <div className={styles["metadata"]}>
-                {Object.entries(work.metadata).map(([key, values]) => (
-                    <div key={key}>
-                        <span>
-                            {key.charAt(0).toUpperCase() + key.substring(1)}
-                            {": "}
-                        </span>
-                        <span>{values[0]}</span>
-                    </div>
-                ))}
+            <div className={styles["work-container__metadata"]}>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                    }}
+                >
+                    <Icon path={mdiCardText} size={2} />
+                    <h3>Metadata</h3>
+                </div>
+                <div>
+                    {Object.entries(work.metadata).map(([key, values]) => (
+                        <div key={key}>
+                            <span>
+                                {key.charAt(0).toUpperCase() + key.substring(1)}
+                                {": "}
+                            </span>
+                            <span>{values[0]}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

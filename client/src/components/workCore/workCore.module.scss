@@ -1,12 +1,10 @@
-.work-container {
+.work-core {
     display: grid;
+    grid-area: core;
     grid-template:
         "title title" auto
         "cover description" auto
-        "minor-stats description" 1fr
-        "people people"
-        "metadata metadata"
-        / clamp(300px, 50%, 400px) 1fr;
+        "minor-stats description" 1fr / clamp(300px, 50%, 400px) 1fr;
     gap: 10px;
     align-items: start;
     justify-items: start;
@@ -17,8 +15,6 @@
             "cover"
             "description"
             "minor-stats"
-            "people"
-            "metadata"
             / 1fr;
     }
 
@@ -34,6 +30,14 @@
         margin: 10px 0 2px;
     }
 
+    &__icon {
+        height: 1.2em;
+
+        &--big {
+            height: 1.4em;
+        }
+    }
+
     &__cover {
         grid-area: cover;
         max-width: 400px;
@@ -47,30 +51,5 @@
     &__minor-stats {
         grid-area: minor-stats;
         justify-self: start;
-    }
-
-    &__people {
-        grid-area: people;
-    }
-
-    &__metadata {
-        display: flex;
-        flex-flow: column wrap;
-        grid-area: metadata;
-        gap: 5px;
-        margin-top: 30px;
-    }
-
-    &__icon {
-        height: 1.2em;
-
-        &--big {
-            height: 1.4em;
-        }
-    }
-
-    .label {
-        font-size: 1.1rem;
-        font-weight: bold;
     }
 }
