@@ -3,6 +3,8 @@
     grid-template:
         "core instance" 1fr
         "people people" auto
-        "metadata metadata" auto / 1fr 400px;
+        "metadata metadata" auto / minmax(min-content, 1000px) 500px;
     gap: 10px;
+    justify-content: center;
+    margin: 20px 20px 0;
 }
