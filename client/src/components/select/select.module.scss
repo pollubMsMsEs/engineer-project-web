@@ -1,6 +1,7 @@
 .select {
     position: relative;
     z-index: 1;
+    display: block;
 
     &__select {
         padding: 0.2em 2em 0.2em 0.7em;
