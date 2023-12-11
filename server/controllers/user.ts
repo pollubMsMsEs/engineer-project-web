@@ -32,10 +32,11 @@ export const register = [
             if (!process.env.SALT) throw new Error("Missing SALT in env");
             const salt = await bcrypt.genSalt(Number(process.env.SALT));
             const hashPassword = await bcrypt.hash(req.body.password, salt);
-            const user: any = await new User({
+            const user: any = await User.create({
                 ...req.body,
                 password: hashPassword,
-            }).save();
+            });
+            user.save();
             const token = user.generateAuthToken();
 
             res.status(201).send({
