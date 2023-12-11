@@ -49,6 +49,8 @@ export default function StatusSwitcher({
         const debounce = setTimeout(async () => {
             const didBegan = status === "doing" || status === "completed";
             const didFinished = status === "completed";
+            const addedNewViewing =
+                viewedToday && !hasViewingToday(_workInstance);
 
             const updatedWorkInstance: WorkInstanceFromAPI<string> = {
                 ..._workInstance,
@@ -64,12 +66,11 @@ export default function StatusSwitcher({
                     (didFinished ? new Date() : undefined),
             };
 
-            const addedNewViewing =
-                viewedToday && !hasViewingToday(_workInstance);
-
             if (addedNewViewing) {
                 updatedWorkInstance.completions.push(new Date());
                 updatedWorkInstance.number_of_completions++;
+                updatedWorkInstance.status = "completed";
+                setStatus("completed");
             }
 
             try {
