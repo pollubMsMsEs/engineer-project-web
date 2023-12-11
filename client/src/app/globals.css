@@ -29,6 +29,8 @@
     --text-disabled: var(--bkg-600);
     --active: var(--main-500);
     --card-border-radius: 10px;
+
+    color-scheme: dark;
 }
 
 a {

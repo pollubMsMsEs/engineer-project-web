@@ -19,7 +19,7 @@ export default function RatingElement({
             } ${!readOnly ? styles["rating-bar__star--interactable"] : ""}`}
             onClick={onClick}
         >
-            <Icon path={mdiStar} size={1} />
+            <Icon path={mdiStar} size={"1em"} />
         </div>
     );
 }

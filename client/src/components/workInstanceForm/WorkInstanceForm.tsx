@@ -176,6 +176,7 @@ export default function WorkInstanceForm({
                     id={`status`}
                     label="Status"
                     value={status}
+                    fontSize="1.5rem"
                     options={Object.entries(STATUSES[workInstance.type])}
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
@@ -183,69 +184,62 @@ export default function WorkInstanceForm({
                 />
             </div>
             {(isBegan || isCompleted) && (
-                <Input
-                    type="date"
-                    id="beganAt"
-                    name="beganAt"
-                    label="Began at"
-                    value={dayjs(beganAt).format("YYYY-MM-DD")}
-                    max={
-                        finishedAt
-                            ? dayjs(finishedAt).format("YYYY-MM-DD")
-                            : dayjs().format("YYYY-MM-DD")
-                    }
-                    onChange={(value) => {
-                        setBeganAt(new Date(value));
-                    }}
-                />
-            )}
-
-            {isCompleted && (
-                <>
+                <div className={styles["work-instance__dates"]}>
                     <Input
                         type="date"
-                        id="finishedAt"
-                        name="finishedAt"
-                        label="Finished at"
-                        value={dayjs(finishedAt).format("YYYY-MM-DD")}
-                        min={beganAt && dayjs(beganAt).format("YYYY-MM-DD")}
-                        max={dayjs().format("YYYY-MM-DD")}
+                        id="beganAt"
+                        name="beganAt"
+                        label="Began at"
+                        labelDisplay="always"
+                        value={dayjs(beganAt).format("YYYY-MM-DD")}
+                        max={
+                            finishedAt
+                                ? dayjs(finishedAt).format("YYYY-MM-DD")
+                                : dayjs().format("YYYY-MM-DD")
+                        }
                         onChange={(value) => {
-                            setFinishedAt(new Date(value));
+                            setBeganAt(new Date(value));
                         }}
                     />
-                    <Input
-                        type="number"
-                        id="numberOfCompletions"
-                        name="numberOfCompletions"
-                        label="Number of completions"
-                        value={numberOfCompletions}
-                        onChange={(rawValue) => {
-                            let value = Number.parseInt(rawValue);
-                            if (Number.isNaN(value)) value = 0;
-                            if (value < completions.length) {
-                                toast.warning(
-                                    "There is more completions in the list, remove them first"
-                                );
-                                return;
-                            }
 
-                            setNumberOfCompletions(value);
-                        }}
-                    />
-                    <RatingBar
-                        value={rating}
-                        maxValue={5}
-                        setValue={setRating}
-                    />
-                    <CompletionsList
-                        published_at={workInstance.work_id.published_at}
-                        completions={completions}
-                        addCompletion={addCompletion}
-                        editCompletion={editCompletion}
-                        removeCompletion={removeCompletion}
-                    />
-
+                    {isCompleted && (
+                        <>
+                            <span
+                                className={
+                                    styles["work-instance__dates__separator"]
+                                }
+                            >
+                                :
+                            </span>
+                            <Input
+                                type="date"
+                                id="finishedAt"
+                                name="finishedAt"
+                                label="Finished at"
+                                labelDisplay="always"
+                                value={dayjs(finishedAt).format("YYYY-MM-DD")}
+                                min={
+                                    beganAt &&
+                                    dayjs(beganAt).format("YYYY-MM-DD")
+                                }
+                                max={dayjs().format("YYYY-MM-DD")}
+                                onChange={(value) => {
+                                    setFinishedAt(new Date(value));
+                                }}
+                            />
+                        </>
+                    )}
+                </div>
+            )}
+            {(isBegan || isCompleted) && (
+                <div className={styles["work-instance__opinion"]}>
+                    {isCompleted && (
+                        <RatingBar
+                            value={rating}
+                            maxValue={5}
+                            setValue={setRating}
+                        />
+                    )}
                     <TextArea
                         name="description"
                         id="description"
@@ -254,6 +248,19 @@ export default function WorkInstanceForm({
                             setDescription(e.target.value);
                         }}
                         value={description}
+                    />
+                </div>
+            )}
+            {isCompleted && (
+                <>
+                    <CompletionsList
+                        published_at={workInstance.work_id.published_at}
+                        numberOfCompletions={numberOfCompletions}
+                        setNumberOfCompletions={setNumberOfCompletions}
+                        completions={completions}
+                        addCompletion={addCompletion}
+                        editCompletion={editCompletion}
+                        removeCompletion={removeCompletion}
                     />
                 </>
             )}

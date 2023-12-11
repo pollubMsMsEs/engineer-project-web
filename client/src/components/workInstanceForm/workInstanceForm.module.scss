@@ -1,14 +1,33 @@
 .work-instance {
     display: grid;
     grid-area: instance;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 20px;
     align-content: start;
     align-items: start;
+    justify-content: stretch;
     justify-items: center;
 
     &__status {
         grid-column: 1 / -1;
-        width: 200px;
-        margin: 30px 0;
+        margin-top: 10px;
+    }
+
+    &__dates {
+        display: flex;
+        gap: 10px;
+        padding-top: 30px;
+
+        &__separator {
+            font-size: 1.5rem;
+        }
+    }
+
+    &__opinion {
+        display: grid;
+        gap: 10px;
+        justify-items: center;
+        justify-self: stretch;
+        padding: 0 50px;
     }
 }
