@@ -3,15 +3,6 @@ import { WorkInstanceFromAPI } from "@/types/types";
 import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
 import WorkInstanceCard from "@/components/workInstanceCard/WorkInstanceCard";
 import TooltipWrapper from "@/components/tooltipWrapper/TooltipWrapper";
-import Link from "next/link";
-import Icon from "@mdi/react";
-import {
-    mdiBook,
-    mdiBookOpenVariant,
-    mdiController,
-    mdiMovieOpen,
-    mdiPlus,
-} from "@mdi/js";
 import styles from "./page.module.scss";
 import AddCard from "../../components/addCard/AddCard";
 import { getTypeIcon } from "@/modules/ui";

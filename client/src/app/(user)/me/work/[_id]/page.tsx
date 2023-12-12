@@ -5,6 +5,24 @@ import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
 import WorkInstanceForm from "@/components/workInstanceForm/WorkInstanceForm";
 import { notFound } from "next/navigation";
 import Work from "@/components/work/Work";
+import { Metadata, ResolvingMetadata } from "next";
+
+export async function generateMetadata({
+    params,
+}: {
+    params: { _id: string };
+}): Promise<Metadata> {
+    const response = await fetchAPIFromServerComponent(
+        `/workInstance/${params._id}`
+    );
+    const workInstance: WorkInstanceFromAPI<WorkFromAPIPopulated> = (
+        await response.json()
+    ).data;
+
+    return {
+        title: workInstance.work_id.title,
+    };
+}
 
 export default async function WorkInstance({
     params,
