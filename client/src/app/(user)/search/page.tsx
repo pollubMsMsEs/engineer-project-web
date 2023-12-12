@@ -7,27 +7,18 @@ import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
-import WorkCard from "@/components/workCard/WorkCard";
-import ClickableCard from "@/components/clickableCard/ClickableCard";
 import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
 import Select from "@/components/select/Select";
 import NavLink from "@/components/navLink/NavLink";
 import Input from "@/components/input/Input";
-
-function assertCorrectType(type: any, defaultType: WorkType = "book") {
-    if (type === "book" || type === "movie" || type === "game") {
-        return type;
-    } else {
-        return defaultType;
-    }
-}
+import ClickableWorkCard from "@/components/clickableWorkCard/ClickableWorkCard";
 
 export default function Search() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [type, setType] = useState<WorkType>(() => {
-        return assertCorrectType(searchParams.get("type"));
+        return (searchParams.get("type") as WorkType) ?? "book";
     });
     const [query, setQuery] = useState("");
     const [foundWorks, setFoundWorks] = useState<WorkFromAPIShort[] | false>(
@@ -112,8 +103,8 @@ export default function Search() {
                     options={TYPES}
                     fontSize="1.6rem"
                     onChange={(value) => {
-                        const newType = assertCorrectType(value);
-                        setType(assertCorrectType(newType));
+                        const newType = value as WorkType;
+                        setType(newType);
                         doDebouncedSearch(query, newType);
                     }}
                 />
@@ -151,8 +142,9 @@ export default function Search() {
                             {foundWorks
                                 ? foundWorks.map((work) => {
                                       return (
-                                          <ClickableCard
+                                          <ClickableWorkCard
                                               key={work.api_key}
+                                              work={work}
                                               onClick={async () => {
                                                   return {
                                                       success:
@@ -162,14 +154,7 @@ export default function Search() {
                                                       stopLoading: false,
                                                   };
                                               }}
-                                          >
-                                              <WorkCard
-                                                  work={work}
-                                                  roundedCornersTop
-                                                  roundedCornersBottom
-                                                  zoomOnHover
-                                              />
-                                          </ClickableCard>
+                                          />
                                       );
                                   })
                                 : "Works browser is unavailable"}

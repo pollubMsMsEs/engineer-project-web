@@ -23,7 +23,9 @@
         display: grid;
         place-content: center;
         place-items: stretch;
+        align-self: flex-start;
         padding: 5px 0;
         font-size: 1.2rem;
+        text-align: center;
     }
 }
