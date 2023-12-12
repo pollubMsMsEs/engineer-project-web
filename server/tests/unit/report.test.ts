@@ -6,7 +6,7 @@ import Person from "../../models/person.js";
 import Work from "../../models/work.js";
 import WorkFromAPI from "../../models/workFromAPI.js";
 import WorkInstance from "../../models/workInstance.js";
-import createTestData from "../data/report.js";
+import createTestData from "./data/report.js";
 
 let mongoServer: MongoMemoryServer;
 let userId: any;

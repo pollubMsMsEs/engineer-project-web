@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import User from "../../models/user.js";
-import Person from "../../models/person.js";
-import Work from "../../models/work.js";
-import WorkFromAPI from "../../models/workFromAPI.js";
-import WorkInstance from "../../models/workInstance.js";
+import User from "../../../models/user.js";
+import Person from "../../../models/person.js";
+import Work from "../../../models/work.js";
+import WorkFromAPI from "../../../models/workFromAPI.js";
+import WorkInstance from "../../../models/workInstance.js";
 
 export async function createTestData() {
     const user = new User({
