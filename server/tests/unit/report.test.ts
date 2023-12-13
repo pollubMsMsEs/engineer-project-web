@@ -1,11 +1,11 @@
-import { handleReport } from "../controllers/report.js";
+import { handleReport } from "../../controllers/report.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import User from "../models/user.js";
-import Person from "../models/person.js";
-import Work from "../models/work.js";
-import WorkFromAPI from "../models/workFromAPI.js";
-import WorkInstance from "../models/workInstance.js";
+import User from "../../models/user.js";
+import Person from "../../models/person.js";
+import Work from "../../models/work.js";
+import WorkFromAPI from "../../models/workFromAPI.js";
+import WorkInstance from "../../models/workInstance.js";
 import createTestData from "./data/report.js";
 
 let mongoServer: MongoMemoryServer;
@@ -538,7 +538,7 @@ describe("getFinishedCount", () => {
 
         await handleReport(req, res);
 
-        const expected = 5;
+        const expected = 6;
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,

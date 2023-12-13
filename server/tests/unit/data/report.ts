@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import User from "../../models/user.js";
-import Person from "../../models/person.js";
-import Work from "../../models/work.js";
-import WorkFromAPI from "../../models/workFromAPI.js";
-import WorkInstance from "../../models/workInstance.js";
+import User from "../../../models/user.js";
+import Person from "../../../models/person.js";
+import Work from "../../../models/work.js";
+import WorkFromAPI from "../../../models/workFromAPI.js";
+import WorkInstance from "../../../models/workInstance.js";
 
 export async function createTestData() {
     const user = new User({
@@ -124,7 +124,7 @@ export async function createTestData() {
             onModel: "Work",
             rating: 1,
             description: "",
-            number_of_completions: 2,
+            number_of_completions: 4,
             completions: [
                 "2021-01-01T15:00:00.000Z",
                 "2021-01-02T00:00:00.000Z",
@@ -206,7 +206,7 @@ export async function createTestData() {
             onModel: "WorkFromAPI",
             rating: 6,
             description: "",
-            number_of_completions: 0,
+            number_of_completions: 5,
             completions: [
                 "2021-01-02T23:00:00.000Z",
                 "2021-01-03T23:00:00.000Z",

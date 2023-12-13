@@ -1,9 +1,6 @@
 import WorkInstance from "../models/workInstance.js";
 import { Request, Response } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import mongoose from "mongoose";
-const debug = Debug("project:dev");
 
 interface ReportQuery {
     type?: string;
@@ -641,94 +638,4 @@ async function getFinishedCount(req: Request | any) {
         (worksFromApiResult ? worksFromApiResult.completedCount : 0);
 
     return totalCompletedCount;
-}
-
-export async function getCompletionsSortedByDate(
-    req: Request | any,
-    res: Response
-) {
-    const userId = new mongoose.Types.ObjectId(req.auth._id);
-
-    const types = [];
-
-    if (req.query.type) {
-        const typesArray =
-            typeof req.query.type === "string"
-                ? req.query.type.split(",")
-                : req.query.type;
-        types.push({ type: { $in: typesArray } });
-    }
-
-    const facetPipeline = {
-        works: [
-            { $match: { onModel: "Work" } },
-            {
-                $lookup: {
-                    from: "works",
-                    localField: "work_id",
-                    foreignField: "_id",
-                    as: "work_details",
-                },
-            },
-            { $unwind: "$work_details" },
-            { $unwind: "$completions" },
-            ...(types.length > 0 ? [{ $match: { $and: types } }] : []),
-            {
-                $project: {
-                    completionDate: {
-                        $dateToString: {
-                            format: "%Y-%m-%d",
-                            date: "$completions",
-                        },
-                    },
-                    title: "$work_details.title",
-                    cover: { $ifNull: ["$work_details.cover", ""] },
-                },
-            },
-        ],
-        worksFromAPI: [
-            { $match: { onModel: "WorkFromAPI" } },
-            {
-                $lookup: {
-                    from: "worksFromAPI",
-                    localField: "work_id",
-                    foreignField: "_id",
-                    as: "work_details",
-                },
-            },
-            { $unwind: "$work_details" },
-            { $unwind: "$completions" },
-            ...(types.length > 0 ? [{ $match: { $and: types } }] : []),
-            {
-                $project: {
-                    completionDate: {
-                        $dateToString: {
-                            format: "%Y-%m-%d",
-                            date: "$completions",
-                        },
-                    },
-                    title: "$work_details.title",
-                    cover: { $ifNull: ["$work_details.cover", ""] },
-                },
-            },
-        ],
-    };
-
-    const result = await WorkInstance.aggregate([
-        { $match: { user_id: userId } },
-        { $facet: facetPipeline },
-    ]).exec();
-
-    const combinedResults = [
-        ...(result[0].works ?? []),
-        ...(result[0].worksFromAPI ?? []),
-    ];
-
-    combinedResults.sort((a, b) => {
-        const dateA = new Date(a.completionDate);
-        const dateB = new Date(b.completionDate);
-        return dateB.getTime() - dateA.getTime();
-    });
-
-    return res.json({ acknowledged: true, completions: combinedResults });
 }

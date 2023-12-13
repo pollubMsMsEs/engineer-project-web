@@ -5,7 +5,6 @@ import logger from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import utilsRouter from "./routes/utils.js";
 import apiRouter from "./routes/api.js";
 
 const app: Express = express();
@@ -21,6 +20,5 @@ app.get("/healthz", (req, res) => {
 });
 
 app.use("/api", apiRouter);
-app.use("/utils", utilsRouter);
 
 export default app;

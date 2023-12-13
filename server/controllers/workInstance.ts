@@ -1,8 +1,6 @@
 import WorkInstance from "../models/workInstance.js";
 import { getBookAuthorFromAPI, getOneFromAPI } from "./searchAPI.js";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import mongoose from "mongoose";
 import {
@@ -10,12 +8,10 @@ import {
     isPast,
     parseISO,
     isAfter,
-    isEqual,
     fromUnixTime,
     parse,
 } from "date-fns";
 import { query } from "express-validator";
-const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 
@@ -32,30 +28,6 @@ export async function getAll(req: Request, res: Response) {
         .exec();
     res.json(workInstances);
 }
-
-export const getAllForUser = [
-    param("id").isMongoId().withMessage("URL contains incorrect id"),
-    async function (req: Request, res: Response, next: NextFunction) {
-        try {
-            validationResult(req).throw();
-            const workInstances = await WorkInstance.find({
-                user_id: req.params.id,
-            })
-                .populate({
-                    path: "work_id",
-                    populate: {
-                        path: "people.person_id",
-                        model: "Person",
-                        strictPopulate: false,
-                    },
-                })
-                .exec();
-            res.json({ data: workInstances });
-        } catch (e: any) {
-            return next(e);
-        }
-    },
-];
 
 export const getAllForCurrentUser = [
     async function (req: Request | any, res: Response, next: NextFunction) {

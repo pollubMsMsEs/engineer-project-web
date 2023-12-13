@@ -1,13 +1,9 @@
 import Image from "../models/image.js";
-import { fileTypeFromBuffer } from "file-type";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import multer from "multer";
-const debug = Debug("project:dev");
 
-const { param, body, validationResult } = ExtendedValidator();
+const { param, validationResult } = ExtendedValidator();
 
 const storage = multer.memoryStorage();
 const upload = multer({

@@ -4,10 +4,7 @@ import Person from "../models/person.js";
 import Image from "../models/image.js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 
@@ -67,8 +64,7 @@ export const createOne = [
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
-        .exists()
-        .withMessage("Missing published_at date")
+        .optional()
         .isISO8601()
         .withMessage("Incorrect format of published_at date")
         .toDate(),
@@ -157,8 +153,7 @@ export const updateOne = [
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
-        .exists()
-        .withMessage("Missing published_at date")
+        .optional()
         .isISO8601()
         .withMessage("Incorrect format of published_at date")
         .toDate(),
