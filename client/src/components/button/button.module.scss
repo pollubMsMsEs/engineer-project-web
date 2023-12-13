@@ -132,7 +132,7 @@
     }
 
     &:disabled {
-        color: var(--text-disabled);
+        color: var(--bkg-500);
     }
 
     &:not(:disabled):hover {

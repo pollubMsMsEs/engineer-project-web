@@ -537,7 +537,12 @@ export default function WorkForm({
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
                 <div className={styles["buttons"]}>
-                    <Button type="submit" style="normal" size="big">
+                    <Button
+                        type="submit"
+                        style="normal"
+                        size="big"
+                        loading={fetchingState !== false}
+                    >
                         {submitBtnText}
                     </Button>
                     <Button onClick={onCancel}>

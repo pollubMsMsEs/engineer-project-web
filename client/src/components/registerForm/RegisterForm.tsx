@@ -92,7 +92,12 @@ export default function RegisterForm() {
                 />
             </div>
             <ErrorsDisplay key={errorsKey} errors={errors} />
-            <Button type="submit" style="major" size="big">
+            <Button
+                type="submit"
+                style="major"
+                size="big"
+                loading={fetchingState}
+            >
                 {fetchingState ? <LoadingDisplay size="1.3rem" /> : "Register"}
             </Button>
 

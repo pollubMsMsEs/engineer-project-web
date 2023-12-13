@@ -7,6 +7,7 @@ export default function Button({
     disabled = false,
     size = "medium",
     style = "normal",
+    loading,
     className,
     customStyle,
     squared = false,
@@ -21,6 +22,7 @@ export default function Button({
     disabled?: boolean;
     size?: "small" | "medium" | "big" | "large";
     style?: "icon" | "normal" | "major" | "major-gradient";
+    loading?: boolean;
     className?: string;
     customStyle?: React.CSSProperties;
     squared?: boolean;
@@ -43,7 +45,7 @@ export default function Button({
         <button
             style={{ ...customStyle, padding, width }}
             type={type}
-            disabled={disabled}
+            disabled={disabled || loading}
             className={buttonClassName}
             onClick={onClick}
             data-tooltip-id={dataTooltipId}

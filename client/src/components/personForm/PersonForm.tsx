@@ -103,7 +103,7 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                         setSurname(value);
                     }}
                 />
-                <Button type="submit">
+                <Button type="submit" loading={fetchingState}>
                     {fetchingState ? (
                         <LoadingDisplay size="1.3rem" />
                     ) : (
