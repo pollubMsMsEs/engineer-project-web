@@ -160,7 +160,9 @@ export default function Search() {
                                 : "Works browser is unavailable"}
                         </InstancesGrid>
                     ) : (
-                        <LoadingDisplay size="50px" />
+                        <div className={styles["search__results__loading"]}>
+                            <LoadingDisplay size="50px" />
+                        </div>
                     )}
                 </div>
             )}

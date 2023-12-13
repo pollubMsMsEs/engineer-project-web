@@ -27,9 +27,13 @@
 
     &__results {
         display: grid;
-        place-items: center;
+        place-items: stretch;
         width: 100%;
         min-height: 200px;
         padding: 10px 0;
+
+        &__loading {
+            place-self: center;
+        }
     }
 }
