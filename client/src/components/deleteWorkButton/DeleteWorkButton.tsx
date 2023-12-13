@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { mdiTrashCan } from "@mdi/js";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
 import { useRouter } from "next/navigation";
+import Button from "../button/Button";
 
 export default function DeleteWork({
     workInstance,
@@ -15,7 +16,7 @@ export default function DeleteWork({
     const router = useRouter();
 
     return (
-        <button
+        <Button
             onClick={async () => {
                 const responseInstance = await fetch(
                     `/api/workInstance/${workInstance._id}`,
@@ -44,6 +45,6 @@ export default function DeleteWork({
             }}
         >
             <Icon path={mdiTrashCan} size={1} />
-        </button>
+        </Button>
     );
 }

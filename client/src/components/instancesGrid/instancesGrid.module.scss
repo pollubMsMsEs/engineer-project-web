@@ -1,5 +1,29 @@
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    gap: 10px;
+    padding: 10px 30px;
+
+    &__title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        font-size: 2rem;
+    }
+
+    &__icon {
+        height: 1em;
+
+        &--game-icon {
+            height: 1.2em;
+            margin-bottom: -5px;
+        }
+    }
+
+    &__children {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
 }

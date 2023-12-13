@@ -12,10 +12,13 @@ import React, { useRef, useState } from "react";
 import CompletionsList from "./completionsList/CompletionsList";
 import { toast } from "react-toastify";
 import Select from "@/components/select/Select";
-import { statuses } from "@/modules/workInstanceStatus";
+import { STATUSES } from "@/constantValues";
 import { useUnmountedEffect } from "@/hooks/useUnmountedEffect";
 import styles from "./workInstanceForm.module.scss";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
+import Input from "../input/Input";
+import TextArea from "../textArea/TextArea";
+import dayjs from "dayjs";
 
 export default function WorkInstanceForm({
     workInstance,
@@ -40,6 +43,12 @@ export default function WorkInstanceForm({
     );
     const [numberOfCompletions, setNumberOfCompletions] = useState(
         workInstance.number_of_completions ?? 0
+    );
+    const [beganAt, setBeganAt] = useState<Date | undefined>(
+        workInstance.began_at
+    );
+    const [finishedAt, setFinishedAt] = useState<Date | undefined>(
+        workInstance.finished_at
     );
     const [status, setStatus] = useState(workInstance.status ?? "");
 
@@ -85,6 +94,17 @@ export default function WorkInstanceForm({
             const didBegan = status === "doing" || status === "completed";
             const didFinished = status === "completed";
 
+            const _beganAt = beganAt ?? (didBegan ? new Date() : undefined);
+            if (_beganAt !== beganAt) {
+                setBeganAt(_beganAt);
+            }
+
+            const _finishedAt =
+                finishedAt ?? (didFinished ? new Date() : undefined);
+            if (_finishedAt !== finishedAt) {
+                setFinishedAt(_finishedAt);
+            }
+
             const newInstance: WorkInstance = {
                 ...workInstance,
                 rating,
@@ -94,12 +114,8 @@ export default function WorkInstanceForm({
                     (completion) => completion.completion
                 ),
                 status,
-                began_at:
-                    workInstance.began_at ??
-                    (didBegan ? new Date() : undefined),
-                finished_at:
-                    workInstance.finished_at ??
-                    (didFinished ? new Date() : undefined),
+                began_at: _beganAt,
+                finished_at: _finishedAt,
             };
 
             const response = await fetch(
@@ -145,9 +161,12 @@ export default function WorkInstanceForm({
         numberOfCompletions,
         completions,
         status,
+        beganAt,
+        finishedAt,
     ]);
 
     const isCompleted = numberOfCompletions > 0 || status === "completed";
+    const isBegan = status === "doing";
 
     return (
         <form className={styles["work-instance"]}>
@@ -155,54 +174,93 @@ export default function WorkInstanceForm({
                 <Select
                     name={"status"}
                     id={`status`}
+                    label="Status"
                     value={status}
-                    options={Object.entries(statuses[workInstance.type])}
+                    fontSize="1.5rem"
+                    options={Object.entries(STATUSES[workInstance.type])}
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
                     }}
                 />
             </div>
-            {isCompleted && (
-                <>
-                    <input
-                        type="number"
-                        value={numberOfCompletions}
-                        onChange={(e) => {
-                            let value = Number.parseInt(e.target.value);
-                            if (Number.isNaN(value)) value = 0;
-                            if (value < completions.length) {
-                                toast.warning(
-                                    "There is more completions in the list, remove them first"
-                                );
-                                return;
-                            }
-
-                            setNumberOfCompletions(value);
+            {(isBegan || isCompleted) && (
+                <div className={styles["work-instance__dates"]}>
+                    <Input
+                        type="date"
+                        id="beganAt"
+                        name="beganAt"
+                        label="Began at"
+                        labelDisplay="always"
+                        value={dayjs(beganAt).format("YYYY-MM-DD")}
+                        max={
+                            finishedAt
+                                ? dayjs(finishedAt).format("YYYY-MM-DD")
+                                : dayjs().format("YYYY-MM-DD")
+                        }
+                        onChange={(value) => {
+                            setBeganAt(new Date(value));
                         }}
                     />
-                    <RatingBar
-                        value={rating}
-                        maxValue={5}
-                        setValue={setRating}
-                    />
-                    <CompletionsList
-                        published_at={workInstance.work_id.published_at}
-                        completions={completions}
-                        addCompletion={addCompletion}
-                        editCompletion={editCompletion}
-                        removeCompletion={removeCompletion}
-                    />
 
-                    <textarea
-                        className={styles["work-instance__description"]}
+                    {isCompleted && (
+                        <>
+                            <span
+                                className={
+                                    styles["work-instance__dates__separator"]
+                                }
+                            >
+                                :
+                            </span>
+                            <Input
+                                type="date"
+                                id="finishedAt"
+                                name="finishedAt"
+                                label="Finished at"
+                                labelDisplay="always"
+                                value={dayjs(finishedAt).format("YYYY-MM-DD")}
+                                min={
+                                    beganAt &&
+                                    dayjs(beganAt).format("YYYY-MM-DD")
+                                }
+                                max={dayjs().format("YYYY-MM-DD")}
+                                onChange={(value) => {
+                                    setFinishedAt(new Date(value));
+                                }}
+                            />
+                        </>
+                    )}
+                </div>
+            )}
+            {(isBegan || isCompleted) && (
+                <div className={styles["work-instance__opinion"]}>
+                    {isCompleted && (
+                        <RatingBar
+                            value={rating}
+                            maxValue={5}
+                            setValue={setRating}
+                        />
+                    )}
+                    <TextArea
                         name="description"
                         id="description"
-                        cols={30}
-                        rows={10}
+                        label="Notes"
                         onChange={(e) => {
                             setDescription(e.target.value);
                         }}
                         value={description}
+                    />
+                </div>
+            )}
+            {isCompleted && (
+                <>
+                    <CompletionsList
+                        published_at={workInstance.work_id.published_at}
+                        numberOfCompletions={numberOfCompletions}
+                        setNumberOfCompletions={setNumberOfCompletions}
+                        completions={completions}
+                        addCompletion={addCompletion}
+                        editCompletion={editCompletion}
+                        removeCompletion={removeCompletion}
                     />
                 </>
             )}

@@ -1,9 +1,21 @@
+.all {
+    display: grid;
+    gap: 10px;
+    place-content: center;
+    place-items: center;
+    height: 100%;
+    padding: 20px;
+    border: 2px solid var(--bkg-800);
+}
+
 .work-form {
     display: grid;
+    gap: 2em;
     justify-content: start;
 
     .people-header {
         display: flex;
+        gap: 8px;
         align-items: center;
     }
 
@@ -15,6 +27,13 @@
 
     .metadata-header {
         display: flex;
+        gap: 8px;
         align-items: center;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
     }
 }

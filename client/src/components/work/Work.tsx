@@ -1,130 +1,96 @@
+"use client";
+
 import {
     MetaObject,
     Person as PersonType,
     PersonInWork,
     WorkFromAPIPopulated,
+    WorkInstanceFromAPI,
 } from "../../types/types";
 import dayjs from "dayjs";
 import Person from "../person/Person";
 import styles from "./work.module.scss";
-import { capitalize } from "radash";
-import Image from "next/image";
 import Icon from "@mdi/react";
-import { mdiImageOff } from "@mdi/js";
+import {
+    mdiAccountGroup,
+    mdiCalendar,
+    mdiCardText,
+    mdiLabel,
+    mdiPencil,
+} from "@mdi/js";
 import Markdown from "react-markdown";
-
-type PeopleByRole = {
-    [role: string]: (PersonType & {
-        _id: string;
-        details?: MetaObject;
-    })[];
-};
-
-type PersonInWorkFromAPI = PersonInWork & {
-    person_id: PersonType & { _id: string };
-};
-
-function groupPeopleInWorkByRole(people: PersonInWorkFromAPI[]) {
-    return Object.entries(
-        people
-            .filter((p) => p?.person_id?._id)
-            .reduce((peopleByRole: PeopleByRole, person) => {
-                const newPerson = {
-                    ...person.person_id,
-                    details: person.details,
-                };
-
-                if (person.role in peopleByRole) {
-                    peopleByRole[person.role].push(newPerson);
-                } else {
-                    peopleByRole[person.role] = [newPerson];
-                }
-
-                return peopleByRole;
-            }, {})
-    );
-}
+import { getAspectRatio, getTypeIcon } from "@/modules/ui";
+import ImageContainer from "../imageContainer/ImageContainer";
+import WorkCore from "../workCore/WorkCore";
+import WorkPeople from "../workPeople/WorkPeople";
+import WorkMetadata from "../workMetadata/WorkMetadata";
+import DeleteWork from "../deleteWorkButton/DeleteWorkButton";
+import Button from "../button/Button";
+import { useReducer, useState } from "react";
+import Modal from "../modal/Modal";
+import { useHandleRequest } from "@/hooks/useHandleRequests";
+import WorkForm from "../workForm/WorkForm";
 
 export default function Work({
-    work,
-    readOnly,
+    work: _work,
+    workInstance,
 }: {
     work: WorkFromAPIPopulated;
-    readOnly: boolean;
+    workInstance:
+        | WorkInstanceFromAPI
+        | WorkInstanceFromAPI<WorkFromAPIPopulated>;
 }) {
-    const peopleByRole = groupPeopleInWorkByRole(work.people);
+    const [workFormKey, refreshWorkFormKey] = useReducer(() => {
+        return Date.now();
+    }, Date.now());
+    const [work, setWork] = useState(_work);
+    const [editOpen, setEditOpen] = useState(false);
+    const {
+        errors,
+        errorsKey,
+        fetchingState,
+        setFetchingState,
+        handleResponse,
+    } = useHandleRequest<"cover" | "work">();
 
     return (
-        <div className={styles["work-container"]}>
-            <h2>{work.title}</h2>
-            <h5>{capitalize(work.type ?? "")}</h5>
-            <div className={styles["work-container__image"]}>
-                {work.cover ? (
-                    <Image
-                        src={work.cover}
-                        alt="Work cover"
-                        sizes="100%"
-                        fill
-                    />
-                ) : (
-                    <Icon path={mdiImageOff} />
-                )}
-            </div>
-
-            <div>
-                <span className={styles["label"]}>Description: </span>
-                <span>
-                    <Markdown>{work?.description ?? ""}</Markdown>
-                </span>
-            </div>
-            <div>
-                <span className={styles["label"]}>Published at: </span>
-                {work?.published_at
-                    ? dayjs(work.published_at).format("YYYY-MM-DD")
-                    : ""}
-            </div>
-            <div>
-                <span className={styles["label"]}>Genres: </span>
-                <span>
-                    {work?.genres.reduce((acc, genre) => {
-                        return `${acc}${genre}, `;
-                    }, "") ?? ""}
-                </span>
-            </div>
-            <div className={styles["roles"]}>
-                {peopleByRole.map(([role, people]) => (
-                    <div key={role}>
-                        <h3>
-                            {role.charAt(0).toUpperCase() +
-                                role.substring(1) +
-                                "(s)"}
-                        </h3>
-                        <div className={styles["people"]}>
-                            {people.map((p) => (
-                                <div key={p._id} className={styles["person"]}>
-                                    <Person
-                                        person={p}
-                                        details={p.details}
-                                        readOnly={readOnly}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <h3>Metadata</h3>
-            <div className={styles["metadata"]}>
-                {Object.entries(work.metadata).map(([key, values]) => (
-                    <div key={key}>
-                        <span>
-                            {key.charAt(0).toUpperCase() + key.substring(1)}
-                            {": "}
-                        </span>
-                        <span>{values[0]}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <>
+            <WorkCore
+                work={work}
+                titleButtons={
+                    <>
+                        {!workInstance.from_api && (
+                            <Button onClick={() => setEditOpen(!editOpen)}>
+                                <Icon path={mdiPencil} size={1} />
+                            </Button>
+                        )}
+                        <DeleteWork workInstance={workInstance} />
+                    </>
+                }
+            />
+            <WorkPeople work={work} readOnly />
+            <WorkMetadata work={work} />
+            <Modal isOpen={editOpen} setIsOpen={setEditOpen} size="screen">
+                <WorkForm
+                    key={workFormKey}
+                    work={work}
+                    errors={errors}
+                    errorsKey={errorsKey}
+                    fetchingState={fetchingState}
+                    setFetchingState={setFetchingState}
+                    handleResponse={handleResponse}
+                    onSubmit={async (work) => {
+                        setWork(work);
+                        setEditOpen(false);
+                        setFetchingState(false);
+                        refreshWorkFormKey();
+                    }}
+                    onCancel={() => {
+                        setEditOpen(false);
+                        refreshWorkFormKey();
+                    }}
+                />
+            </Modal>
+        </>
     );
 }

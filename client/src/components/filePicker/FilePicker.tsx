@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import styles from "./filePicker.module.scss";
+import Button from "../button/Button";
 
 export default function FilePicker({
     title,
@@ -30,7 +31,7 @@ export default function FilePicker({
                     onChange(e.target.files);
                 }}
             />
-            <button
+            <Button
                 type="button"
                 onClick={() => {
                     if (input.current) {
@@ -39,7 +40,7 @@ export default function FilePicker({
                 }}
             >
                 {title}
-            </button>
+            </Button>
         </div>
     );
 }

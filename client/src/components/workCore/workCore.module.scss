@@ -1,0 +1,76 @@
+.work-core {
+    display: grid;
+    grid-area: core;
+    grid-template:
+        "title title" auto
+        "cover description" auto
+        "cover minor-stats" 1fr / clamp(300px, 50%, 400px) 1fr;
+    gap: 10px;
+    align-items: start;
+    justify-items: start;
+
+    @media (width <= 1200px) {
+        grid-template:
+            "title"
+            "cover"
+            "description"
+            "minor-stats"
+            / 1fr;
+    }
+
+    @media (1200px < width <= 1400px) {
+        grid-template-areas:
+            "title title"
+            "cover description"
+            "minor-stats description";
+    }
+
+    > h5 {
+        margin-top: 0;
+    }
+
+    &__title {
+        display: flex;
+        grid-column: 1 / -1;
+        gap: 10px;
+        align-items: center;
+        justify-self: stretch;
+        margin: 10px 0 0;
+        font-size: 2rem;
+
+        &__buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+    }
+
+    &__icon {
+        flex: none;
+        height: 1.2em;
+
+        &--big {
+            height: 1.4em;
+        }
+    }
+
+    &__cover {
+        grid-area: cover;
+        max-width: 400px;
+    }
+
+    &__description {
+        grid-area: description;
+        max-width: 600px;
+
+        > p:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &__minor-stats {
+        grid-area: minor-stats;
+        justify-self: start;
+    }
+}

@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+    devdb:
+        image: mongo:7.0
+        restart: always
+        ports:
+            - "27017:27017"
+        environment:
+            - MONGO_LOG_LEVEL=warn
+        volumes:
+            - mongo-data:/data/db
+            - ./mongo.conf:/etc/mongo/mongo.conf
+        command: mongod --config /etc/mongo/mongo.conf
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'",
+                ]
+            interval: 10s
+            timeout: 10s
+            retries: 7
+            start_period: 40s
+
+volumes:
+    mongo-data:

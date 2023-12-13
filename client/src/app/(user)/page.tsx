@@ -3,11 +3,10 @@ import { WorkInstanceFromAPI } from "@/types/types";
 import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
 import WorkInstanceCard from "@/components/workInstanceCard/WorkInstanceCard";
 import TooltipWrapper from "@/components/tooltipWrapper/TooltipWrapper";
-import Link from "next/link";
-import Icon from "@mdi/react";
-import { mdiPlus } from "@mdi/js";
 import styles from "./page.module.scss";
 import AddCard from "../../components/addCard/AddCard";
+import { getTypeIcon } from "@/modules/ui";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 
 export const revalidate = 0;
 
@@ -42,7 +41,7 @@ export default async function Home() {
 
     return (
         <div className={styles["collection"]}>
-            <InstancesGrid title="Books">
+            <InstancesGrid title="Books" iconPath={getTypeIcon("book").path}>
                 {books.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -51,7 +50,7 @@ export default async function Home() {
                 ))}
                 <AddCard workType="book" />
             </InstancesGrid>
-            <InstancesGrid title="Movies">
+            <InstancesGrid title="Movies" iconPath={getTypeIcon("movie").path}>
                 {movies.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}
@@ -60,7 +59,11 @@ export default async function Home() {
                 ))}
                 <AddCard workType="movie" />
             </InstancesGrid>
-            <InstancesGrid title="Computer Games">
+            <InstancesGrid
+                title="Computer Games"
+                iconPath={getTypeIcon("game").path}
+                gameIcon
+            >
                 {games.map((workInstance) => (
                     <WorkInstanceCard
                         key={workInstance._id}

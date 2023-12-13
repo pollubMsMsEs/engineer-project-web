@@ -7,9 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import ErrorsDisplay from "@/components/errorsDisplay/ErrorsDisplay";
 import styles from "./registerForm.module.scss";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
-import { ExtractedErrors } from "@/types/types";
-import { tryExtractErrors } from "@/modules/errorsHandling";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
+import Button from "../button/Button";
+import Input from "../input/Input";
 
 export default function RegisterForm() {
     const [user, setUser] = useState({
@@ -45,7 +45,7 @@ export default function RegisterForm() {
 
     return (
         <form
-            className={styles["register-form-container"]}
+            className={styles["auth-form"]}
             onSubmit={(e) => {
                 e.preventDefault();
                 e.currentTarget.reportValidity();
@@ -54,31 +54,52 @@ export default function RegisterForm() {
         >
             <h2>Register</h2>
 
-            <input
-                type="text"
-                placeholder="Enter your username"
-                required
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-            />
-            <input
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-            />
-            <input
-                type="password"
-                placeholder="Enter your password"
-                required
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
-            />
+            <div className={styles[`auth-form__inputs`]}>
+                <Input
+                    id="name"
+                    type="text"
+                    name="name"
+                    label="Username"
+                    labelDisplay="always"
+                    placeholder="Enter your username"
+                    required
+                    value={user.name}
+                    onChange={(value: any) => setUser({ ...user, name: value })}
+                />
+                <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    label="Email"
+                    labelDisplay="always"
+                    placeholder="Enter your email"
+                    required
+                    value={user.email}
+                    onChange={(value: any) =>
+                        setUser({ ...user, email: value })
+                    }
+                />
+                <Input
+                    id="password"
+                    type="password"
+                    name="password"
+                    label="Password"
+                    labelDisplay="always"
+                    placeholder="Enter your password"
+                    required
+                    value={user.password}
+                    onChange={(value) => setUser({ ...user, password: value })}
+                />
+            </div>
             <ErrorsDisplay key={errorsKey} errors={errors} />
-            <button>
+            <Button
+                type="submit"
+                style="major"
+                size="big"
+                loading={fetchingState}
+            >
                 {fetchingState ? <LoadingDisplay size="1.3rem" /> : "Register"}
-            </button>
+            </Button>
 
             <Link href="/auth/login">Already have an account? Login</Link>
         </form>

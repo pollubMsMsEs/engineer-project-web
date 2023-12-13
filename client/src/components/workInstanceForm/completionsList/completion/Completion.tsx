@@ -1,5 +1,10 @@
+import Button from "@/components/button/Button";
+import Input from "@/components/input/Input";
 import dayjs from "dayjs";
 import React from "react";
+import styles from "./completion.module.scss";
+import Icon from "@mdi/react";
+import { mdiMinusThick } from "@mdi/js";
 
 export default function Completion({
     published_at,
@@ -16,24 +21,30 @@ export default function Completion({
     removeCompletion: (completion: { id: number; completion: Date }) => void;
 }) {
     return (
-        <div>
-            <input
+        <div className={styles["completion"]}>
+            <Input
                 type="date"
+                name="completion"
+                label=""
+                labelDisplay="never"
                 value={dayjs(completion.completion).format("YYYY-MM-DD")}
-                min={dayjs(published_at).format("YYYY-MM-DD")}
+                min={published_at && dayjs(published_at).format("YYYY-MM-DD")}
                 max={dayjs().format("YYYY-MM-DD")}
-                onChange={(e) => {
-                    editCompletion(completion, new Date(e.target.value));
+                onChange={(value) => {
+                    editCompletion(completion, new Date(value));
                 }}
             />
-            <button
+            <Button
                 type="button"
+                style="normal"
+                squared
+                padding="6px"
                 onClick={() => {
                     removeCompletion(completion);
                 }}
             >
-                -
-            </button>
+                <Icon path={mdiMinusThick} size={"1.3em"} />
+            </Button>
         </div>
     );
 }

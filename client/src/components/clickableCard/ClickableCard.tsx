@@ -1,19 +1,35 @@
 import React, { useState } from "react";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import styles from "./clickableCard.module.scss";
+import { waitPromise } from "@/scripts/devUtils";
 
 export default function ClickableCard({
     children,
     onClick,
+    disabled = false,
+    loadingDisplay,
+    disabledDisplay,
 }: React.PropsWithChildren<{
-    onClick: () => Promise<{ success: boolean; stopLoading: boolean }>;
+    onClick: () => Promise<{
+        success: boolean;
+        stopLoading: boolean;
+    }>;
+    disabled?: boolean;
+    loadingDisplay: React.ReactNode;
+    disabledDisplay?: React.ReactNode;
 }>) {
     const [isLoading, setIsLoading] = useState(false);
 
+    let className = styles["clickable-card"];
+    className += isLoading ? ` ${styles["clickable-card--loading"]}` : "";
+    className += disabled ? ` ${styles["clickable-card--disabled"]}` : "";
+
     return (
-        <button
-            className={styles["clickable-card"]}
+        <div
+            className={className}
             onClick={async () => {
+                if (disabled) return;
+
                 setIsLoading(true);
 
                 const { success, stopLoading } = await onClick();
@@ -21,14 +37,13 @@ export default function ClickableCard({
                 if (!success || (success && stopLoading)) {
                     setIsLoading(false);
                 }
+
+                setIsLoading(false);
             }}
         >
             <div className={styles["clickable-card__card"]}>{children}</div>
-            {isLoading && (
-                <div className={styles["clickable-card__loading"]}>
-                    <LoadingDisplay size="40px" />
-                </div>
-            )}
-        </button>
+            {isLoading && loadingDisplay}
+            {disabled && disabledDisplay}
+        </div>
     );
 }

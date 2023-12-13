@@ -1,21 +1,45 @@
 .select {
-    width: 100%;
-    padding: 0.2rem 20px 0.2rem 0.2rem;
-    font-size: 1rem;
-    color: aliceblue;
-    text-align: center;
-    appearance: none;
-    background: url("menu-down.svg") no-repeat right 2px center;
-    background-color: rgb(177 177 177 / 20.5%);
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0 0 1em 0 rgb(0 0 0 / 20%);
+    position: relative;
+    z-index: 1;
+    display: block;
 
-    &:focus-visible {
-        outline: none;
+    &__select {
+        padding: 0.2em 2em 0.2em 0.7em;
+        font-size: 1rem;
+        color: var(--text);
+        text-align: center;
+        appearance: none;
+        background: url("menu-down.svg") no-repeat right 0 center;
+        background-color: var(--bkg-800);
+        border: 2px solid transparent;
+        border-radius: 5px;
+        box-shadow: 0 0 1em 0 rgb(0 0 0 / 20%);
+        transition: border 0.2s;
+
+        &:hover {
+            border: 2px solid var(--main-600);
+        }
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    &__label {
+        position: absolute;
+        top: 0;
+        left: 10px;
+        z-index: -1;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        transition: top 0.5s;
+
+        &--active {
+            top: calc(-1em - 10px);
+        }
     }
 
     &__option {
-        background-color: rgb(54 54 54);
+        background-color: var(--bkg-800);
     }
 }

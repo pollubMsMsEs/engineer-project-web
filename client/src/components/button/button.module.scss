@@ -1,0 +1,141 @@
+.button {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    padding: 0.4em 1em;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    background-color: var(--bkg-800);
+    border: 1px solid var(--bkg-700);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px 2px #00000061;
+    transition: transform 0.25s, border-color 0.25s, background-color 0.1s;
+
+    &--squared {
+        aspect-ratio: 1 / 1;
+    }
+
+    &--round {
+        border-radius: 50%;
+    }
+
+    &--size {
+        &-small {
+            font-size: 0.8rem;
+        }
+
+        &-medium {
+            font-size: 1rem;
+        }
+
+        &-big {
+            font-size: 1.3rem;
+        }
+
+        &-large {
+            padding: 0.6em 1.2em;
+            font-size: 1.5rem;
+        }
+    }
+
+    &--style {
+        &-icon {
+            padding: 0.2em;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+
+            &:not(:disabled):hover {
+                color: var(--active);
+            }
+
+            &:not(:disabled):active {
+                color: var(--main-700);
+            }
+        }
+
+        &--icon-border {
+            padding: 0.2em;
+            background-color: transparent;
+            border: 1px solid var(--bkg-700);
+            box-shadow: none;
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
+        }
+
+        &-normal {
+            background-color: var(--bkg-800);
+            border: 1px solid var(--bkg-700);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
+        }
+
+        &-major {
+            background-color: var(--main-600);
+            border: 2px solid var(--main-950);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
+        }
+
+        &-major-gradient {
+            background-color: var(--active);
+            border: 2px solid var(--main-950);
+
+            &:not(:disabled):hover {
+                border-color: var(--active);
+                transform: scale(102%);
+            }
+
+            &:not(:disabled):active {
+                background-color: var(--main-800);
+            }
+
+            &::before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: -1;
+                width: 100%;
+                height: 100%;
+                content: "";
+                background: linear-gradient(transparent 20%, var(--main-700));
+                border-radius: 10px;
+            }
+
+            @at-root #{&}--round::before {
+                border-radius: 50%;
+            }
+        }
+    }
+
+    &:disabled {
+        color: var(--bkg-500);
+    }
+
+    &:not(:disabled):hover {
+        cursor: pointer;
+    }
+}

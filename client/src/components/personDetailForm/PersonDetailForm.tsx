@@ -1,3 +1,5 @@
+import Button from "../button/Button";
+import Input from "../input/Input";
 import styles from "./personDetailForm.module.scss";
 
 export default function PersonDetailForm({
@@ -19,22 +21,28 @@ export default function PersonDetailForm({
 }) {
     return (
         <div>
-            <input
+            <Input
+                id="key"
                 type="text"
+                name="key"
+                label="Key"
                 value={data.key}
                 required
-                onChange={(e) => {
-                    data.key = e.target.value;
+                onChange={(value) => {
+                    data.key = value;
                     editDetailCallback(uniqueKey, data);
                 }}
             />
             {data && (
-                <input
+                <Input
+                    id="values"
                     type="text"
+                    name="values"
+                    label="Values"
                     value={data.values.join(" ")}
                     required
-                    onChange={(e) => {
-                        if (e.target.value.includes(",")) {
+                    onChange={(value, e) => {
+                        if (value.includes(",")) {
                             e.target.setCustomValidity(
                                 "Seperate values with space, not colon"
                             );
@@ -42,20 +50,19 @@ export default function PersonDetailForm({
                             e.target.setCustomValidity("");
                         }
 
-                        data.values = e.target.value.split(" ");
+                        data.values = value.split(" ");
                         editDetailCallback(uniqueKey, data);
                     }}
                 />
             )}
-            <button
-                className={styles["delete-button"]}
+            <Button
                 type="button"
                 onClick={() => {
                     deleteDetailCallback(uniqueKey);
                 }}
             >
                 -
-            </button>
+            </Button>
         </div>
     );
 }

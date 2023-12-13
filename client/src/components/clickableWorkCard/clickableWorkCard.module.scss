@@ -1,0 +1,26 @@
+.clickable-work-card {
+    &__overlay {
+        z-index: 1;
+        grid-row: 1 / -1;
+        grid-column: 1 / -1;
+    }
+
+    &__loading {
+        display: grid;
+        place-items: center;
+        width: 100%;
+        background-color: var(--black-tint);
+        border-radius: 10px;
+    }
+
+    &__owned {
+        box-sizing: border-box;
+        display: grid;
+        place-items: flex-end;
+        width: 100%;
+        padding: 10px;
+        color: var(--active);
+        background-color: var(--black-tint);
+        border-radius: 10px;
+    }
+}

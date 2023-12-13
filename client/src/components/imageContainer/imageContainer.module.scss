@@ -1,22 +1,42 @@
 .img-container {
     position: relative;
+    box-sizing: border-box;
     display: grid;
     place-items: center;
     width: 100%;
-    aspect-ratio: 3/4;
+    overflow: hidden;
 
-    /* MDI icon */
-    svg {
-        padding: 20%;
+    &--no-img {
+        background-color: var(--bkg-800);
+    }
+
+    &--rounded-corners-top {
+        border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
     }
 
     /* NEXT image */
     &__img {
-        object-fit: cover;
+        object-fit: fill;
         object-position: top;
+        transition: transform 0.5s;
 
         &--rounded-corners-top {
-            border-radius: 20px 20px 0 0;
+            border-top-left-radius: var(--card-border-radius);
+            border-top-right-radius: var(--card-border-radius);
         }
+
+        &--rounded-corners-bottom {
+            border-bottom-right-radius: var(--card-border-radius);
+            border-bottom-left-radius: var(--card-border-radius);
+        }
+
+        &--zoom:hover {
+            transform: scale(1.05);
+        }
+    }
+
+    /* MDI icon */
+    svg {
+        padding: 20%;
     }
 }

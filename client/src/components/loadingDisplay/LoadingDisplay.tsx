@@ -19,8 +19,7 @@ export default function LoadingDisplay({
                 style={{
                     aspectRatio: "1 / 1",
                     height: "100%",
-                    border: `calc(${size} * 0.2) solid #f3f3f3`,
-                    borderTop: `calc(${size} * 0.2) solid #3498db`,
+                    borderWidth: `calc(${size} * 0.2)`,
                 }}
             ></div>
             {text && <span>{text}</span>}

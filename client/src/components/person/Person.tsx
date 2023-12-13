@@ -5,6 +5,7 @@ import styles from "./person.module.scss";
 import Icon from "@mdi/react";
 import { mdiTrashCan } from "@mdi/js";
 import { toast } from "react-toastify";
+import Button from "../button/Button";
 
 async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
@@ -61,13 +62,13 @@ export default function Person({
                 </div>
             )}
             {!readOnly && (
-                <button
+                <Button
                     onClick={() => {
                         deletePersonHandler(person._id);
                     }}
                 >
                     <Icon path={mdiTrashCan} size={1} />
-                </button>
+                </Button>
             )}
         </>
     );

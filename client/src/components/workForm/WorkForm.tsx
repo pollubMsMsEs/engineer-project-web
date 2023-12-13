@@ -9,6 +9,7 @@ import {
     WorkFromAPIPopulated,
     PersonFromAPI,
     ExtractedErrors,
+    WorkType,
 } from "@/types/types";
 import PersonInWorkForm, {
     PersonInWorkFormType,
@@ -21,10 +22,17 @@ import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
 import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
-import { mdiDisc, mdiFloppy } from "@mdi/js";
+import { mdiCancel, mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
+import Button from "../button/Button";
+import Select from "../select/Select";
+import { TYPES } from "@/constantValues";
+import Input from "../input/Input";
+import TextArea from "../textArea/TextArea";
+import ImageContainer from "../imageContainer/ImageContainer";
+import { getAspectRatio } from "@/modules/ui";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -60,6 +68,7 @@ export default function WorkForm({
     setFetchingState,
     handleResponse,
     onSubmit,
+    onCancel,
 }: {
     work?: WorkFromAPIPopulated;
     errors: ExtractedErrors | undefined;
@@ -68,6 +77,7 @@ export default function WorkForm({
     setFetchingState: (state: "cover" | "work" | false) => void;
     handleResponse: (response: Response) => Promise<any>;
     onSubmit?: (work: WorkFromAPIPopulated) => void;
+    onCancel: () => void;
 }) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -76,14 +86,16 @@ export default function WorkForm({
     const [coverFile, setCoverFile] = useState<File>();
     const [isCoverNew, setIsCoverNew] = useState(false);
 
-    const [type, setType] = useState(
-        work?.type ?? searchParams.get("type") ?? ""
+    const [type, setType] = useState<WorkType>(
+        work?.type ??
+            (searchParams.get("type") as WorkType | undefined) ??
+            "book"
     );
     const [title, setTitle] = useState(work?.title ?? "");
     const [description, setDescription] = useState(work?.description ?? "");
     const [cover, setCover] = useState<string | undefined>(work?.cover);
     const [publishedAt, setPublishedAt] = useState(
-        work ? dayjs(work.published_at).format("YYYY-MM-DD") : ""
+        work ? dayjs(work.published_at).format("YYYY-MM-DD") : undefined
     );
     const [genres, setGenres] = useState<string[]>(work?.genres ?? []);
     const [metadata, setMetadata] = useState<MetadataInForm>(
@@ -205,7 +217,7 @@ export default function WorkForm({
             cover: newCover,
             dev: true,
             description,
-            published_at: new Date(publishedAt),
+            published_at: new Date(publishedAt ?? ""),
             genres,
             metadata: Object.entries(metadata).reduce<MetaObject>(
                 (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
@@ -271,7 +283,7 @@ export default function WorkForm({
     }
 
     return (
-        <div>
+        <div className={styles["all"]}>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -279,14 +291,13 @@ export default function WorkForm({
                 }}
             >
                 {(coverFile || cover) && (
-                    <Image
+                    <ImageContainer
                         src={
                             coverFile ? URL.createObjectURL(coverFile) : cover!
                         }
                         alt="Work cover"
-                        width={300}
-                        height={400}
-                        style={{ objectFit: "cover" }}
+                        width="300px"
+                        aspectRatio={getAspectRatio(type)}
                     />
                 )}
                 <FilePicker
@@ -298,10 +309,10 @@ export default function WorkForm({
                         setIsCoverNew(true);
                     }}
                 />
-                {false && ( // this will be usefull if endpoint for updating image will exist
-                    <button type="submit" disabled={!coverFile}>
+                {false && ( //  disabled={!coverFile} this will be usefull if endpoint for updating image will exist
+                    <Button type="submit">
                         <Icon path={mdiFloppy} size={1} />
-                    </button>
+                    </Button>
                 )}
             </form>
             <form
@@ -315,178 +326,201 @@ export default function WorkForm({
                 {work ? (
                     <div>{capitalize(work.type ?? "")}</div>
                 ) : (
-                    <select
-                        onChange={(e) => {
-                            setType(e.target.value);
-                        }}
+                    <Select
+                        name="type"
+                        id="type"
+                        label="Type"
                         value={type}
-                    >
-                        <option value="book">Book</option>
-                        <option value="movie">Movie</option>
-                        <option value="game">Game</option>
-                    </select>
+                        options={TYPES}
+                        onChange={(value) => {
+                            setType(value as WorkType);
+                        }}
+                    />
                 )}
-                <label htmlFor="title">Title: </label>
-                <input
+                <Input
+                    id="title"
                     type="text"
                     name="title"
-                    id="title"
-                    required
+                    label="Title"
                     value={title}
-                    onChange={(e) => {
-                        setTitle(e.target.value);
+                    onChange={(value: any) => {
+                        setTitle(value);
                     }}
                 />
-                <label htmlFor="description">Description: </label>
-                <textarea
-                    name="description"
+                <TextArea
                     id="description"
+                    name="description"
+                    label="Description"
                     value={description}
-                    onChange={(e) => {
-                        setDescription(e.target.value);
+                    onChange={(value) => {
+                        setDescription(value);
                     }}
                 />
-                <label htmlFor="published_at">Published at: </label>
-                <input
+                <Input
+                    id="published_at"
                     type="date"
                     name="published_at"
-                    id="published_at"
+                    label="Published at"
+                    labelDisplay="always"
                     value={publishedAt}
-                    onChange={(e) => {
-                        setPublishedAt(e.target.value);
+                    onChange={(value: any) => {
+                        setPublishedAt(value);
                     }}
                 />
-                <label htmlFor="genres">Genres (space seperated):</label>
-                <input
-                    type="input"
-                    name="genres"
+                <Input
                     id="genres"
+                    type="text"
+                    name="genres"
+                    label="Genres (space seperated)"
                     value={genres.join(" ")}
-                    onChange={(e) => {
-                        if (e.target.value.includes(",")) {
+                    onChange={(value: any, e) => {
+                        if (value.includes(",")) {
                             e.target.setCustomValidity(
                                 "Seperate values with space, not colon"
                             );
                         } else {
                             e.target.setCustomValidity("");
                         }
-                        setGenres(e.target.value.split(" "));
+                        setGenres(value.split(" "));
                     }}
                 />
-                <header className={styles["people-header"]}>
-                    <h3>People</h3>
-                    {peopleToPick && (
-                        <button
-                            type="button"
+                <div>
+                    <header className={styles["people-header"]}>
+                        <h3>People</h3>
+                        {peopleToPick && (
+                            <Button
+                                padding="2px"
+                                width="30px"
+                                squared
+                                round
+                                onClick={() => {
+                                    setPeople((prevPeople) => {
+                                        return [
+                                            ...prevPeople,
+                                            {
+                                                react_key: getUniqueKey(),
+                                                role: "",
+                                                person_id: peopleToPick[0]._id,
+                                                formDetails: {},
+                                            },
+                                        ];
+                                    });
+                                }}
+                            >
+                                <Icon path={mdiPlusThick} />
+                            </Button>
+                        )}
+                    </header>
+
+                    <div className={styles["people"]}>
+                        {peopleToPick.length === 0 ? (
+                            <span>
+                                No people in database, create some first
+                            </span>
+                        ) : (
+                            people.map((p, index) => (
+                                <PersonInWorkForm
+                                    key={p.react_key}
+                                    person={p}
+                                    peopleToPick={peopleToPick}
+                                    index={index}
+                                    editPersonCallback={editPersonCallback}
+                                    deletePersonCallback={deletePersonCallback}
+                                    setEditedRoleCallback={
+                                        setEditedRoleCallback
+                                    }
+                                    getUniqueKey={getUniqueKey}
+                                />
+                            ))
+                        )}
+                    </div>
+                </div>
+                <div>
+                    <div className={styles["metadata-header"]}>
+                        <h3>Metadata</h3>
+                        <Button
+                            padding="2px"
+                            width="30px"
+                            squared
+                            round
                             onClick={() => {
-                                setPeople((prevPeople) => {
-                                    return [
-                                        ...prevPeople,
-                                        {
-                                            react_key: getUniqueKey(),
-                                            role: "",
-                                            person_id: peopleToPick[0]._id,
-                                            formDetails: {},
+                                setMetadata((prev) => {
+                                    return {
+                                        ...prev,
+                                        [getUniqueKey()]: {
+                                            key: "",
+                                            values: [],
                                         },
-                                    ];
+                                    };
                                 });
                             }}
                         >
-                            +
-                        </button>
-                    )}
-                </header>
+                            <Icon path={mdiPlusThick} />
+                        </Button>
+                    </div>
+                    <div>
+                        {metadata &&
+                            Object.entries(metadata).map(
+                                ([reactKey, metadata], index) => (
+                                    <div key={reactKey}>
+                                        <Input
+                                            type="text"
+                                            id={`metakey${index}`}
+                                            name={`metakey${index}`}
+                                            value={metadata.key}
+                                            label="Key"
+                                            required
+                                            onChange={(e) => {
+                                                setMetadata((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        [reactKey]: {
+                                                            key: e.target.value,
+                                                            values: metadata.values,
+                                                        },
+                                                    };
+                                                });
+                                            }}
+                                        />
+                                        <Input
+                                            type="text"
+                                            id={`metavalue${index}`}
+                                            name={`metavalue${index}`}
+                                            value={metadata.values.join(" ")}
+                                            label="Value"
+                                            required
+                                            onChange={(e) => {
+                                                if (
+                                                    e.target.value.includes(",")
+                                                ) {
+                                                    e.target.setCustomValidity(
+                                                        "Seperate values with space, not colon"
+                                                    );
+                                                } else {
+                                                    e.target.setCustomValidity(
+                                                        ""
+                                                    );
+                                                }
 
-                <div className={styles["people"]}>
-                    {peopleToPick.length === 0 ? (
-                        <span>No people in database, create some first</span>
-                    ) : (
-                        people.map((p, index) => (
-                            <PersonInWorkForm
-                                key={p.react_key}
-                                person={p}
-                                peopleToPick={peopleToPick}
-                                index={index}
-                                editPersonCallback={editPersonCallback}
-                                deletePersonCallback={deletePersonCallback}
-                                setEditedRoleCallback={setEditedRoleCallback}
-                                getUniqueKey={getUniqueKey}
-                            />
-                        ))
-                    )}
+                                                setMetadata((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        [reactKey]: {
+                                                            key: metadata.key,
+                                                            values: e.target.value.split(
+                                                                " "
+                                                            ),
+                                                        },
+                                                    };
+                                                });
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            )}
+                    </div>
                 </div>
-                <div className={styles["metadata-header"]}>
-                    <h3>Metadata</h3>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setMetadata((prev) => {
-                                return {
-                                    ...prev,
-                                    [getUniqueKey()]: {
-                                        key: "",
-                                        values: [],
-                                    },
-                                };
-                            });
-                        }}
-                    >
-                        +
-                    </button>
-                </div>
-                <div>
-                    {metadata &&
-                        Object.entries(metadata).map(
-                            ([reactKey, metadata], index) => (
-                                <div key={reactKey}>
-                                    <input
-                                        type="text"
-                                        name={`metakey${index}`}
-                                        value={metadata.key}
-                                        required
-                                        onChange={(e) => {
-                                            setMetadata((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    [reactKey]: {
-                                                        key: e.target.value,
-                                                        values: metadata.values,
-                                                    },
-                                                };
-                                            });
-                                        }}
-                                    />
-                                    <input
-                                        type="text"
-                                        name={`metavalue${index}`}
-                                        value={metadata.values.join(" ")}
-                                        required
-                                        onChange={(e) => {
-                                            if (e.target.value.includes(",")) {
-                                                e.target.setCustomValidity(
-                                                    "Seperate values with space, not colon"
-                                                );
-                                            } else {
-                                                e.target.setCustomValidity("");
-                                            }
 
-                                            setMetadata((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    [reactKey]: {
-                                                        key: metadata.key,
-                                                        values: e.target.value.split(
-                                                            " "
-                                                        ),
-                                                    },
-                                                };
-                                            });
-                                        }}
-                                    />
-                                </div>
-                            )
-                        )}
-                </div>
                 <datalist id="people-roles">
                     {roleSuggestions.map((r) => (
                         <option key={r} value={r}>
@@ -502,7 +536,23 @@ export default function WorkForm({
                     ))}
                 </datalist>
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <button type="submit">{submitBtnText}</button>
+                <div className={styles["buttons"]}>
+                    <Button
+                        type="submit"
+                        style="normal"
+                        size="big"
+                        loading={fetchingState !== false}
+                    >
+                        {submitBtnText}
+                    </Button>
+                    <Button onClick={onCancel}>
+                        <Icon
+                            path={mdiCancel}
+                            size={"2em"}
+                            style={{ color: "#ef4444" }}
+                        />
+                    </Button>
+                </div>
             </form>
         </div>
     );

@@ -2,33 +2,23 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useRef, useState } from "react";
 import styles from "./page.module.scss";
-import Icon from "@mdi/react";
-import { mdiPlus } from "@mdi/js";
-import Link from "next/link";
+import { mdiPlusThick } from "@mdi/js";
 import { WorkType } from "@/types/types";
 import { WorkFromAPIShort, searchWorks } from "@/modules/apiBrowser";
 import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 import InstancesGrid from "@/components/instancesGrid/InstancesGrid";
-import WorkCard from "@/components/workCard/WorkCard";
-import ClickableCard from "@/components/clickableCard/ClickableCard";
-import { waitPromise, waitRandomPromise } from "@/scripts/devUtils";
-import { toast } from "react-toastify";
-import { DEFAULT_WORK_INSTANCE } from "@/constantValues";
+import { DEFAULT_WORK_INSTANCE, TYPES } from "@/constantValues";
 import { handleResponseErrorWithToast } from "@/modules/errorsHandling";
-
-function assertCorrectType(type: any, defaultType: WorkType = "book") {
-    if (type === "book" || type === "movie" || type === "game") {
-        return type;
-    } else {
-        return defaultType;
-    }
-}
+import Select from "@/components/select/Select";
+import NavLink from "@/components/navLink/NavLink";
+import Input from "@/components/input/Input";
+import ClickableWorkCard from "@/components/clickableWorkCard/ClickableWorkCard";
 
 export default function Search() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [type, setType] = useState<WorkType>(() => {
-        return assertCorrectType(searchParams.get("type"));
+        return (searchParams.get("type") as WorkType) ?? "book";
     });
     const [query, setQuery] = useState("");
     const [foundWorks, setFoundWorks] = useState<WorkFromAPIShort[] | false>(
@@ -38,11 +28,12 @@ export default function Search() {
     const searchDebounce = useRef<NodeJS.Timeout>();
 
     function doDebouncedSearch(query: string, type: WorkType) {
-        setIsFetching(true);
-
         if (searchDebounce.current != undefined) {
             clearTimeout(searchDebounce.current);
         }
+        if (query === "") return;
+
+        setIsFetching(true);
 
         searchDebounce.current = setTimeout(async () => {
             setFoundWorks(await searchWorks(query, type));
@@ -104,42 +95,45 @@ export default function Search() {
     return (
         <div className={styles["search"]}>
             <div className={styles["search__form"]}>
-                <input
-                    className={styles["search__input"]}
+                <Select
+                    name="type"
+                    id="type"
+                    label="Type"
+                    value={type}
+                    options={TYPES}
+                    fontSize="1.6rem"
+                    onChange={(value) => {
+                        const newType = value as WorkType;
+                        setType(newType);
+                        doDebouncedSearch(query, newType);
+                    }}
+                />
+                <Input
+                    id="search"
+                    name="search"
+                    label="Search by title"
+                    labelDisplay="never"
                     type="text"
                     value={query}
-                    onChange={(e) => {
-                        const newQuery = e.target.value;
+                    className={styles["search__input"]}
+                    onChange={(value) => {
+                        const newQuery = value;
                         setQuery(newQuery);
                         doDebouncedSearch(newQuery, type);
                     }}
                 />
-                <select
-                    className={styles["search__select"]}
-                    name="type"
-                    id="type"
-                    value={type}
-                    onChange={(e) => {
-                        const newType = assertCorrectType(e.target.value);
-                        setType(assertCorrectType(newType));
-                        doDebouncedSearch(query, newType);
-                    }}
-                >
-                    <option value="book">Book</option>
-                    <option value="movie">Movie</option>
-                    <option value="game">Game</option>
-                </select>
-                <Link
+                <span className={styles["search__divider"]}>Or</span>
+                <NavLink
                     href={{
                         pathname: "/me/work/create",
                         query: {
                             type,
                         },
                     }}
-                    className={styles["search__add-manualy"]}
-                >
-                    <Icon path={mdiPlus} size={1} /> Add manually
-                </Link>
+                    title="Create new"
+                    icon={mdiPlusThick}
+                    style="inline"
+                />
             </div>
             {query !== "" && (
                 <div className={styles["search__results"]}>
@@ -148,8 +142,9 @@ export default function Search() {
                             {foundWorks
                                 ? foundWorks.map((work) => {
                                       return (
-                                          <ClickableCard
+                                          <ClickableWorkCard
                                               key={work.api_key}
+                                              work={work}
                                               onClick={async () => {
                                                   return {
                                                       success:
@@ -159,15 +154,15 @@ export default function Search() {
                                                       stopLoading: false,
                                                   };
                                               }}
-                                          >
-                                              <WorkCard work={work} />
-                                          </ClickableCard>
+                                          />
                                       );
                                   })
                                 : "Works browser is unavailable"}
                         </InstancesGrid>
                     ) : (
-                        <LoadingDisplay size="30px" />
+                        <div className={styles["search__results__loading"]}>
+                            <LoadingDisplay size="50px" />
+                        </div>
                     )}
                 </div>
             )}

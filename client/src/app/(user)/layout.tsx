@@ -6,7 +6,17 @@ import { cookies } from "next/headers";
 import jwtDecode from "jwt-decode";
 import ToastContainerWrapper from "@/components/toastContainerWrapper/ToastContainerWrapper";
 import Icon from "@mdi/react";
-import { mdiMagnify } from "@mdi/js";
+import {
+    mdiAccount,
+    mdiChartArc,
+    mdiChartBar,
+    mdiChartBox,
+    mdiChartDonut,
+    mdiHome,
+    mdiMagnify,
+    mdiPlusThick,
+} from "@mdi/js";
+import NavLink from "@/components/navLink/NavLink";
 
 export default function Layout({ children }: React.PropsWithChildren) {
     const username = jwtDecode<any>(cookies().get("jwt")?.value!!).name;
@@ -14,14 +24,22 @@ export default function Layout({ children }: React.PropsWithChildren) {
         {
             href: "/",
             title: "Home",
+            icon: mdiHome,
+        },
+        {
+            href: "/search",
+            title: "New",
+            icon: mdiPlusThick,
         },
         {
             href: "/person/all",
-            title: "People table",
+            title: "People",
+            icon: mdiAccount,
         },
         {
             href: "/me/reports",
             title: "Reports",
+            icon: mdiChartBox,
         },
     ];
 
@@ -30,9 +48,6 @@ export default function Layout({ children }: React.PropsWithChildren) {
             <header className={styles["default-layout-header"]}>
                 <Logo />
                 <div className={styles["default-layout-header__user"]}>
-                    <Link href={"/search"}>
-                        <Icon path={mdiMagnify} size={1.2} />
-                    </Link>
                     <span
                         className={styles["default-layout-header__user-name"]}
                     >
@@ -43,9 +58,13 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </header>
             <aside className={styles["default-layout-aside"]}>
                 {routes.map((route) => (
-                    <a key={route.href} href={route.href}>
-                        {route.title}
-                    </a>
+                    <NavLink
+                        key={route.href}
+                        href={route.href}
+                        icon={route.icon}
+                        title={route.title}
+                        style="centered"
+                    />
                 ))}
             </aside>
             <main className={styles["default-layout-main"]}>{children}</main>

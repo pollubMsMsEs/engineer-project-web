@@ -5,6 +5,7 @@ import { PersonFromAPI } from "@/types/types";
 import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import Button from "../button/Button";
 
 async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
@@ -41,23 +42,23 @@ export default function PersonList({ people }: { people: PersonFromAPI[] }) {
                     <td>{person.surname}</td>
                     <td>
                         <a href={`/person/${person._id}`}>
-                            <button>Details</button>
+                            <Button>Details</Button>
                         </a>
                         <Link
                             href={{
                                 pathname: `/person/${person._id}/edit`,
                             }}
                         >
-                            <button>Edit</button>
+                            <Button>Edit</Button>
                         </Link>
 
-                        <button
+                        <Button
                             onClick={() => {
                                 deletePersonHandler(person._id);
                             }}
                         >
                             Delete
-                        </button>
+                        </Button>
                     </td>
                 </tr>
             ))}

@@ -1,27 +1,22 @@
 .status-switcher {
     display: flex;
-    gap: 30px;
     align-items: center;
-    justify-content: center;
-
-    &__select-wrapper {
-        width: 70%;
-    }
+    justify-content: space-around;
+    padding: 0 10px;
 
     &__view-button {
         padding: 0;
         line-height: 0;
-        background-color: rgb(0 0 0 / 2%);
+        background: none;
         border: none;
-        box-shadow: 0 0 1em 0 rgb(0 0 0 / 25%);
         transition: color 0.25s;
 
         &:disabled {
-            color: rgb(161 161 161);
+            color: var(--bkg-800);
         }
 
         &:hover:not(:disabled) {
-            color: #f87171;
+            color: var(--active);
         }
     }
 }

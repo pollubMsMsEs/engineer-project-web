@@ -1,6 +1,6 @@
 "use client";
 
-import { statuses } from "@/modules/workInstanceStatus";
+import { STATUSES } from "@/constantValues";
 import { WorkInstanceFromAPI, WorkInstanceStatus } from "@/types/types";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import styles from "./statusSwitcher.module.scss";
 import Select from "../select/Select";
+import Button from "../button/Button";
 
 function hasViewingToday(workInstance: WorkInstanceFromAPI) {
     return workInstance.completions.some((viewing) =>
@@ -48,6 +49,8 @@ export default function StatusSwitcher({
         const debounce = setTimeout(async () => {
             const didBegan = status === "doing" || status === "completed";
             const didFinished = status === "completed";
+            const addedNewViewing =
+                viewedToday && !hasViewingToday(_workInstance);
 
             const updatedWorkInstance: WorkInstanceFromAPI<string> = {
                 ..._workInstance,
@@ -63,12 +66,11 @@ export default function StatusSwitcher({
                     (didFinished ? new Date() : undefined),
             };
 
-            const addedNewViewing =
-                viewedToday && !hasViewingToday(_workInstance);
-
             if (addedNewViewing) {
                 updatedWorkInstance.completions.push(new Date());
                 updatedWorkInstance.number_of_completions++;
+                updatedWorkInstance.status = "completed";
+                setStatus("completed");
             }
 
             try {
@@ -113,22 +115,27 @@ export default function StatusSwitcher({
                 <Select
                     name={"status"}
                     id={`status-${_workInstance._id}`}
+                    label="Status"
+                    labelDisplay="never"
                     value={status}
-                    options={Object.entries(statuses[_workInstance.type])}
+                    options={Object.entries(STATUSES[_workInstance.type])}
+                    fontSize="1.1rem"
                     onChange={(value) => {
                         setStatus(value as WorkInstanceStatus);
                     }}
                 />
             </div>
 
-            <button
-                className={styles["status-switcher__view-button"]}
-                disabled={viewedToday}
+            <Button
+                disabled={viewedToday} //className={styles["status-switcher__view-button"]}
+                style="icon"
+                squared
+                round
                 onClick={() => {
                     setViewedToday(true);
                 }}
-                data-tooltip-id="tooltip-add-viewing"
-                data-tooltip-content={viewedToday ? "" : "Complete today"}
+                dataTooltipId="tooltip-add-viewing"
+                dataTooltipContent={viewedToday ? "" : "Complete today"}
             >
                 <Icon
                     path={
@@ -136,9 +143,9 @@ export default function StatusSwitcher({
                             ? mdiCheckboxMarkedCircleOutline
                             : mdiCheckboxMarkedCirclePlusOutline
                     }
-                    size={1}
+                    size={1.2}
                 />
-            </button>
+            </Button>
         </div>
     );
 }

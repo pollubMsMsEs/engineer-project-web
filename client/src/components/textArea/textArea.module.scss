@@ -1,0 +1,35 @@
+.text-area {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+
+    &__label {
+        position: absolute;
+        top: 0;
+        left: 10px;
+        z-index: -1;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        transition: top 0.5s;
+
+        &--active {
+            top: calc(-1em - 10px);
+        }
+    }
+
+    &__text-area {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0.3em 0.6em;
+        font-size: 1.3rem;
+        color: var(--text);
+        background-color: var(--bkg-800);
+        border: 2px solid transparent;
+        border-radius: 5px;
+
+        &:hover {
+            border: 2px solid var(--main-600);
+        }
+    }
+}

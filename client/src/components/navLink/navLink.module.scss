@@ -1,0 +1,24 @@
+.nav-link {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-size: 1.5rem;
+
+    svg {
+        height: 1.3em;
+    }
+
+    &--style {
+        &-centered {
+            flex-direction: column;
+
+            svg {
+                height: 2em;
+            }
+        }
+    }
+
+    &--active {
+        color: var(--main-500);
+    }
+}

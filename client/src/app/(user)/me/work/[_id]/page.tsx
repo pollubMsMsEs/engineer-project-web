@@ -3,10 +3,26 @@ import styles from "./page.module.scss";
 import { fetchAPIFromServerComponent } from "@/modules/serverSide";
 import { WorkFromAPIPopulated, WorkInstanceFromAPI } from "@/types/types";
 import WorkInstanceForm from "@/components/workInstanceForm/WorkInstanceForm";
-import WorkEditable from "@/components/workEditable/WorkEditable";
-import DeleteWork from "@/components/deleteWorkButton/DeleteWorkButton";
 import { notFound } from "next/navigation";
 import Work from "@/components/work/Work";
+import { Metadata, ResolvingMetadata } from "next";
+
+export async function generateMetadata({
+    params,
+}: {
+    params: { _id: string };
+}): Promise<Metadata> {
+    const response = await fetchAPIFromServerComponent(
+        `/workInstance/${params._id}`
+    );
+    const workInstance: WorkInstanceFromAPI<WorkFromAPIPopulated> = (
+        await response.json()
+    ).data;
+
+    return {
+        title: workInstance.work_id.title,
+    };
+}
 
 export default async function WorkInstance({
     params,
@@ -33,14 +49,9 @@ export default async function WorkInstance({
 
     return (
         <div className={styles["work"]}>
-            {workInstance.from_api ? (
-                <Work work={workInstance.work_id} readOnly />
-            ) : (
-                <WorkEditable _work={workInstance.work_id} />
-            )}
+            <Work work={workInstance.work_id} workInstance={workInstance} />
 
             <WorkInstanceForm workInstance={workInstance} />
-            <DeleteWork workInstance={workInstance} />
         </div>
     );
 }

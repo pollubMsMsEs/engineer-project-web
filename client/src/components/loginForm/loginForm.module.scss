@@ -1,11 +1,21 @@
-.login-form-contaier {
+.auth-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 500px;
     padding: 20px;
+    background-color: var(--bkg-900);
+    border: 2px solid var(--bkg-800);
     border-radius: 8px;
-    box-shadow: 0 2px 20px 5px rgb(0 0 0 / 10%);
+    box-shadow: 0 2px 20px 5px rgb(0 0 0 / 37.9%);
+
+    &__inputs {
+        display: grid;
+        gap: 40px;
+        justify-content: stretch;
+        justify-items: stretch;
+        padding: 20px 0;
+    }
 
     h2 {
         font-size: 24px;
@@ -14,24 +24,8 @@
         text-transform: uppercase;
     }
 
-    input {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    button {
-        display: grid;
-        place-items: center;
-        padding: 10px;
-        cursor: pointer;
-        background-color: #ef4444;
-        border: none;
-        border-radius: 4px;
-    }
-
     a {
-        font-size: 14px;
+        font-size: 1rem;
         text-align: center;
         text-decoration: underline;
     }

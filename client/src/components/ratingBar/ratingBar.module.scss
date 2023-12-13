@@ -2,20 +2,21 @@
     display: flex;
     flex-direction: row-reverse;
     width: min-content;
+    font-size: 2rem;
 
     &__star {
         display: grid;
         place-items: center;
-        color: white;
+        color: var(--text);
 
         &--selected,
         &--interactable:hover {
-            color: #fbc02d;
+            color: var(--star);
         }
 
         &--selected ~ &,
         &--interactable:hover ~ & {
-            color: #fbc02d;
+            color: var(--star);
         }
     }
 }

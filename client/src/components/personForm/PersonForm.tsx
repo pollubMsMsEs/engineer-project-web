@@ -8,6 +8,8 @@ import styles from "./personForm.module.scss";
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
+import Button from "../button/Button";
+import Input from "../input/Input";
 
 export default function PersonForm({ person }: { person?: PersonFromAPI }) {
     const router = useRouter();
@@ -69,45 +71,45 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
                 {person?._id && (
                     <input type="hidden" name="_id" value={person?._id} />
                 )}
-                <label htmlFor="name">Name: </label>
-                <input
+                <Input
                     type="text"
                     name="name"
                     id="name"
+                    label="Name"
                     required
                     value={name}
-                    onChange={(e) => {
-                        setName(e.target.value);
+                    onChange={(value) => {
+                        setName(value);
                     }}
                 />
-                <label htmlFor="nick">Nick: </label>
-                <input
+                <Input
                     type="text"
                     name="nick"
                     id="nick"
+                    label="Nick"
                     value={nick}
-                    onChange={(e) => {
-                        setNick(e.target.value);
+                    onChange={(value) => {
+                        setNick(value);
                     }}
                 />
-                <label htmlFor="surname">Surname: </label>
-                <input
+                <Input
                     type="text"
                     name="surname"
                     id="surname"
+                    label="Surname"
                     required
                     value={surname}
-                    onChange={(e) => {
-                        setSurname(e.target.value);
+                    onChange={(value) => {
+                        setSurname(value);
                     }}
                 />
-                <button type="submit">
+                <Button type="submit" loading={fetchingState}>
                     {fetchingState ? (
                         <LoadingDisplay size="1.3rem" />
                     ) : (
                         buttonText
                     )}
-                </button>
+                </Button>
             </form>
             <ErrorsDisplay key={errorsKey} errors={errors} />
         </div>

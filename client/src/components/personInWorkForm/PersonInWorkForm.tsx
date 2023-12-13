@@ -5,7 +5,10 @@ import {
     PersonInWork,
     Person as PersonType,
 } from "../../types/types";
+import Button from "../button/Button";
+import Input from "../input/Input";
 import PersonDetailForm from "../personDetailForm/PersonDetailForm";
+import Select from "../select/Select";
 import styles from "./personInWorkForm.module.scss";
 
 export type PersonInWorkFormType = PersonInWork & {
@@ -58,49 +61,51 @@ export default function PersonInWorkForm({
         <div className={styles["person-in-work-container"]}>
             <label htmlFor={`person${index}`}>Person</label>
             <div>
-                <select
-                    name={`person${index}`}
+                <Select
                     id={`person${index}`}
+                    name={`person${index}`}
+                    label="Person"
                     value={person.person_id}
                     required
-                    onChange={(e) => {
-                        person.person_id = e.target.value;
-                        editPersonCallback(person);
+                    options={peopleToPick.map((person) => [
+                        person._id,
+                        `${person.name} ${
+                            person.nick ? `${person.nick} ` : ""
+                        } ${person.surname}`,
+                    ])}
+                    onChange={(value) => {
+                        const newPerson: PersonInWorkFormType = {
+                            ...person,
+                            person_id: value,
+                        };
+                        editPersonCallback(newPerson);
                     }}
-                >
-                    {peopleToPick.map((personToPick) => (
-                        <option
-                            key={personToPick._id}
-                            value={personToPick._id}
-                        >{`${personToPick.name} ${
-                            personToPick.nick ? `${personToPick.nick} ` : ""
-                        } ${personToPick.surname}`}</option>
-                    ))}
-                </select>
-                <button
+                />
+                <Button
                     type="button"
-                    className={styles["delete-person-button"]}
                     onClick={() => {
                         deletePersonCallback(person);
                     }}
                 >
                     -
-                </button>
+                </Button>
             </div>
 
             <label htmlFor={`role${index}`}>Role</label>
             {person.person_id === "" ? (
                 <span>Pick person to set role</span>
             ) : (
-                <input
+                <Input
                     type="text"
                     id={`role${index}`}
+                    name={`role${index}`}
                     list="people-roles"
                     value={person.role}
+                    label="Role"
                     required
-                    onChange={(e) => {
-                        person.role = e.target.value;
-                        setEditedRoleCallback(e.target.value);
+                    onChange={(value) => {
+                        person.role = value;
+                        setEditedRoleCallback(value);
                         editPersonCallback(person);
                     }}
                     onFocus={(e) => {
@@ -113,7 +118,7 @@ export default function PersonInWorkForm({
             )}
             <header className={styles["details"]}>
                 <h4>Details</h4>
-                <button
+                <Button
                     type="button"
                     onClick={() => {
                         const uniqueKey = getUniqueKey();
@@ -127,7 +132,7 @@ export default function PersonInWorkForm({
                     }}
                 >
                     +
-                </button>
+                </Button>
             </header>
             <div className={styles["details-container"]}>
                 {person.formDetails &&

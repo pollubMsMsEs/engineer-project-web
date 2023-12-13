@@ -1,20 +1,22 @@
 .instance {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    justify-content: space-between;
-    padding: 0 0 10px;
-    background-color: rgb(134 134 134 / 19.9%);
-    border-radius: 20px;
+    display: grid;
+    gap: 5px;
+    align-items: flex-start;
 
-    &__link-wrapper {
+    &__card {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        align-items: center;
+        gap: 5px;
+        justify-content: space-between;
+        padding: 0 0 5px;
+        background-color: transparent;
+        border: 2px solid var(--bkg-800);
+        border-radius: var(--card-border-radius);
+        box-shadow: 0 2px 20px 5px rgb(0 0 0 / 37.9%);
     }
 
     &__title {
-        justify-self: end;
+        font-size: 1.2rem;
+        text-align: center;
     }
 }
