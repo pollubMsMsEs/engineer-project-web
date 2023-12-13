@@ -41,17 +41,20 @@ export default function Modal({
 
     return (
         <dialog className={modalClassName} ref={dialog}>
-            <Button
-                style="icon"
-                squared
-                round
-                padding="0"
-                customStyle={{ borderWidth: "2px" }}
-                onClick={() => setIsOpen(false)}
-                className={styles["modal__close-button"]}
-            >
-                <Icon path={mdiCloseThick} size={1.8} />
-            </Button>
+            <div className={styles["modal__close-button-wrapper"]}>
+                <Button
+                    style="icon"
+                    squared
+                    round
+                    padding="0"
+                    customStyle={{ borderWidth: "2px" }}
+                    onClick={() => setIsOpen(false)}
+                    className={styles["modal__close-button"]}
+                >
+                    <Icon path={mdiCloseThick} size={1.8} />
+                </Button>
+            </div>
+
             {children}
         </dialog>
     );

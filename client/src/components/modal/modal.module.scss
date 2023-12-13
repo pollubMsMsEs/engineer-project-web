@@ -18,10 +18,16 @@
         }
     }
 
-    &__close-button {
+    &__close-button-wrapper {
         position: absolute !important;
-        top: 4px;
+        top: 0;
         right: 4px;
+        height: 100%;
+    }
+
+    &__close-button {
+        position: sticky;
+        top: -15px;
     }
 
     &::backdrop {
