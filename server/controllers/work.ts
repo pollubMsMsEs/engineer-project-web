@@ -64,8 +64,7 @@ export const createOne = [
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
-        .exists()
-        .withMessage("Missing published_at date")
+        .optional()
         .isISO8601()
         .withMessage("Incorrect format of published_at date")
         .toDate(),
@@ -154,8 +153,7 @@ export const updateOne = [
     body("title").trim().isLength({ min: 1 }).escape(),
     body("description").optional().trim().escape(),
     body("published_at")
-        .exists()
-        .withMessage("Missing published_at date")
+        .optional()
         .isISO8601()
         .withMessage("Incorrect format of published_at date")
         .toDate(),

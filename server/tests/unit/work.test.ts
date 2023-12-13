@@ -135,20 +135,6 @@ describe("createOne", () => {
                 {
                     type: "field",
                     value: undefined,
-                    msg: "Missing published_at date",
-                    path: "published_at",
-                    location: "body",
-                },
-                {
-                    type: "field",
-                    value: undefined,
-                    msg: "Incorrect format of published_at date",
-                    path: "published_at",
-                    location: "body",
-                },
-                {
-                    type: "field",
-                    value: undefined,
                     msg: "Missing type string",
                     path: "type",
                     location: "body",
