@@ -29,7 +29,7 @@ export default function Modal({
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    });
+    }, [setIsOpen]);
 
     useEffect(() => {
         if (isOpen) {
