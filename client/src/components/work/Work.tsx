@@ -26,7 +26,7 @@ import WorkPeople from "../workPeople/WorkPeople";
 import WorkMetadata from "../workMetadata/WorkMetadata";
 import DeleteWork from "../deleteWorkButton/DeleteWorkButton";
 import Button from "../button/Button";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import Modal from "../modal/Modal";
 import { useHandleRequest } from "@/hooks/useHandleRequests";
 import WorkForm from "../workForm/WorkForm";
@@ -40,6 +40,9 @@ export default function Work({
         | WorkInstanceFromAPI
         | WorkInstanceFromAPI<WorkFromAPIPopulated>;
 }) {
+    const [workFormKey, refreshWorkFormKey] = useReducer(() => {
+        return Date.now();
+    }, Date.now());
     const [work, setWork] = useState(_work);
     const [editOpen, setEditOpen] = useState(false);
     const {
@@ -69,6 +72,7 @@ export default function Work({
             <WorkMetadata work={work} />
             <Modal isOpen={editOpen} setIsOpen={setEditOpen} size="screen">
                 <WorkForm
+                    key={workFormKey}
                     work={work}
                     errors={errors}
                     errorsKey={errorsKey}
@@ -78,9 +82,12 @@ export default function Work({
                     onSubmit={async (work) => {
                         setWork(work);
                         setEditOpen(false);
+                        setFetchingState(false);
+                        refreshWorkFormKey();
                     }}
                     onCancel={() => {
                         setEditOpen(false);
+                        refreshWorkFormKey();
                     }}
                 />
             </Modal>
