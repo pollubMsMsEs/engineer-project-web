@@ -160,7 +160,7 @@ export default function Search() {
                                 : "Works browser is unavailable"}
                         </InstancesGrid>
                     ) : (
-                        <LoadingDisplay size="30px" />
+                        <LoadingDisplay size="50px" />
                     )}
                 </div>
             )}

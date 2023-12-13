@@ -6,6 +6,7 @@ import TooltipWrapper from "@/components/tooltipWrapper/TooltipWrapper";
 import styles from "./page.module.scss";
 import AddCard from "../../components/addCard/AddCard";
 import { getTypeIcon } from "@/modules/ui";
+import LoadingDisplay from "@/components/loadingDisplay/LoadingDisplay";
 
 export const revalidate = 0;
 

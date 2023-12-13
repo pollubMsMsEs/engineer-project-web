@@ -26,7 +26,10 @@
     }
 
     &__results {
+        display: grid;
+        place-items: center;
         width: 100%;
+        min-height: 200px;
         padding: 10px 0;
     }
 }

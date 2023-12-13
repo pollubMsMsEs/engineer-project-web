@@ -5,6 +5,8 @@
 
     &__circle {
         box-sizing: border-box;
+        border: 20px solid #f3f3f3;
+        border-top: 20px solid var(--active);
         border-radius: 50%;
         animation: spin 2s linear infinite;
     }
