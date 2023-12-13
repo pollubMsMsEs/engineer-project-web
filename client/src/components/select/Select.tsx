@@ -9,6 +9,7 @@ export default function Select({
     labelDisplay = "onHover",
     value,
     options,
+    required,
     fontSize,
     onChange,
 }: {
@@ -24,6 +25,7 @@ export default function Select({
     id: string;
     value: string;
     options: [string, string][];
+    required?: boolean;
     fontSize?: string;
     onChange: (value: string) => void;
 }) {

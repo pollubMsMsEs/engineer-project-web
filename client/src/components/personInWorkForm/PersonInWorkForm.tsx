@@ -8,6 +8,7 @@ import {
 import Button from "../button/Button";
 import Input from "../input/Input";
 import PersonDetailForm from "../personDetailForm/PersonDetailForm";
+import Select from "../select/Select";
 import styles from "./personInWorkForm.module.scss";
 
 export type PersonInWorkFormType = PersonInWork & {
@@ -60,25 +61,26 @@ export default function PersonInWorkForm({
         <div className={styles["person-in-work-container"]}>
             <label htmlFor={`person${index}`}>Person</label>
             <div>
-                <select
-                    name={`person${index}`}
+                <Select
                     id={`person${index}`}
+                    name={`person${index}`}
+                    label="Person"
                     value={person.person_id}
                     required
-                    onChange={(e) => {
-                        person.person_id = e.target.value;
-                        editPersonCallback(person);
+                    options={peopleToPick.map((person) => [
+                        person._id,
+                        `${person.name} ${
+                            person.nick ? `${person.nick} ` : ""
+                        } ${person.surname}`,
+                    ])}
+                    onChange={(value) => {
+                        const newPerson: PersonInWorkFormType = {
+                            ...person,
+                            person_id: value,
+                        };
+                        editPersonCallback(newPerson);
                     }}
-                >
-                    {peopleToPick.map((personToPick) => (
-                        <option
-                            key={personToPick._id}
-                            value={personToPick._id}
-                        >{`${personToPick.name} ${
-                            personToPick.nick ? `${personToPick.nick} ` : ""
-                        } ${personToPick.surname}`}</option>
-                    ))}
-                </select>
+                />
                 <Button
                     type="button"
                     onClick={() => {
