@@ -1,10 +1,7 @@
 import User from "../models/user.js";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
 import bcrypt from "bcrypt";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-const debug = Debug("project:dev");
 
 const { body, validationResult } = ExtendedValidator({
     emailTaken: async (value: any) => {

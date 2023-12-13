@@ -1,8 +1,6 @@
 import WorkInstance from "../models/workInstance.js";
 import { getBookAuthorFromAPI, getOneFromAPI } from "./searchAPI.js";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
 import mongoose from "mongoose";
 import {
@@ -10,12 +8,10 @@ import {
     isPast,
     parseISO,
     isAfter,
-    isEqual,
     fromUnixTime,
     parse,
 } from "date-fns";
 import { query } from "express-validator";
-const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 

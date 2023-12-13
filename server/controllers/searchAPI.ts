@@ -1,10 +1,7 @@
 import WorkInstance from "../models/workInstance.js";
-import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
+import { Request, Response } from "express";
 import axios from "axios";
 import { Mutex } from "async-mutex";
-const debug = Debug("project:dev");
 
 const mutex = new Mutex();
 let twitchAccessToken: string | null = null;

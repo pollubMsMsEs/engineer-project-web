@@ -1,9 +1,6 @@
 import WorkInstance from "../models/workInstance.js";
 import { Request, Response } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import mongoose from "mongoose";
-const debug = Debug("project:dev");
 
 interface ReportQuery {
     type?: string;

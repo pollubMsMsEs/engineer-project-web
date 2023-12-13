@@ -4,10 +4,7 @@ import Person from "../models/person.js";
 import Image from "../models/image.js";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
-import { inspect } from "util";
-import Debug from "debug";
 import { ExtendedValidator } from "../scripts/customValidator.js";
-const debug = Debug("project:dev");
 
 const { param, body, validationResult } = ExtendedValidator();
 
