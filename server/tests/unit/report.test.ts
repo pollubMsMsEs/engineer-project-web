@@ -538,7 +538,7 @@ describe("getFinishedCount", () => {
 
         await handleReport(req, res);
 
-        const expected = 5;
+        const expected = 6;
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,

@@ -5,16 +5,7 @@ import Work from "../../../models/work.js";
 import WorkFromAPI from "../../../models/workFromAPI.js";
 import WorkInstance from "../../../models/workInstance.js";
 
-export async function createTestData() {
-    const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        name: "Test123",
-        email: "test123@test.com",
-        password: "password",
-    });
-
-    await user.save();
-
+export async function createReportTestData(userId: mongoose.Types.ObjectId) {
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
         name: "Name1",
@@ -35,7 +26,7 @@ export async function createTestData() {
     const works = [
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title1",
             cover: "",
             description: "",
@@ -53,7 +44,7 @@ export async function createTestData() {
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title2",
             cover: "",
             description: "",
@@ -71,7 +62,7 @@ export async function createTestData() {
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title3",
             cover: "",
             description: "",
@@ -119,7 +110,7 @@ export async function createTestData() {
 
     const workInstances = [
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(works[0]._id),
             onModel: "Work",
             rating: 1,
@@ -138,7 +129,7 @@ export async function createTestData() {
             metadata: {},
         },
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(works[1]._id),
             onModel: "Work",
             rating: 2,
@@ -156,7 +147,7 @@ export async function createTestData() {
             metadata: {},
         },
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(works[2]._id),
             onModel: "Work",
             rating: 3,
@@ -171,7 +162,7 @@ export async function createTestData() {
             metadata: {},
         },
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[0]._id),
             onModel: "WorkFromAPI",
             rating: 4,
@@ -186,7 +177,7 @@ export async function createTestData() {
             metadata: {},
         },
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[1]._id),
             onModel: "WorkFromAPI",
             rating: 5,
@@ -201,7 +192,7 @@ export async function createTestData() {
             metadata: {},
         },
         {
-            user_id: new mongoose.Types.ObjectId(user._id),
+            user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
             rating: 6,
@@ -221,7 +212,5 @@ export async function createTestData() {
     ];
 
     await WorkInstance.create(workInstances);
-
-    return user._id;
 }
-export default createTestData;
+export default createReportTestData;

@@ -33,30 +33,6 @@ export async function getAll(req: Request, res: Response) {
     res.json(workInstances);
 }
 
-export const getAllForUser = [
-    param("id").isMongoId().withMessage("URL contains incorrect id"),
-    async function (req: Request, res: Response, next: NextFunction) {
-        try {
-            validationResult(req).throw();
-            const workInstances = await WorkInstance.find({
-                user_id: req.params.id,
-            })
-                .populate({
-                    path: "work_id",
-                    populate: {
-                        path: "people.person_id",
-                        model: "Person",
-                        strictPopulate: false,
-                    },
-                })
-                .exec();
-            res.json({ data: workInstances });
-        } catch (e: any) {
-            return next(e);
-        }
-    },
-];
-
 export const getAllForCurrentUser = [
     async function (req: Request | any, res: Response, next: NextFunction) {
         try {
