@@ -1,6 +1,6 @@
 import { tryExtractErrors } from "@/modules/errorsHandling";
 import { ExtractedErrors, ObjectWithPotentialError } from "@/types/types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useHandleRequest<T>(fetchingDefault: T | false = false) {
     const [errors, setErrors] = useState<ExtractedErrors | undefined>();
@@ -9,7 +9,7 @@ export function useHandleRequest<T>(fetchingDefault: T | false = false) {
         fetchingDefault
     );
 
-    async function handleResponse(response: Response) {
+    const handleResponse = useCallback(async function (response: Response) {
         if (!response.ok) {
             try {
                 const result = await response.json();
@@ -28,7 +28,7 @@ export function useHandleRequest<T>(fetchingDefault: T | false = false) {
 
         setErrors(undefined);
         return await response.json();
-    }
+    }, []);
 
     return {
         errors,

@@ -35,6 +35,7 @@ import ImageContainer from "../imageContainer/ImageContainer";
 import { getAspectRatio, getTypeIcon } from "@/modules/ui";
 import Modal from "../modal/Modal";
 import PersonForm from "../personForm/PersonForm";
+import FindPerson from "../findPerson/FindPerson";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -51,16 +52,6 @@ type MetadataInForm = {
 };
 
 type PersonWithID = Person & { _id: string };
-
-async function getPeopleToPick(): Promise<PersonWithID[]> {
-    const response = await fetch("/api/person/all", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    return await response.json();
-}
 
 export default function WorkForm({
     work,
@@ -138,16 +129,11 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-    const [personQuery, setPersonQuery] = useState("");
     const [isPersonFormOpen, setIsPersonFormOpen] = useState(false);
     const [personFormKey, refreshPersonFormKey] = useReducer(() => {
         return Date.now();
     }, Date.now());
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
-
-    useEffect(() => {
-        getPeopleToPick().then(setPeopleToPick);
-    }, []);
 
     const roleSuggestions = people.reduce((roles: string[], person) => {
         if (
@@ -396,16 +382,21 @@ export default function WorkForm({
                 <div className={styles["work-form__people-wrapper"]}>
                     <header className={styles["work-form__people-header"]}>
                         <h3>People</h3>
-                        <Input
-                            id="search-people"
-                            name="search-people"
-                            type="text"
-                            label="Find person"
-                            style={{ fontSize: "1rem" }}
-                            value={personQuery}
-                            onChange={(v) => setPersonQuery(v)}
+                        <FindPerson
+                            setPicked={(newPerson) => {
+                                setPeople((prevPeople) => {
+                                    return [
+                                        ...prevPeople,
+                                        {
+                                            react_key: getUniqueKey(),
+                                            role: "",
+                                            person_id: newPerson._id,
+                                            formDetails: {},
+                                        },
+                                    ];
+                                });
+                            }}
                         />
-                        <span className={styles["work-form__divider"]}>|</span>
                         {peopleToPick && (
                             <Button
                                 customStyle={{
@@ -424,26 +415,18 @@ export default function WorkForm({
                     </header>
 
                     <div className={styles["work-form__people-list"]}>
-                        {peopleToPick.length === 0 ? (
-                            <span>
-                                No people in database, create some first
-                            </span>
-                        ) : (
-                            people.map((p, index) => (
-                                <PersonInWorkForm
-                                    key={p.react_key}
-                                    person={p}
-                                    peopleToPick={peopleToPick}
-                                    index={index}
-                                    editPersonCallback={editPersonCallback}
-                                    deletePersonCallback={deletePersonCallback}
-                                    setEditedRoleCallback={
-                                        setEditedRoleCallback
-                                    }
-                                    getUniqueKey={getUniqueKey}
-                                />
-                            ))
-                        )}
+                        {people.map((p, index) => (
+                            <PersonInWorkForm
+                                key={p.react_key}
+                                person={p}
+                                peopleToPick={peopleToPick}
+                                index={index}
+                                editPersonCallback={editPersonCallback}
+                                deletePersonCallback={deletePersonCallback}
+                                setEditedRoleCallback={setEditedRoleCallback}
+                                getUniqueKey={getUniqueKey}
+                            />
+                        ))}
                     </div>
                 </div>
                 <div className={styles["work-form__metadata-wrapper"]}>
@@ -581,10 +564,6 @@ export default function WorkForm({
                 <PersonForm
                     key={personFormKey}
                     onSubmit={(newPerson) => {
-                        setPeopleToPick((prevPeople) => [
-                            ...prevPeople,
-                            newPerson,
-                        ]);
                         setPeople((prevPeople) => {
                             return [
                                 ...prevPeople,
