@@ -13,7 +13,7 @@ export default async function PersonAll() {
     const result = await response.json();
 
     return (
-        <>
+        <div className={styles["people"]}>
             <a href="/person/create">
                 <Button>Add person</Button>
             </a>
@@ -28,9 +28,6 @@ export default async function PersonAll() {
                 </thead>
                 <PersonList people={result} />
             </table>
-            <a href="/person/create">
-                <Button>Add person</Button>
-            </a>
-        </>
+        </div>
     );
 }

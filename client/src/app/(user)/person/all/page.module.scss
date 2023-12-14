@@ -1,3 +1,10 @@
-.button {
-    width: 100%;
+.people {
+    display: grid;
+    gap: 10px;
+    place-items: center;
+    margin-top: 10px;
+
+    td {
+        padding: 5px 10px;
+    }
 }
