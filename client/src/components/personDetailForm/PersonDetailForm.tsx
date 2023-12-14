@@ -1,6 +1,8 @@
+import Icon from "@mdi/react";
 import Button from "../button/Button";
 import Input from "../input/Input";
 import styles from "./personDetailForm.module.scss";
+import { mdiTrashCan } from "@mdi/js";
 
 export default function PersonDetailForm({
     uniqueKey,
@@ -20,13 +22,15 @@ export default function PersonDetailForm({
     deleteDetailCallback: (key: number) => void;
 }) {
     return (
-        <div>
+        <div className={styles["person-detail"]}>
             <Input
-                id="key"
+                id={`key${uniqueKey}`}
                 type="text"
                 name="key"
                 label="Key"
+                labelDisplay="never"
                 value={data.key}
+                style={{ fontSize: "1rem" }}
                 required
                 onChange={(value) => {
                     data.key = value;
@@ -35,11 +39,13 @@ export default function PersonDetailForm({
             />
             {data && (
                 <Input
-                    id="values"
+                    id={`values${uniqueKey}`}
                     type="text"
                     name="values"
                     label="Values"
+                    labelDisplay="never"
                     value={data.values.join(" ")}
+                    style={{ fontSize: "1rem" }}
                     required
                     onChange={(value, e) => {
                         if (value.includes(",")) {
@@ -61,7 +67,7 @@ export default function PersonDetailForm({
                     deleteDetailCallback(uniqueKey);
                 }}
             >
-                -
+                <Icon path={mdiTrashCan} size="1.2rem" />
             </Button>
         </div>
     );

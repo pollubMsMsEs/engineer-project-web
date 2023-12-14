@@ -108,7 +108,7 @@ export default function WorkForm({
             .map<PersonInWorkFormType>((p) => {
                 const newPerson: PersonInWorkFormType = {
                     ...p,
-                    person_id: p.person_id._id,
+                    person_id: p.person_id,
                     react_key: getUniqueKey(),
                     formDetails: {},
                 };
@@ -390,7 +390,7 @@ export default function WorkForm({
                                         {
                                             react_key: getUniqueKey(),
                                             role: "",
-                                            person_id: newPerson._id,
+                                            person_id: newPerson,
                                             formDetails: {},
                                         },
                                     ];
@@ -418,7 +418,7 @@ export default function WorkForm({
                         {people.map((p, index) => (
                             <PersonInWorkForm
                                 key={p.react_key}
-                                person={p}
+                                personInWork={p}
                                 peopleToPick={peopleToPick}
                                 index={index}
                                 editPersonCallback={editPersonCallback}
@@ -570,7 +570,7 @@ export default function WorkForm({
                                 {
                                     react_key: getUniqueKey(),
                                     role: "",
-                                    person_id: newPerson._id,
+                                    person_id: newPerson,
                                     formDetails: {},
                                 },
                             ];

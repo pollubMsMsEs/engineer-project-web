@@ -1,11 +1,19 @@
-.person-in-work-container {
+.person-in-work {
+    position: relative;
     display: grid;
-    grid-template-columns: min-content 1fr;
-    gap: 5px;
+    gap: 10px;
     align-content: start;
     padding: 10px;
-    background-color: var(--bkg-800);
+    border: 2px solid var(--bkg-800);
     border-radius: 10px;
+
+    &__title {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
 
     .delete-person-button {
         padding: 0 10px;
@@ -27,8 +35,7 @@
     }
 
     .details-container {
-        display: flex;
-        flex-direction: column;
+        display: grid;
         grid-column: 1 / -1;
         gap: 5px;
         align-items: stretch;

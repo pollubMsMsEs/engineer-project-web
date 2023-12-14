@@ -1,4 +1,6 @@
-.delete-button {
-    aspect-ratio: 1/1;
-    padding: 0 5px;
+.person-detail {
+    display: grid;
+    grid-template-columns: 7rem 12rem auto;
+    gap: 5px;
+    align-items: center;
 }

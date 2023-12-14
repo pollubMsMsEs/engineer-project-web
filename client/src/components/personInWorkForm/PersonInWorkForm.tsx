@@ -11,10 +11,12 @@ import Input from "../input/Input";
 import PersonDetailForm from "../personDetailForm/PersonDetailForm";
 import Select from "../select/Select";
 import styles from "./personInWorkForm.module.scss";
+import Icon from "@mdi/react";
+import { mdiAccount, mdiBriefcase, mdiPlusThick, mdiTrashCan } from "@mdi/js";
 
 export type PersonInWorkFormType = PersonInWork & {
     react_key: number;
-    person_id: string;
+    person_id: PersonFromAPI;
 } & {
     formDetails: {
         [reactKey: number]: {
@@ -25,7 +27,7 @@ export type PersonInWorkFormType = PersonInWork & {
 };
 
 export default function PersonInWorkForm({
-    person,
+    personInWork,
     peopleToPick,
     index,
     editPersonCallback,
@@ -33,7 +35,7 @@ export default function PersonInWorkForm({
     setEditedRoleCallback,
     getUniqueKey,
 }: {
-    person: PersonInWorkFormType;
+    personInWork: PersonInWorkFormType;
     index: number;
     peopleToPick: PersonFromAPI[];
     editPersonCallback: (person: PersonInWorkFormType) => void;
@@ -48,64 +50,48 @@ export default function PersonInWorkForm({
             values: string[];
         }
     ) {
-        person.formDetails[key] = data;
+        personInWork.formDetails[key] = data;
 
-        editPersonCallback(person);
+        editPersonCallback(personInWork);
     }
 
     function deleteDetailCallback(key: number) {
-        delete person.formDetails[key];
-        editPersonCallback(person);
+        delete personInWork.formDetails[key];
+        editPersonCallback(personInWork);
     }
 
     return (
-        <div className={styles["person-in-work-container"]}>
-            <label htmlFor={`person${index}`}>Person</label>
-            <div>
-                <Select
-                    id={`person${index}`}
-                    name={`person${index}`}
-                    label="Person"
-                    value={person.person_id}
-                    required
-                    options={peopleToPick.map((person) => [
-                        person._id,
-                        personToString(person),
-                    ])}
-                    onChange={(value) => {
-                        const newPerson: PersonInWorkFormType = {
-                            ...person,
-                            person_id: value,
-                        };
-                        editPersonCallback(newPerson);
-                    }}
-                />
-                <Button
-                    type="button"
-                    onClick={() => {
-                        deletePersonCallback(person);
-                    }}
-                >
-                    -
-                </Button>
-            </div>
+        <div className={styles["person-in-work"]}>
+            <Button
+                type="button"
+                customStyle={{ position: "absolute", top: "4px", right: "4px" }}
+                onClick={() => {
+                    deletePersonCallback(personInWork);
+                }}
+            >
+                <Icon path={mdiTrashCan} size={1} />
+            </Button>
 
-            <label htmlFor={`role${index}`}>Role</label>
-            {person.person_id === "" ? (
-                <span>Pick person to set role</span>
-            ) : (
+            <span className={styles["person-in-work__title"]}>
+                <Icon path={mdiAccount} size={1} />
+                {personToString(personInWork.person_id)}
+            </span>
+            <span className={styles["person-in-work__title"]}>
+                <Icon path={mdiBriefcase} size={1} />
                 <Input
                     type="text"
                     id={`role${index}`}
                     name={`role${index}`}
                     list="people-roles"
-                    value={person.role}
+                    value={personInWork.role}
                     label="Role"
+                    labelDisplay="never"
                     required
+                    style={{ fontSize: "1rem", width: "150px" }}
                     onChange={(value) => {
-                        person.role = value;
+                        personInWork.role = value;
                         setEditedRoleCallback(value);
-                        editPersonCallback(person);
+                        editPersonCallback(personInWork);
                     }}
                     onFocus={(e) => {
                         setEditedRoleCallback(e.target.value);
@@ -114,28 +100,32 @@ export default function PersonInWorkForm({
                         setEditedRoleCallback("");
                     }}
                 />
-            )}
+            </span>
+
             <header className={styles["details"]}>
                 <h4>Details</h4>
                 <Button
                     type="button"
+                    squared
+                    round
+                    padding="2px"
                     onClick={() => {
                         const uniqueKey = getUniqueKey();
 
-                        person.formDetails[uniqueKey] = {
+                        personInWork.formDetails[uniqueKey] = {
                             key: "",
                             values: [""],
                         };
 
-                        editPersonCallback(person);
+                        editPersonCallback(personInWork);
                     }}
                 >
-                    +
+                    <Icon path={mdiPlusThick} size={1} />
                 </Button>
             </header>
             <div className={styles["details-container"]}>
-                {person.formDetails &&
-                    Object.entries(person.formDetails).map(
+                {personInWork.formDetails &&
+                    Object.entries(personInWork.formDetails).map(
                         ([reactKey, data]) => (
                             <PersonDetailForm
                                 key={reactKey}

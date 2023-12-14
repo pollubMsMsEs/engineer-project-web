@@ -1,16 +1,18 @@
 .work-form {
+    box-sizing: border-box;
     display: grid;
     grid-template:
-        "cover core" auto
-        "people people" auto
-        "metadata metadata" auto
-        "submit submit" auto / auto auto;
+        "cover core metadata" auto
+        "people people people" 1fr
+        "submit submit submit" auto / auto auto auto;
     gap: 20px;
-    place-content: center;
+    place-content: stretch;
     place-items: center;
-    width: fit-content;
+    align-self: start;
+    width: 100%;
+    height: 100%;
     padding: 20px;
-    border: 2px solid var(--bkg-800);
+    margin: 10px;
 
     &__core {
         display: grid;
@@ -42,7 +44,8 @@
 
     &__people-wrapper {
         grid-area: people;
-        justify-self: flex-start;
+        align-self: flex-start;
+        justify-self: stretch;
     }
 
     &__people-header {
@@ -52,13 +55,15 @@
     }
 
     &__people-list {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
         gap: 8px;
-        align-items: center;
+        align-items: stretch;
     }
 
     &__metadata-wrapper {
         grid-area: metadata;
+        align-self: flex-start;
         justify-self: flex-start;
     }
 
@@ -79,5 +84,6 @@
         grid-area: submit;
         grid-template-columns: 1fr auto;
         gap: 10px;
+        align-self: flex-end;
     }
 }
