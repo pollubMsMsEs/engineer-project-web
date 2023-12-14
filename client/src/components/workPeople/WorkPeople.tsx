@@ -72,7 +72,7 @@ export default function WorkPeople({
                                 role.substring(1) +
                                 "(s)"}
                         </h3>
-                        <div>
+                        <div className={styles["work-people__people"]}>
                             {people.map((p) => (
                                 <div key={p._id}>
                                     <Person
