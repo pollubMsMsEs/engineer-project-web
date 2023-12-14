@@ -7,6 +7,7 @@ export default function TextArea({
     label,
     labelBehaviour = "slidingOnFocus",
     value,
+    height,
     onChange,
     required = false,
 }: {
@@ -15,6 +16,7 @@ export default function TextArea({
     label: string;
     labelBehaviour?: "never" | "slidingOnFocus" | "slidingOnValue" | "always";
     value: any;
+    height?: string;
     onChange: (value: any) => void;
     required?: boolean;
 }) {
@@ -55,6 +57,7 @@ export default function TextArea({
                 placeholder={label}
                 required={required}
                 value={value}
+                style={{ height: height }}
                 onChange={(e) => {
                     onChange(e.target.value);
                 }}

@@ -1,0 +1,12 @@
+.autocomplete-option {
+    padding: 10px 20px;
+    background-color: var(--bkg-800);
+
+    &:hover {
+        color: var(--active);
+    }
+
+    &--selected {
+        color: var(--active);
+    }
+}

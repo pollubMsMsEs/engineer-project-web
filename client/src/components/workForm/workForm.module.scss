@@ -1,39 +1,89 @@
-.all {
+.work-form {
+    box-sizing: border-box;
     display: grid;
-    gap: 10px;
-    place-content: center;
+    grid-template:
+        "cover core metadata" auto
+        "people people people" 1fr
+        "submit submit submit" auto / auto auto auto;
+    gap: 20px;
+    place-content: stretch;
     place-items: center;
+    align-self: start;
+    width: 100%;
     height: 100%;
     padding: 20px;
-    border: 2px solid var(--bkg-800);
-}
+    margin: 10px;
 
-.work-form {
-    display: grid;
-    gap: 2em;
-    justify-content: start;
-
-    .people-header {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .people {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px 20px;
-    }
-
-    .metadata-header {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .buttons {
+    &__core {
         display: grid;
+        grid-area: core;
+        gap: 30px;
+        align-items: center;
+        align-self: flex-start;
+        justify-content: stretch;
+        margin-top: 20px;
+    }
+
+    &__cover {
+        display: grid;
+        grid-area: cover;
+        gap: 10px;
+        place-items: center;
+    }
+
+    &__title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    &__divider {
+        padding-bottom: 0.3em;
+        font-size: 1.8rem;
+    }
+
+    &__people-wrapper {
+        grid-area: people;
+        align-self: flex-start;
+        justify-self: stretch;
+    }
+
+    &__people-header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__people-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    &__metadata-wrapper {
+        grid-area: metadata;
+        align-self: flex-start;
+        justify-self: flex-start;
+    }
+
+    &__metadata-header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__metadata-element {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    &__submit {
+        display: grid;
+        grid-area: submit;
         grid-template-columns: 1fr auto;
         gap: 10px;
+        align-self: flex-end;
     }
 }

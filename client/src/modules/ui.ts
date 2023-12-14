@@ -1,4 +1,4 @@
-import { WorkType } from "@/types/types";
+import { Person, WorkType } from "@/types/types";
 import { mdiBookOpenVariant, mdiController, mdiMovieOpen } from "@mdi/js";
 
 export function getTypeIcon(workType: WorkType) {
@@ -21,4 +21,10 @@ export function getAspectRatio(workType: WorkType) {
         case "game":
             return "3/4";
     }
+}
+
+export function personToString(person: Person) {
+    return `${person.name}${person.nick ? ` ${person.nick} ` : ""} ${
+        person.surname
+    }`;
 }

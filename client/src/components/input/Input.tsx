@@ -13,6 +13,7 @@ export default function Input({
     labelDisplay = "onFocus",
     value,
     className,
+    style,
     onChange,
     onFocus,
     onBlur,
@@ -29,6 +30,7 @@ export default function Input({
     labelDisplay?: "never" | "onFocus" | "onValue" | "always";
     value: any;
     className?: string;
+    style?: React.CSSProperties;
     onChange: (value: any, event: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -67,6 +69,7 @@ export default function Input({
             <input
                 id={id}
                 className={styles["input__input"]}
+                style={style}
                 type={type}
                 name={name}
                 min={min}

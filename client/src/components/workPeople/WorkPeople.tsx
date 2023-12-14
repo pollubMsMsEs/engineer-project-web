@@ -49,6 +49,7 @@ export default function WorkPeople({
     work: WorkFromAPIPopulated;
     readOnly: boolean;
 }) {
+    console.log(work);
     const peopleByRole = groupPeopleInWorkByRole(work.people);
 
     return (

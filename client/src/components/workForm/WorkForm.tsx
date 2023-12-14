@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer } from "react";
 import {
     MetaObject,
     Work,
@@ -22,7 +22,14 @@ import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
 import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
-import { mdiCancel, mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
+import {
+    mdiCancel,
+    mdiDisc,
+    mdiFloppy,
+    mdiPlus,
+    mdiPlusThick,
+    mdiTrashCan,
+} from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
@@ -32,7 +39,10 @@ import { TYPES } from "@/constantValues";
 import Input from "../input/Input";
 import TextArea from "../textArea/TextArea";
 import ImageContainer from "../imageContainer/ImageContainer";
-import { getAspectRatio } from "@/modules/ui";
+import { getAspectRatio, getTypeIcon } from "@/modules/ui";
+import Modal from "../modal/Modal";
+import PersonForm from "../personForm/PersonForm";
+import FindPerson from "../findPerson/FindPerson";
 
 type WorkToDB = Work & {
     _id?: string;
@@ -49,16 +59,6 @@ type MetadataInForm = {
 };
 
 type PersonWithID = Person & { _id: string };
-
-async function getPeopleToPick(): Promise<PersonWithID[]> {
-    const response = await fetch("/api/person/all", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    return await response.json();
-}
 
 export default function WorkForm({
     work,
@@ -115,7 +115,7 @@ export default function WorkForm({
             .map<PersonInWorkFormType>((p) => {
                 const newPerson: PersonInWorkFormType = {
                     ...p,
-                    person_id: p.person_id._id,
+                    person_id: p.person_id,
                     react_key: getUniqueKey(),
                     formDetails: {},
                 };
@@ -136,12 +136,11 @@ export default function WorkForm({
                 return newPerson;
             }) ?? []
     );
-
+    const [isPersonFormOpen, setIsPersonFormOpen] = useState(false);
+    const [personFormKey, refreshPersonFormKey] = useReducer(() => {
+        return Date.now();
+    }, Date.now());
     const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
-
-    useEffect(() => {
-        getPeopleToPick().then(setPeopleToPick);
-    }, []);
 
     const roleSuggestions = people.reduce((roles: string[], person) => {
         if (
@@ -210,6 +209,14 @@ export default function WorkForm({
 
         setCover(newCover);
 
+        const peopleToRecover = people.map((p) => {
+            p.details = Object.entries(p.formDetails).reduce<MetaObject>(
+                (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
+                {}
+            );
+            return p;
+        });
+
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
@@ -224,11 +231,17 @@ export default function WorkForm({
                 {}
             ),
             people: people.map((p) => {
-                p.details = Object.entries(p.formDetails).reduce<MetaObject>(
-                    (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
-                    {}
-                );
-                return p;
+                return {
+                    ...p,
+                    person_id: p.person_id._id as any,
+                    details: Object.entries(p.formDetails).reduce<MetaObject>(
+                        (acc, [, data]) => ({
+                            ...acc,
+                            [data.key]: data.values,
+                        }),
+                        {}
+                    ),
+                };
             }),
         };
 
@@ -257,6 +270,8 @@ export default function WorkForm({
             ? result.updated
             : result.created;
 
+        updatedWork.people = peopleToRecover;
+
         if (onSubmit) {
             onSubmit(updatedWork);
         }
@@ -283,38 +298,7 @@ export default function WorkForm({
     }
 
     return (
-        <div className={styles["all"]}>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    trySubmitCover();
-                }}
-            >
-                {(coverFile || cover) && (
-                    <ImageContainer
-                        src={
-                            coverFile ? URL.createObjectURL(coverFile) : cover!
-                        }
-                        alt="Work cover"
-                        width="300px"
-                        aspectRatio={getAspectRatio(type)}
-                    />
-                )}
-                <FilePicker
-                    title="Pick cover"
-                    name="cover"
-                    acceptedTypes="image/*"
-                    onChange={(fileList) => {
-                        setCoverFile(fileList?.[0]);
-                        setIsCoverNew(true);
-                    }}
-                />
-                {false && ( //  disabled={!coverFile} this will be usefull if endpoint for updating image will exist
-                    <Button type="submit">
-                        <Icon path={mdiFloppy} size={1} />
-                    </Button>
-                )}
-            </form>
+        <>
             <form
                 className={styles["work-form"]}
                 onSubmit={(e) => {
@@ -323,120 +307,152 @@ export default function WorkForm({
                 }}
             >
                 {work && <input type="hidden" name="_id" value={work._id} />}
-                {work ? (
-                    <div>{capitalize(work.type ?? "")}</div>
-                ) : (
-                    <Select
-                        name="type"
-                        id="type"
-                        label="Type"
-                        value={type}
-                        options={TYPES}
-                        onChange={(value) => {
-                            setType(value as WorkType);
+                <div className={styles["work-form__cover"]}>
+                    {(coverFile || cover) && (
+                        <ImageContainer
+                            src={
+                                coverFile
+                                    ? URL.createObjectURL(coverFile)
+                                    : cover!
+                            }
+                            alt="Work cover"
+                            width="300px"
+                            aspectRatio={getAspectRatio(type)}
+                        />
+                    )}
+                    <FilePicker
+                        title="Pick cover"
+                        name="cover"
+                        acceptedTypes="image/*"
+                        onChange={(fileList) => {
+                            setCoverFile(fileList?.[0]);
+                            setIsCoverNew(true);
                         }}
                     />
-                )}
-                <Input
-                    id="title"
-                    type="text"
-                    name="title"
-                    label="Title"
-                    value={title}
-                    onChange={(value: any) => {
-                        setTitle(value);
-                    }}
-                />
-                <TextArea
-                    id="description"
-                    name="description"
-                    label="Description"
-                    value={description}
-                    onChange={(value) => {
-                        setDescription(value);
-                    }}
-                />
-                <Input
-                    id="published_at"
-                    type="date"
-                    name="published_at"
-                    label="Published at"
-                    labelDisplay="always"
-                    value={publishedAt}
-                    onChange={(value: any) => {
-                        setPublishedAt(value);
-                    }}
-                />
-                <Input
-                    id="genres"
-                    type="text"
-                    name="genres"
-                    label="Genres (space seperated)"
-                    value={genres.join(" ")}
-                    onChange={(value: any, e) => {
-                        if (value.includes(",")) {
-                            e.target.setCustomValidity(
-                                "Seperate values with space, not colon"
-                            );
-                        } else {
-                            e.target.setCustomValidity("");
-                        }
-                        setGenres(value.split(" "));
-                    }}
-                />
-                <div>
-                    <header className={styles["people-header"]}>
-                        <h3>People</h3>
-                        {peopleToPick && (
-                            <Button
-                                padding="2px"
-                                width="30px"
-                                squared
-                                round
-                                onClick={() => {
-                                    setPeople((prevPeople) => {
-                                        return [
-                                            ...prevPeople,
-                                            {
-                                                react_key: getUniqueKey(),
-                                                role: "",
-                                                person_id: peopleToPick[0]._id,
-                                                formDetails: {},
-                                            },
-                                        ];
-                                    });
+                </div>
+                <div className={styles["work-form__core"]}>
+                    <div className={styles["work-form__title"]}>
+                        {work ? (
+                            <div>
+                                <Icon
+                                    path={getTypeIcon(work.type).path}
+                                    size={1.5}
+                                />
+                            </div>
+                        ) : (
+                            <Select
+                                name="type"
+                                id="type"
+                                label="Type"
+                                value={type}
+                                options={TYPES}
+                                onChange={(value) => {
+                                    setType(value as WorkType);
                                 }}
-                            >
-                                <Icon path={mdiPlusThick} />
-                            </Button>
+                            />
                         )}
+                        <Input
+                            id="title"
+                            type="text"
+                            name="title"
+                            label="Title"
+                            value={title}
+                            onChange={(value: any) => {
+                                setTitle(value);
+                            }}
+                        />
+                    </div>
+                    <TextArea
+                        id="description"
+                        name="description"
+                        label="Description"
+                        value={description}
+                        onChange={(value) => {
+                            setDescription(value);
+                        }}
+                        height="300px"
+                    />
+                    <Input
+                        id="published_at"
+                        type="date"
+                        name="published_at"
+                        label="Published at"
+                        labelDisplay="always"
+                        value={publishedAt}
+                        onChange={(value: any) => {
+                            setPublishedAt(value);
+                        }}
+                    />
+                    <Input
+                        id="genres"
+                        type="text"
+                        name="genres"
+                        label="Genres (space seperated)"
+                        value={genres.join(" ")}
+                        onChange={(value: any, e) => {
+                            if (value.includes(",")) {
+                                e.target.setCustomValidity(
+                                    "Seperate values with space, not colon"
+                                );
+                            } else {
+                                e.target.setCustomValidity("");
+                            }
+                            setGenres(value.split(" "));
+                        }}
+                    />
+                </div>
+
+                <div className={styles["work-form__people-wrapper"]}>
+                    <header className={styles["work-form__people-header"]}>
+                        <h3>People</h3>
+                        <FindPerson
+                            setPicked={(newPerson) => {
+                                setPeople((prevPeople) => {
+                                    return [
+                                        ...prevPeople,
+                                        {
+                                            react_key: getUniqueKey(),
+                                            role: "",
+                                            person_id: newPerson,
+                                            formDetails: {},
+                                        },
+                                    ];
+                                });
+                            }}
+                        />
+
+                        <Button
+                            customStyle={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                            }}
+                            onClick={() => {
+                                setIsPersonFormOpen(true);
+                            }}
+                        >
+                            <span>New</span>
+                            <Icon path={mdiPlusThick} size="1.2em" />
+                        </Button>
                     </header>
 
-                    <div className={styles["people"]}>
-                        {peopleToPick.length === 0 ? (
-                            <span>
-                                No people in database, create some first
-                            </span>
-                        ) : (
-                            people.map((p, index) => (
-                                <PersonInWorkForm
-                                    key={p.react_key}
-                                    person={p}
-                                    peopleToPick={peopleToPick}
-                                    index={index}
-                                    editPersonCallback={editPersonCallback}
-                                    deletePersonCallback={deletePersonCallback}
-                                    setEditedRoleCallback={
-                                        setEditedRoleCallback
-                                    }
-                                    getUniqueKey={getUniqueKey}
-                                />
-                            ))
-                        )}
+                    <div className={styles["work-form__people-list"]}>
+                        {people.map((p, index) => (
+                            <PersonInWorkForm
+                                key={p.react_key}
+                                personInWork={p}
+                                peopleToPick={peopleToPick}
+                                index={index}
+                                editPersonCallback={editPersonCallback}
+                                deletePersonCallback={deletePersonCallback}
+                                setEditedRoleCallback={setEditedRoleCallback}
+                                getUniqueKey={getUniqueKey}
+                            />
+                        ))}
                     </div>
                 </div>
-                <div>
-                    <div className={styles["metadata-header"]}>
+                <div className={styles["work-form__metadata-wrapper"]}>
+                    <div className={styles["work-form__metadata-header"]}>
                         <h3>Metadata</h3>
                         <Button
                             padding="2px"
@@ -461,22 +477,29 @@ export default function WorkForm({
                     <div>
                         {metadata &&
                             Object.entries(metadata).map(
-                                ([reactKey, metadata], index) => (
-                                    <div key={reactKey}>
+                                ([reactKey, insideMetadata], index) => (
+                                    <div
+                                        key={reactKey}
+                                        className={
+                                            styles[
+                                                "work-form__metadata-element"
+                                            ]
+                                        }
+                                    >
                                         <Input
                                             type="text"
                                             id={`metakey${index}`}
                                             name={`metakey${index}`}
-                                            value={metadata.key}
+                                            value={insideMetadata.key}
                                             label="Key"
                                             required
-                                            onChange={(e) => {
+                                            onChange={(value) => {
                                                 setMetadata((prev) => {
                                                     return {
                                                         ...prev,
                                                         [reactKey]: {
-                                                            key: e.target.value,
-                                                            values: metadata.values,
+                                                            key: value,
+                                                            values: insideMetadata.values,
                                                         },
                                                     };
                                                 });
@@ -486,13 +509,13 @@ export default function WorkForm({
                                             type="text"
                                             id={`metavalue${index}`}
                                             name={`metavalue${index}`}
-                                            value={metadata.values.join(" ")}
+                                            value={insideMetadata.values.join(
+                                                " "
+                                            )}
                                             label="Value"
                                             required
-                                            onChange={(e) => {
-                                                if (
-                                                    e.target.value.includes(",")
-                                                ) {
+                                            onChange={(value, e) => {
+                                                if (value.includes(",")) {
                                                     e.target.setCustomValidity(
                                                         "Seperate values with space, not colon"
                                                     );
@@ -506,7 +529,7 @@ export default function WorkForm({
                                                     return {
                                                         ...prev,
                                                         [reactKey]: {
-                                                            key: metadata.key,
+                                                            key: insideMetadata.key,
                                                             values: e.target.value.split(
                                                                 " "
                                                             ),
@@ -515,6 +538,20 @@ export default function WorkForm({
                                                 });
                                             }}
                                         />
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                delete metadata[
+                                                    reactKey as unknown as number
+                                                ];
+                                                setMetadata({ ...metadata });
+                                            }}
+                                        >
+                                            <Icon
+                                                path={mdiTrashCan}
+                                                size="1.2rem"
+                                            />
+                                        </Button>
                                     </div>
                                 )
                             )}
@@ -535,8 +572,9 @@ export default function WorkForm({
                         </option>
                     ))}
                 </datalist>
+
                 <ErrorsDisplay key={errorsKey} errors={errors} />
-                <div className={styles["buttons"]}>
+                <div className={styles["work-form__submit"]}>
                     <Button
                         type="submit"
                         style="normal"
@@ -554,6 +592,34 @@ export default function WorkForm({
                     </Button>
                 </div>
             </form>
-        </div>
+            <Modal
+                size="fit-content"
+                isOpen={isPersonFormOpen}
+                setIsOpen={setIsPersonFormOpen}
+            >
+                <PersonForm
+                    key={personFormKey}
+                    onSubmit={(newPerson) => {
+                        setPeople((prevPeople) => {
+                            return [
+                                ...prevPeople,
+                                {
+                                    react_key: getUniqueKey(),
+                                    role: "",
+                                    person_id: newPerson,
+                                    formDetails: {},
+                                },
+                            ];
+                        });
+                        setIsPersonFormOpen(false);
+                        refreshPersonFormKey();
+                    }}
+                    onCancel={() => {
+                        setIsPersonFormOpen(false);
+                        refreshPersonFormKey();
+                    }}
+                />
+            </Modal>
+        </>
     );
 }

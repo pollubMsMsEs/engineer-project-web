@@ -10,8 +10,18 @@ import { useHandleRequest } from "@/hooks/useHandleRequests";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import Button from "../button/Button";
 import Input from "../input/Input";
+import Icon from "@mdi/react";
+import { mdiCancel } from "@mdi/js";
 
-export default function PersonForm({ person }: { person?: PersonFromAPI }) {
+export default function PersonForm({
+    person,
+    onSubmit,
+    onCancel,
+}: {
+    person?: PersonFromAPI;
+    onSubmit?: (person: PersonFromAPI) => void;
+    onCancel?: () => void;
+}) {
     const router = useRouter();
 
     const [name, setName] = useState(person?.name ?? "");
@@ -29,6 +39,7 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
 
     async function submitForm() {
         setFetchingState(true);
+        console.log("?");
         const submittedPerson: Person & { _id: string | undefined } = {
             _id: person?._id,
             name,
@@ -56,62 +67,92 @@ export default function PersonForm({ person }: { person?: PersonFromAPI }) {
 
         if (!result) return;
 
-        router.push("/person/all");
+        const newPerson = person ? result.updated : result.created;
+
+        if (onSubmit) {
+            onSubmit(newPerson);
+        } else {
+            router.push("/person/all");
+        }
     }
 
     return (
-        <div className={styles["person-form-container"]}>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    e.currentTarget.reportValidity();
-                    submitForm();
+        <form
+            className={styles["person-form"]}
+            onSubmit={(e) => {
+                e.preventDefault();
+                e.currentTarget.reportValidity();
+                submitForm();
+            }}
+        >
+            {person?._id && (
+                <input type="hidden" name="_id" value={person?._id} />
+            )}
+            <Input
+                type="text"
+                name="name"
+                id="name"
+                label="Name"
+                required
+                value={name}
+                onChange={(value) => {
+                    setName(value);
                 }}
-            >
-                {person?._id && (
-                    <input type="hidden" name="_id" value={person?._id} />
-                )}
-                <Input
-                    type="text"
-                    name="name"
-                    id="name"
-                    label="Name"
-                    required
-                    value={name}
-                    onChange={(value) => {
-                        setName(value);
+            />
+            <Input
+                type="text"
+                name="nick"
+                id="nick"
+                label="Nick"
+                value={nick}
+                onChange={(value) => {
+                    setNick(value);
+                }}
+            />
+            <Input
+                type="text"
+                name="surname"
+                id="surname"
+                label="Surname"
+                required
+                value={surname}
+                onChange={(value) => {
+                    setSurname(value);
+                }}
+            />
+            <ErrorsDisplay key={errorsKey} errors={errors} />
+            <div className={styles["person-form__submit"]}>
+                <Button
+                    type="submit"
+                    loading={fetchingState}
+                    customStyle={{
+                        paddingLeft: "30px",
+                        paddingRight: "30px",
+                        fontSize: "1.2rem",
                     }}
-                />
-                <Input
-                    type="text"
-                    name="nick"
-                    id="nick"
-                    label="Nick"
-                    value={nick}
-                    onChange={(value) => {
-                        setNick(value);
-                    }}
-                />
-                <Input
-                    type="text"
-                    name="surname"
-                    id="surname"
-                    label="Surname"
-                    required
-                    value={surname}
-                    onChange={(value) => {
-                        setSurname(value);
-                    }}
-                />
-                <Button type="submit" loading={fetchingState}>
+                >
                     {fetchingState ? (
                         <LoadingDisplay size="1.3rem" />
                     ) : (
                         buttonText
                     )}
                 </Button>
-            </form>
-            <ErrorsDisplay key={errorsKey} errors={errors} />
-        </div>
+                <Button
+                    onClick={() => {
+                        if (onCancel) {
+                            onCancel();
+                        } else {
+                            router.push("/person/all");
+                        }
+                    }}
+                >
+                    <Icon
+                        path={mdiCancel}
+                        size={"1.5em"}
+                        style={{ color: "#ef4444" }}
+                    />
+                </Button>
+            </div>
+        </form>
     );
 }
