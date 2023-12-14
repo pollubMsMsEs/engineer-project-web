@@ -22,7 +22,14 @@ import { useUniqueKey } from "@/hooks/useUniqueKey";
 import { capitalize } from "radash";
 import FilePicker from "../filePicker/FilePicker";
 import Icon from "@mdi/react";
-import { mdiCancel, mdiDisc, mdiFloppy, mdiPlus, mdiPlusThick } from "@mdi/js";
+import {
+    mdiCancel,
+    mdiDisc,
+    mdiFloppy,
+    mdiPlus,
+    mdiPlusThick,
+    mdiTrashCan,
+} from "@mdi/js";
 import Image from "next/image";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import { tryExtractErrors } from "@/modules/errorsHandling";
@@ -202,6 +209,14 @@ export default function WorkForm({
 
         setCover(newCover);
 
+        const peopleToRecover = people.map((p) => {
+            p.details = Object.entries(p.formDetails).reduce<MetaObject>(
+                (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
+                {}
+            );
+            return p;
+        });
+
         const submittedWork: WorkToDB = {
             _id: work?._id,
             title,
@@ -216,11 +231,17 @@ export default function WorkForm({
                 {}
             ),
             people: people.map((p) => {
-                p.details = Object.entries(p.formDetails).reduce<MetaObject>(
-                    (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
-                    {}
-                );
-                return p;
+                return {
+                    ...p,
+                    person_id: p.person_id._id as any,
+                    details: Object.entries(p.formDetails).reduce<MetaObject>(
+                        (acc, [, data]) => ({
+                            ...acc,
+                            [data.key]: data.values,
+                        }),
+                        {}
+                    ),
+                };
             }),
         };
 
@@ -248,6 +269,8 @@ export default function WorkForm({
         const updatedWork: WorkFromAPIPopulated = work
             ? result.updated
             : result.created;
+
+        updatedWork.people = peopleToRecover;
 
         if (onSubmit) {
             onSubmit(updatedWork);
@@ -397,21 +420,20 @@ export default function WorkForm({
                                 });
                             }}
                         />
-                        {peopleToPick && (
-                            <Button
-                                customStyle={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "5px",
-                                }}
-                                onClick={() => {
-                                    setIsPersonFormOpen(true);
-                                }}
-                            >
-                                <span>New</span>
-                                <Icon path={mdiPlusThick} size="1.2em" />
-                            </Button>
-                        )}
+
+                        <Button
+                            customStyle={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                            }}
+                            onClick={() => {
+                                setIsPersonFormOpen(true);
+                            }}
+                        >
+                            <span>New</span>
+                            <Icon path={mdiPlusThick} size="1.2em" />
+                        </Button>
                     </header>
 
                     <div className={styles["work-form__people-list"]}>
@@ -455,7 +477,7 @@ export default function WorkForm({
                     <div>
                         {metadata &&
                             Object.entries(metadata).map(
-                                ([reactKey, metadata], index) => (
+                                ([reactKey, insideMetadata], index) => (
                                     <div
                                         key={reactKey}
                                         className={
@@ -468,16 +490,16 @@ export default function WorkForm({
                                             type="text"
                                             id={`metakey${index}`}
                                             name={`metakey${index}`}
-                                            value={metadata.key}
+                                            value={insideMetadata.key}
                                             label="Key"
                                             required
-                                            onChange={(e) => {
+                                            onChange={(value) => {
                                                 setMetadata((prev) => {
                                                     return {
                                                         ...prev,
                                                         [reactKey]: {
-                                                            key: e.target.value,
-                                                            values: metadata.values,
+                                                            key: value,
+                                                            values: insideMetadata.values,
                                                         },
                                                     };
                                                 });
@@ -487,13 +509,13 @@ export default function WorkForm({
                                             type="text"
                                             id={`metavalue${index}`}
                                             name={`metavalue${index}`}
-                                            value={metadata.values.join(" ")}
+                                            value={insideMetadata.values.join(
+                                                " "
+                                            )}
                                             label="Value"
                                             required
-                                            onChange={(e) => {
-                                                if (
-                                                    e.target.value.includes(",")
-                                                ) {
+                                            onChange={(value, e) => {
+                                                if (value.includes(",")) {
                                                     e.target.setCustomValidity(
                                                         "Seperate values with space, not colon"
                                                     );
@@ -507,7 +529,7 @@ export default function WorkForm({
                                                     return {
                                                         ...prev,
                                                         [reactKey]: {
-                                                            key: metadata.key,
+                                                            key: insideMetadata.key,
                                                             values: e.target.value.split(
                                                                 " "
                                                             ),
@@ -516,6 +538,20 @@ export default function WorkForm({
                                                 });
                                             }}
                                         />
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                delete metadata[
+                                                    reactKey as unknown as number
+                                                ];
+                                                setMetadata({ ...metadata });
+                                            }}
+                                        >
+                                            <Icon
+                                                path={mdiTrashCan}
+                                                size="1.2rem"
+                                            />
+                                        </Button>
                                     </div>
                                 )
                             )}
