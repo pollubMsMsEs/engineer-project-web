@@ -5,6 +5,7 @@ import Work from "../../../models/work.js";
 export async function createWorkTestData(userId: mongoose.Types.ObjectId) {
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name1",
         nick: "Nick1",
         surname: "Surname1",
@@ -12,6 +13,7 @@ export async function createWorkTestData(userId: mongoose.Types.ObjectId) {
 
     const person2 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name2",
         nick: "Nick2",
         surname: "Surname2",

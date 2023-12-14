@@ -39,10 +39,12 @@ describe("createOne", () => {
                 nick: "Nick",
                 surname: "Surname",
             },
+            auth: { _id: "654ec8d1875ad4c13456f64a" },
         };
 
         const mockPersonCreateResponse = {
             _id: "507f191e810c19729de860ea",
+            created_by: req.auth._id,
             ...req.body,
             save: async () => null,
         };
@@ -50,7 +52,7 @@ describe("createOne", () => {
         PersonMock.expects("create").once().resolves(mockPersonCreateResponse);
 
         for (const middleware of createOne) {
-            await middleware(req as Request, res as Response, next);
+            await middleware(req as Request | any, res as Response, next);
         }
 
         expect(res.json).to.have.been.calledWith({
@@ -70,19 +72,35 @@ describe("updateOne", () => {
                 nick: "Nick updated",
                 surname: "Surname",
             },
+            auth: { _id: "654ec8d1875ad4c13456f64a" },
+        };
+
+        const mockUnupdatedPerson = {
+            _id: req.params.id,
+            created_by: "654ec8d1875ad4c13456f64a",
+            name: "Name",
+            nick: "Nick",
+            surname: "Surname",
         };
 
         const mockUpdatedPerson = {
             _id: req.params.id,
+            created_by: "654ec8d1875ad4c13456f64a",
             ...req.body,
         };
+
+        PersonMock.expects("findById")
+            .once()
+            .withArgs(req.params.id)
+            .resolves(mockUnupdatedPerson);
+
         PersonMock.expects("findByIdAndUpdate")
             .once()
             .withArgs(req.params.id, req.body)
             .resolves(mockUpdatedPerson);
 
         for (const middleware of updateOne) {
-            await middleware(req as Request, res as Response, next);
+            await middleware(req as Request | any, res as Response, next);
         }
 
         expect(res.json).to.have.been.calledWith({
@@ -97,10 +115,12 @@ describe("deleteOne", () => {
     it("powinno usunąć osobę", async () => {
         req = {
             params: { id: "507f191e810c19729de860ea" },
+            auth: { _id: "654ec8d1875ad4c13456f64a" },
         };
 
         const mockPersonToDelete = {
             _id: req.params.id,
+            created_by: "654ec8d1875ad4c13456f64a",
             name: "Name",
             nick: "Nick",
             surname: "Surname",
@@ -116,12 +136,16 @@ describe("deleteOne", () => {
 
         findOneStub.returns(chainableStub);
 
+        PersonMock.expects("findById")
+            .withArgs(req.params.id)
+            .resolves(mockPersonToDelete);
+
         PersonMock.expects("findByIdAndRemove")
             .withArgs(req.params.id)
             .resolves(mockPersonToDelete);
 
         for (const middleware of deleteOne) {
-            await middleware(req as Request, res, next);
+            await middleware(req as Request | any, res, next);
         }
 
         expect(res.json).to.have.been.calledWith({
@@ -142,6 +166,7 @@ describe("getOne", () => {
 
         const mockPersonToGet = {
             _id: req.params.id,
+            created_by: "654ec8d1875ad4c13456f64a",
             name: "Name",
             nick: "Nick",
             surname: "Surname",

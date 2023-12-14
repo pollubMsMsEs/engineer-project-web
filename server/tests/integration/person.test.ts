@@ -63,8 +63,14 @@ describe("GET /all", () => {
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an("array");
                 res.body.forEach((work: any) => {
-                    expect(work).to.include.keys("_id", "name", "surname");
+                    expect(work).to.include.keys(
+                        "_id",
+                        "created_by",
+                        "name",
+                        "surname"
+                    );
                     expect(work._id).to.be.a("string");
+                    expect(work.created_by).to.be.a("string");
                     expect(work.name).to.be.a("string");
                     expect(work.surname).to.be.a("string");
                 });
@@ -106,6 +112,7 @@ describe("GET /:id", () => {
                 expect(res.body).to.be.an("object");
                 expect(res.body).to.have.property("data");
                 expect(res.body.data).to.have.property("_id");
+                expect(res.body.data).to.have.property("created_by");
                 expect(res.body.data).to.have.property("name");
                 expect(res.body.data).to.have.property("surname");
                 done();
