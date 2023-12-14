@@ -100,7 +100,7 @@ describe("GET /:id", () => {
         chai.request(app)
             .get("/api/search/game")
             .set("Authorization", `Bearer ${token}`)
-            .query({ query: "Minecraft", page: "1" })
+            .query({ query: "Harry", page: "1" })
             .end((err: any, res: any) => {
                 if (err) {
                     done(err);
