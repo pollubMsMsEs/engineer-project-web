@@ -169,7 +169,7 @@ describe("createOne", () => {
                 {
                     type: "field",
                     value: "Error",
-                    msg: "Rating must be an integer number between 0 and 10",
+                    msg: "Rating must be an integer number between 0 and 5",
                     path: "rating",
                     location: "body",
                 },

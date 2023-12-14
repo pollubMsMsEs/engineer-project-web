@@ -195,7 +195,7 @@ export async function createReportTestData(userId: mongoose.Types.ObjectId) {
             user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 5,
             description: "",
             number_of_completions: 5,
             completions: [

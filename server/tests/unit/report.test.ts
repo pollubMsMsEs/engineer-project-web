@@ -416,7 +416,7 @@ describe("getAverageRating", () => {
 
         await handleReport(req, res);
 
-        const expected = 3.5;
+        const expected = 3;
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,
@@ -443,7 +443,7 @@ describe("getAverageRating", () => {
 
         await handleReport(req, res);
 
-        const expected = 3.5;
+        const expected = 3;
 
         expect(res.json).toHaveBeenCalledWith({
             acknowledged: true,

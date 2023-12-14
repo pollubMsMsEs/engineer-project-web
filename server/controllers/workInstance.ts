@@ -16,17 +16,24 @@ import { query } from "express-validator";
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const workInstances = await WorkInstance.find({})
-        .populate({
-            path: "work_id",
-            populate: {
-                path: "people.person_id",
-                model: "Person",
-                strictPopulate: false,
-            },
-        })
-        .exec();
-    res.json(workInstances);
+    try {
+        const workInstances = await WorkInstance.find({})
+            .populate({
+                path: "work_id",
+                populate: {
+                    path: "people.person_id",
+                    model: "Person",
+                    strictPopulate: false,
+                },
+            })
+            .exec();
+        res.json(workInstances);
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export const getAllForCurrentUser = [
@@ -46,8 +53,11 @@ export const getAllForCurrentUser = [
                 })
                 .exec();
             res.json({ data: workInstances });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -87,8 +97,11 @@ export const getOne = [
             } else {
                 res.json({ data: workInstance });
             }
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -116,8 +129,11 @@ export const countAllForCurrentUserByTypeAndStatus = [
             }, {});
 
             res.json({ acknowledged: true, data: statusCounts });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -215,58 +231,68 @@ export const createOne = [
             "Began_at date cannot be at the same time or after finished_at date"
         ),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req);
+        try {
+            const valResult = validationResult(req);
 
-        if (!valResult.isEmpty())
-            return res
-                .status(422)
-                .json({ acknowledged: false, errors: valResult.array() });
+            if (!valResult.isEmpty())
+                return res
+                    .status(422)
+                    .json({ acknowledged: false, errors: valResult.array() });
 
-        const Model = mongoose.model(req.body.onModel);
-        const work = await Model.findById(req.body.work_id);
+            const Model = mongoose.model(req.body.onModel);
+            const work = await Model.findById(req.body.work_id);
 
-        if (!work) {
-            return res.status(400).json({
+            if (!work) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Invalid work_id for the given onModel",
+                });
+            }
+
+            req.body.from_api = req.body.onModel === "WorkFromAPI";
+            req.body.type = work.type;
+
+            const existingInstance = await WorkInstance.findOne({
+                work_id: req.body.work_id,
+                user_id: req.auth._id,
+            });
+
+            if (existingInstance) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "User already has an instance with this work_id",
+                });
+            }
+
+            const workInstance = await WorkInstance.create({
+                ...req.body,
+                user_id: req.auth._id,
+            });
+            await workInstance.save();
+
+            const workInstancePopulated = await WorkInstance.findById(
+                workInstance._id
+            )
+                .populate({
+                    path: "work_id",
+                    populate: {
+                        path: "people.person_id",
+                        model: "Person",
+                        strictPopulate: false,
+                    },
+                })
+                .exec();
+
+            return res.json({
+                acknowledged: true,
+                created: workInstancePopulated,
+            });
+        } catch (error) {
+            return res.status(500).json({
                 acknowledged: false,
-                errors: "Invalid work_id for the given onModel",
+                errors: "Internal Server Error",
             });
         }
-
-        req.body.from_api = req.body.onModel === "WorkFromAPI";
-        req.body.type = work.type;
-
-        const existingInstance = await WorkInstance.findOne({
-            work_id: req.body.work_id,
-            user_id: req.auth._id,
-        });
-
-        if (existingInstance) {
-            return res.status(400).json({
-                acknowledged: false,
-                errors: "User already has an instance with this work_id",
-            });
-        }
-
-        const workInstance = await WorkInstance.create({
-            ...req.body,
-            user_id: req.auth._id,
-        });
-        await workInstance.save();
-
-        const workInstancePopulated = await WorkInstance.findById(
-            workInstance._id
-        )
-            .populate({
-                path: "work_id",
-                populate: {
-                    path: "people.person_id",
-                    model: "Person",
-                    strictPopulate: false,
-                },
-            })
-            .exec();
-
-        return res.json({ acknowledged: true, created: workInstancePopulated });
     },
 ];
 
@@ -415,7 +441,10 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
-            next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -453,7 +482,10 @@ export const deleteOne = [
 
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];

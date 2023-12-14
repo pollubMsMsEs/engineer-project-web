@@ -15,13 +15,27 @@ const { param, body, validationResult } = ExtendedValidator({
 });
 
 export async function getCount(req: Request, res: Response) {
-    const count = await Person.count();
-    res.json({ count });
+    try {
+        const count = await Person.count();
+        res.json({ count });
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export async function getAll(req: Request, res: Response) {
-    const people = await Person.find({}, { __v: 0 });
-    res.json(people);
+    try {
+        const people = await Person.find({}, { __v: 0 });
+        res.json(people);
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export const getOne = [
@@ -39,8 +53,11 @@ export const getOne = [
             }
 
             res.json({ data: person });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -58,7 +75,10 @@ export const createOne = [
 
             return res.json({ acknowledged: true, created: person });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -83,7 +103,10 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: person });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -100,7 +123,10 @@ export const deleteOne = [
             const result = await Person.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
