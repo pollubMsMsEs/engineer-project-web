@@ -107,7 +107,17 @@ async function getAverageCompletionTime(req: Request | any) {
 
     const facetPipeline = {
         works: [
-            { $match: { onModel: "Work" } },
+            {
+                $match: {
+                    $and: [
+                        {
+                            onModel: "Work",
+                            finished_at: { $exists: true },
+                            began_at: { $exists: true },
+                        },
+                    ],
+                },
+            },
             {
                 $lookup: {
                     from: "works",
@@ -117,21 +127,19 @@ async function getAverageCompletionTime(req: Request | any) {
                 },
             },
             { $unwind: "$work_details" },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "work_details.people.person_id",
-                    foreignField: "_id",
-                    as: "work_details.people.person_info",
-                },
-            },
-            { $unwind: "$work_details.people.person_info" },
-            {
-                $match: {
-                    finished_at: { $exists: true },
-                    began_at: { $exists: true },
-                },
-            },
+            ...(isPersonQueryPresent
+                ? [
+                      {
+                          $lookup: {
+                              from: "people",
+                              localField: "work_details.people.person_id",
+                              foreignField: "_id",
+                              as: "work_details.people.person_info",
+                          },
+                      },
+                      { $unwind: "$work_details.people.person_info" },
+                  ]
+                : []),
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
@@ -154,7 +162,17 @@ async function getAverageCompletionTime(req: Request | any) {
             ? {}
             : {
                   worksFromAPI: [
-                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $match: {
+                              $and: [
+                                  {
+                                      onModel: "WorkFromAPI",
+                                      finished_at: { $exists: true },
+                                      began_at: { $exists: true },
+                                  },
+                              ],
+                          },
+                      },
                       {
                           $lookup: {
                               from: "worksFromAPI",
@@ -164,12 +182,6 @@ async function getAverageCompletionTime(req: Request | any) {
                           },
                       },
                       { $unwind: "$work_details" },
-                      {
-                          $match: {
-                              finished_at: { $exists: true },
-                              began_at: { $exists: true },
-                          },
-                      },
                       ...(conditions.filter((cond) => !cond["$or"]).length > 0
                           ? [
                                 {
@@ -224,7 +236,16 @@ async function getAverageRating(req: Request | any) {
 
     const facetPipeline = {
         works: [
-            { $match: { onModel: "Work" } },
+            {
+                $match: {
+                    $and: [
+                        {
+                            onModel: "Work",
+                            rating: { $gte: 1 },
+                        },
+                    ],
+                },
+            },
             {
                 $lookup: {
                     from: "works",
@@ -234,20 +255,19 @@ async function getAverageRating(req: Request | any) {
                 },
             },
             { $unwind: "$work_details" },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "work_details.people.person_id",
-                    foreignField: "_id",
-                    as: "work_details.people.person_info",
-                },
-            },
-            { $unwind: "$work_details.people.person_info" },
-            {
-                $match: {
-                    rating: { $gte: 1 },
-                },
-            },
+            ...(isPersonQueryPresent
+                ? [
+                      {
+                          $lookup: {
+                              from: "people",
+                              localField: "work_details.people.person_id",
+                              foreignField: "_id",
+                              as: "work_details.people.person_info",
+                          },
+                      },
+                      { $unwind: "$work_details.people.person_info" },
+                  ]
+                : []),
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
@@ -263,7 +283,16 @@ async function getAverageRating(req: Request | any) {
             ? {}
             : {
                   worksFromAPI: [
-                      { $match: { onModel: "WorkFromAPI" } },
+                      {
+                          $match: {
+                              $and: [
+                                  {
+                                      onModel: "WorkFromAPI",
+                                      rating: { $gte: 1 },
+                                  },
+                              ],
+                          },
+                      },
                       {
                           $lookup: {
                               from: "worksFromAPI",
@@ -273,11 +302,6 @@ async function getAverageRating(req: Request | any) {
                           },
                       },
                       { $unwind: "$work_details" },
-                      {
-                          $match: {
-                              rating: { $gte: 1 },
-                          },
-                      },
                       ...(conditions.filter((cond) => !cond["$or"]).length > 0
                           ? [
                                 {
@@ -314,6 +338,9 @@ async function getAverageRating(req: Request | any) {
         (worksResult ? worksResult.count : 0) +
         (worksFromApiResult ? worksFromApiResult.count : 0);
 
+    console.log(totalRating);
+    console.log(totalCount);
+
     return totalCount > 0 ? totalRating / totalCount : 0;
 }
 
@@ -335,15 +362,19 @@ async function getCountByType(req: Request | any) {
                 },
             },
             { $unwind: "$work_details" },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "work_details.people.person_id",
-                    foreignField: "_id",
-                    as: "work_details.people.person_info",
-                },
-            },
-            { $unwind: "$work_details.people.person_info" },
+            ...(isPersonQueryPresent
+                ? [
+                      {
+                          $lookup: {
+                              from: "people",
+                              localField: "work_details.people.person_id",
+                              foreignField: "_id",
+                              as: "work_details.people.person_info",
+                          },
+                      },
+                      { $unwind: "$work_details.people.person_info" },
+                  ]
+                : []),
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
@@ -431,15 +462,19 @@ async function getCompletionsByDate(req: Request | any) {
                 },
             },
             { $unwind: "$work_details" },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "work_details.people.person_id",
-                    foreignField: "_id",
-                    as: "work_details.people.person_info",
-                },
-            },
-            { $unwind: "$work_details.people.person_info" },
+            ...(isPersonQueryPresent
+                ? [
+                      {
+                          $lookup: {
+                              from: "people",
+                              localField: "work_details.people.person_id",
+                              foreignField: "_id",
+                              as: "work_details.people.person_info",
+                          },
+                      },
+                      { $unwind: "$work_details.people.person_info" },
+                  ]
+                : []),
             { $unwind: "$completions" },
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
@@ -551,15 +586,19 @@ async function getFinishedCount(req: Request | any) {
                 },
             },
             { $unwind: "$work_details" },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "work_details.people.person_id",
-                    foreignField: "_id",
-                    as: "work_details.people.person_info",
-                },
-            },
-            { $unwind: "$work_details.people.person_info" },
+            ...(isPersonQueryPresent
+                ? [
+                      {
+                          $lookup: {
+                              from: "people",
+                              localField: "work_details.people.person_id",
+                              foreignField: "_id",
+                              as: "work_details.people.person_info",
+                          },
+                      },
+                      { $unwind: "$work_details.people.person_info" },
+                  ]
+                : []),
             ...(conditions.length > 0
                 ? [{ $match: { $and: conditions } }]
                 : []),
