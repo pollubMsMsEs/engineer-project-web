@@ -338,9 +338,6 @@ async function getAverageRating(req: Request | any) {
         (worksResult ? worksResult.count : 0) +
         (worksFromApiResult ? worksFromApiResult.count : 0);
 
-    console.log(totalRating);
-    console.log(totalCount);
-
     return totalCount > 0 ? totalRating / totalCount : 0;
 }
 

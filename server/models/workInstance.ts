@@ -4,7 +4,7 @@ const WorkInstanceSchema = new Schema({
     user_id: { type: Schema.Types.ObjectId, ref: "User" },
     work_id: { type: Schema.Types.ObjectId, refPath: "onModel" },
     onModel: { type: String, enum: ["Work", "WorkFromAPI"] },
-    rating: { type: Number, min: 0, max: 10 },
+    rating: { type: Number, min: 0, max: 5 },
     description: { type: String },
     number_of_completions: { type: Number, min: 0 },
     completions: { type: [Date] },

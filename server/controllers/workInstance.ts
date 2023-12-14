@@ -137,9 +137,9 @@ export const createOne = [
         .optional()
         .custom((value) => {
             if (isNaN(value)) return false;
-            return Number.isInteger(value) && value >= 0 && value <= 10;
+            return Number.isInteger(value) && value >= 0 && value <= 5;
         })
-        .withMessage("Rating must be an integer number between 0 and 10"),
+        .withMessage("Rating must be an integer number between 0 and 5"),
     body("description").optional().trim().escape(),
     body("completions").isArray().withMessage("Completions must be an array"),
     body("completions.*")
@@ -276,9 +276,9 @@ export const updateOne = [
         .custom((value) => {
             if (isNaN(value)) return false;
 
-            return Number.isInteger(value) && value >= 0 && value <= 10;
+            return Number.isInteger(value) && value >= 0 && value <= 5;
         })
-        .withMessage("Rating must be an integer number between 0 and 10"),
+        .withMessage("Rating must be an integer number between 0 and 5"),
     body("description").optional().trim().escape(),
     body("completions").isArray().withMessage("Completions must be an array"),
     body("completions.*")
