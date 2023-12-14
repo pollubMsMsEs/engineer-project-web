@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import Button from "../button/Button";
+import styles from "./personList.module.scss";
 
 async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
@@ -40,10 +41,7 @@ export default function PersonList({ people }: { people: PersonFromAPI[] }) {
                     <td>{person.name}</td>
                     <td>{person.nick}</td>
                     <td>{person.surname}</td>
-                    <td>
-                        <a href={`/person/${person._id}`}>
-                            <Button>Details</Button>
-                        </a>
+                    <td className={styles["person-list__operations"]}>
                         <Link
                             href={{
                                 pathname: `/person/${person._id}/edit`,
