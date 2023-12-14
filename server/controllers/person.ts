@@ -26,9 +26,11 @@ export async function getCount(req: Request, res: Response) {
     }
 }
 
-export async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request | any, res: Response) {
     try {
-        const people = await Person.find({}, { __v: 0 });
+        const people = await Person.find({
+            created_by: req.auth._id,
+        });
         res.json(people);
     } catch (error) {
         return res.status(500).json({
@@ -66,11 +68,14 @@ export const createOne = [
     body("name").trim().isLength({ min: 1 }).escape(),
     body("nick").optional().trim().isLength({ min: 1 }).escape(),
     body("surname").trim().isLength({ min: 1 }).escape(),
-    async function (req: Request, res: Response, next: NextFunction) {
+    async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
 
-            const person = await Person.create(req.body);
+            const person = await Person.create({
+                ...req.body,
+                created_by: req.auth._id,
+            });
             await person.save();
 
             return res.json({ acknowledged: true, created: person });
@@ -88,17 +93,28 @@ export const updateOne = [
     body("name").trim().isLength({ min: 1 }).escape(),
     body("nick").optional().trim().isLength({ min: 1 }).escape(),
     body("surname").trim().isLength({ min: 1 }).escape(),
-    async function (req: Request, res: Response, next: NextFunction) {
+    async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             if (req.body.nick === undefined) {
                 req.body.nick = null;
             }
             validationResult(req).throw();
 
+            const personBeforeUpdate = await Person.findById(req.params.id);
+
+            if (String(personBeforeUpdate?.created_by) !== req.auth._id) {
+                return res.status(403).json({
+                    acknowledged: false,
+                    errors: "You do not have permission to update this person.",
+                });
+            }
+
             const person = await Person.findByIdAndUpdate(
                 req.params.id,
                 req.body,
-                { new: true }
+                {
+                    new: true,
+                }
             );
 
             return res.json({ acknowledged: true, updated: person });
@@ -117,9 +133,19 @@ export const deleteOne = [
         .withMessage("URL contains incorrect id")
         .bail()
         .isReferenced(),
-    async function (req: Request, res: Response, next: NextFunction) {
+    async function (req: Request | any, res: Response, next: NextFunction) {
         try {
             validationResult(req).throw();
+
+            const personBeforeDelete = await Person.findById(req.params.id);
+
+            if (String(personBeforeDelete?.created_by) !== req.auth._id) {
+                return res.status(403).json({
+                    acknowledged: false,
+                    errors: "You do not have permission to update this person.",
+                });
+            }
+
             const result = await Person.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {

@@ -19,6 +19,7 @@ export async function createWorkInstanceTestData(
 
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(user._id),
         name: "Name1",
         nick: "Nick1",
         surname: "Surname1",
@@ -26,6 +27,7 @@ export async function createWorkInstanceTestData(
 
     const person2 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name2",
         nick: "Nick2",
         surname: "Surname2",
@@ -55,7 +57,7 @@ export async function createWorkInstanceTestData(
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title2",
             cover: "",
             description: "",
@@ -73,7 +75,7 @@ export async function createWorkInstanceTestData(
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title3",
             cover: "",
             description: "",
@@ -82,7 +84,7 @@ export async function createWorkInstanceTestData(
             metadata: {},
             people: [
                 {
-                    person_id: new mongoose.Types.ObjectId(person1._id),
+                    person_id: new mongoose.Types.ObjectId(person2._id),
                     role: "Author",
                     details: {},
                 },
