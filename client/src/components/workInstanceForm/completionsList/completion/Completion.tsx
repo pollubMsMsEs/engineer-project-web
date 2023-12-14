@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import React from "react";
 import styles from "./completion.module.scss";
 import Icon from "@mdi/react";
-import { mdiMinusThick } from "@mdi/js";
+import { mdiMinusThick, mdiTrashCan } from "@mdi/js";
 
 export default function Completion({
     published_at,
@@ -43,7 +43,7 @@ export default function Completion({
                     removeCompletion(completion);
                 }}
             >
-                <Icon path={mdiMinusThick} size={"1.3em"} />
+                <Icon path={mdiTrashCan} size={"1.3em"} />
             </Button>
         </div>
     );
