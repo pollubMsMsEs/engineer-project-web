@@ -6,6 +6,7 @@ import Icon from "@mdi/react";
 import { mdiTrashCan } from "@mdi/js";
 import { toast } from "react-toastify";
 import Button from "../button/Button";
+import { personToString } from "@/modules/ui";
 
 async function deletePerson(_id: string) {
     const response = await fetch(`/api/person/${_id}`, {
@@ -42,12 +43,12 @@ export default function Person({
     }
 
     return (
-        <>
-            <div>{person.name}</div>
-            <div>{person.nick && `"${person.nick}"`}</div>
-            <div>{person.surname}</div>
+        <div className={styles["person"]}>
+            <span className={styles["person__name"]}>
+                {personToString(person)}
+            </span>
             {details && (
-                <div className={styles["person-details"]}>
+                <div className={styles["person__details"]}>
                     {Object.entries(details).map(([key, values]) => (
                         <div key={key}>
                             <span>
@@ -70,6 +71,6 @@ export default function Person({
                     <Icon path={mdiTrashCan} size={1} />
                 </Button>
             )}
-        </>
+        </div>
     );
 }

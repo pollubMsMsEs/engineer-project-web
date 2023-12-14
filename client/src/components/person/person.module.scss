@@ -1,5 +1,19 @@
-.person-details {
+.person {
     display: grid;
+    gap: 5px;
     place-items: center;
-    margin-top: 10px;
+    width: fit-content;
+    padding: 10px;
+    background-color: var(--bkg-800);
+    border-radius: 10px;
+
+    &__name {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    &__details {
+        display: grid;
+        gap: 5px;
+    }
 }
