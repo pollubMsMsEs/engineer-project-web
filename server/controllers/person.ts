@@ -43,8 +43,20 @@ export async function getAll(req: Request | any, res: Response) {
             OFFSET = 0;
         }
 
+        let queryConditions: any = [{ created_by: req.auth._id }];
+
+        if (req.query.query) {
+            queryConditions.push({
+                $or: [
+                    { name: new RegExp(req.query.query, "i") },
+                    { nick: new RegExp(req.query.query, "i") },
+                    { surname: new RegExp(req.query.query, "i") },
+                ],
+            });
+        }
+
         const people = await Person.find({
-            created_by: req.auth._id,
+            $and: queryConditions,
         })
             .skip(OFFSET)
             .limit(LIMIT);
