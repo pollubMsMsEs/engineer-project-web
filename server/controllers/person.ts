@@ -28,9 +28,27 @@ export async function getCount(req: Request, res: Response) {
 
 export async function getAll(req: Request | any, res: Response) {
     try {
+        let LIMIT = 20;
+        let OFFSET;
+
+        if (req.query.page) {
+            if (req.query.page < 1) {
+                return res.status(400).json({
+                    acknowledged: false,
+                    errors: "Invalid page value",
+                });
+            }
+            OFFSET = (req.query.page - 1) * LIMIT;
+        } else {
+            OFFSET = 0;
+        }
+
         const people = await Person.find({
             created_by: req.auth._id,
-        });
+        })
+            .skip(OFFSET)
+            .limit(LIMIT);
+
         res.json(people);
     } catch (error) {
         return res.status(500).json({
