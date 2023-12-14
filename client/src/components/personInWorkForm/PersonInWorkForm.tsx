@@ -1,5 +1,6 @@
 "use client";
 
+import { personToString } from "@/modules/ui";
 import {
     PersonFromAPI,
     PersonInWork,
@@ -69,9 +70,7 @@ export default function PersonInWorkForm({
                     required
                     options={peopleToPick.map((person) => [
                         person._id,
-                        `${person.name} ${
-                            person.nick ? `${person.nick} ` : ""
-                        } ${person.surname}`,
+                        personToString(person),
                     ])}
                     onChange={(value) => {
                         const newPerson: PersonInWorkFormType = {

@@ -24,12 +24,14 @@
         position: absolute !important;
         top: 0;
         right: 4px;
+        z-index: 3;
         height: 100%;
     }
 
     &__close-button {
         position: sticky !important;
         top: -15px;
+        z-index: 3;
     }
 
     &::backdrop {

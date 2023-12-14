@@ -35,6 +35,11 @@
         align-items: center;
     }
 
+    &__divider {
+        padding-bottom: 0.3em;
+        font-size: 1.8rem;
+    }
+
     &__people-wrapper {
         grid-area: people;
         justify-self: flex-start;
