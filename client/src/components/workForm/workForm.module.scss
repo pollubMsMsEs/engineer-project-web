@@ -1,38 +1,77 @@
-.all {
-    display: grid;
-    gap: 10px;
-    place-content: center;
-    place-items: center;
-    height: 100%;
-    padding: 20px;
-    border: 2px solid var(--bkg-800);
-}
-
 .work-form {
     display: grid;
-    gap: 2em;
-    justify-content: start;
+    grid-template:
+        "cover core" auto
+        "people people" auto
+        "metadata metadata" auto
+        "submit submit" auto / auto auto;
+    gap: 20px;
+    place-content: center;
+    place-items: center;
+    width: fit-content;
+    padding: 20px;
+    border: 2px solid var(--bkg-800);
 
-    .people-header {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .people {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px 20px;
-    }
-
-    .metadata-header {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .buttons {
+    &__core {
         display: grid;
+        grid-area: core;
+        gap: 30px;
+        align-items: center;
+        align-self: flex-start;
+        justify-content: stretch;
+        margin-top: 20px;
+    }
+
+    &__cover {
+        display: grid;
+        grid-area: cover;
+        gap: 10px;
+        place-items: center;
+    }
+
+    &__title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    &__people-wrapper {
+        grid-area: people;
+        justify-self: flex-start;
+    }
+
+    &__people-header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__people-list {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__metadata-wrapper {
+        grid-area: metadata;
+        justify-self: flex-start;
+    }
+
+    &__metadata-header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    &__metadata-element {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    &__submit {
+        display: grid;
+        grid-area: submit;
         grid-template-columns: 1fr auto;
         gap: 10px;
     }
