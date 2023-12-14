@@ -19,6 +19,7 @@ export async function createWorkInstanceTestData(
 
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(user._id),
         name: "Name1",
         nick: "Nick1",
         surname: "Surname1",
@@ -26,6 +27,7 @@ export async function createWorkInstanceTestData(
 
     const person2 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name2",
         nick: "Nick2",
         surname: "Surname2",
@@ -55,7 +57,7 @@ export async function createWorkInstanceTestData(
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title2",
             cover: "",
             description: "",
@@ -73,7 +75,7 @@ export async function createWorkInstanceTestData(
         },
         {
             _id: new mongoose.Types.ObjectId(),
-            created_by: new mongoose.Types.ObjectId(user._id),
+            created_by: new mongoose.Types.ObjectId(userId),
             title: "Title3",
             cover: "",
             description: "",
@@ -82,7 +84,7 @@ export async function createWorkInstanceTestData(
             metadata: {},
             people: [
                 {
-                    person_id: new mongoose.Types.ObjectId(person1._id),
+                    person_id: new mongoose.Types.ObjectId(person2._id),
                     role: "Author",
                     details: {},
                 },
@@ -106,14 +108,14 @@ export async function createWorkInstanceTestData(
             api_id: "111",
             title: "Title5",
             cover: "",
-            type: "movie",
+            type: "game",
         },
         {
             _id: new mongoose.Types.ObjectId(),
             api_id: "222",
             title: "Title6",
             cover: "",
-            type: "game",
+            type: "movie",
         },
     ];
 
@@ -197,7 +199,7 @@ export async function createWorkInstanceTestData(
             number_of_completions: 4,
             completions: [],
             status: "completed",
-            type: "movie",
+            type: "game",
             from_api: true,
             began_at: "2021-01-01T10:00:00Z",
             finished_at: "2021-01-03T10:00:00Z",
@@ -208,7 +210,7 @@ export async function createWorkInstanceTestData(
             user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 5,
             description: "",
             number_of_completions: 5,
             completions: [
@@ -216,7 +218,7 @@ export async function createWorkInstanceTestData(
                 "2021-01-03T23:00:00.000Z",
             ],
             status: "completed",
-            type: "game",
+            type: "movie",
             from_api: true,
             began_at: "2021-01-01T10:00:00Z",
             finished_at: "2021-01-04T10:00:00Z",

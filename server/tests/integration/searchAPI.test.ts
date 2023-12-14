@@ -65,7 +65,7 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 
     it("powinno zwrócić filmy z API TMDB (do dwudziestu na stronie)", (done) => {
         chai.request(app)
@@ -94,13 +94,13 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 
     it("powinno zwrócić gry z API IGDB (do dwudziestu na stronie)", (done) => {
         chai.request(app)
             .get("/api/search/game")
             .set("Authorization", `Bearer ${token}`)
-            .query({ query: "Minecraft", page: "1" })
+            .query({ query: "Harry", page: "1" })
             .end((err: any, res: any) => {
                 if (err) {
                     done(err);
@@ -123,5 +123,5 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 });

@@ -9,18 +9,39 @@ import { ExtendedValidator } from "../scripts/customValidator.js";
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getCount(req: Request, res: Response) {
-    const count = await Work.count();
-    res.json({ count });
+    try {
+        const count = await Work.count();
+        res.json({ count });
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export async function getAllShort(req: Request, res: Response) {
-    const works = await Work.find({}, { title: 1 });
-    res.json(works);
+    try {
+        const works = await Work.find({}, { title: 1 });
+        res.json(works);
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export async function getAllPopulated(req: Request, res: Response) {
-    const works = await Work.find({}).populate("people.person_id").exec();
-    res.json(works);
+    try {
+        const works = await Work.find({}).populate("people.person_id").exec();
+        res.json(works);
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export const getAllByType = [
@@ -30,8 +51,11 @@ export const getAllByType = [
             validationResult(req).throw();
             const works = await Work.find({ type: req.params.type }).exec();
             res.json({ data: works });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -53,8 +77,11 @@ export const getOne = [
             }
 
             res.json({ data: work });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -114,36 +141,43 @@ export const createOne = [
             return true;
         }),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req);
+        try {
+            const valResult = validationResult(req);
 
-        if (!valResult.isEmpty())
-            return res
-                .status(422)
-                .json({ acknowledged: false, errors: valResult.array() });
+            if (!valResult.isEmpty())
+                return res
+                    .status(422)
+                    .json({ acknowledged: false, errors: valResult.array() });
 
-        if (req.body.people && Array.isArray(req.body.people)) {
-            for (const person of req.body.people) {
-                if (person.person_id) {
-                    const personExists = await Person.exists({
-                        _id: person.person_id,
-                    });
-                    if (!personExists) {
-                        return res.status(400).json({
-                            acknowledged: false,
-                            errors: `Person with ID '${person.person_id}' does not exist`,
+            if (req.body.people && Array.isArray(req.body.people)) {
+                for (const person of req.body.people) {
+                    if (person.person_id) {
+                        const personExists = await Person.exists({
+                            _id: person.person_id,
                         });
+                        if (!personExists) {
+                            return res.status(400).json({
+                                acknowledged: false,
+                                errors: `Person with ID '${person.person_id}' does not exist`,
+                            });
+                        }
                     }
                 }
             }
+
+            const work = await Work.create({
+                ...req.body,
+                created_by: req.auth._id,
+            });
+            await work.save();
+
+            return res.json({ acknowledged: true, created: work });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
-
-        const work = await Work.create({
-            ...req.body,
-            created_by: req.auth._id,
-        });
-        await work.save();
-
-        return res.json({ acknowledged: true, created: work });
     },
 ];
 
@@ -212,7 +246,10 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: work });
         } catch (error) {
-            next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -244,7 +281,10 @@ export const deleteOne = [
                 },
             });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];

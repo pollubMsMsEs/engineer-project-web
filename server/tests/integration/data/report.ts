@@ -8,6 +8,7 @@ import WorkInstance from "../../../models/workInstance.js";
 export async function createReportTestData(userId: mongoose.Types.ObjectId) {
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name1",
         nick: "Nick1",
         surname: "Surname1",
@@ -15,6 +16,7 @@ export async function createReportTestData(userId: mongoose.Types.ObjectId) {
 
     const person2 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(userId),
         name: "Name2",
         nick: "Nick2",
         surname: "Surname2",
@@ -195,7 +197,7 @@ export async function createReportTestData(userId: mongoose.Types.ObjectId) {
             user_id: new mongoose.Types.ObjectId(userId),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 5,
             description: "",
             number_of_completions: 5,
             completions: [

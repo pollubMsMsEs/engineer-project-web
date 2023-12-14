@@ -191,7 +191,7 @@ describe("POST /create", () => {
         workInstanceData = {
             work_id: workFromAPIData._id.toString(),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 5,
             description: "Test description created123",
             number_of_completions: 3,
             completions: [

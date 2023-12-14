@@ -65,9 +65,7 @@ describe("GET /:reportType", () => {
                 done();
             });
     });
-});
 
-describe("GET /:reportType", () => {
     it("powinno zwrócić średnią ocenę wszystkich dzieł użytkownika", (done) => {
         chai.request(app)
             .get("/api/report/average_rating")
@@ -83,9 +81,7 @@ describe("GET /:reportType", () => {
                 done();
             });
     });
-});
 
-describe("GET /:reportType", () => {
     it("powinno zwrócić liczbę dzieł użytkownika podzieloną na typy", (done) => {
         chai.request(app)
             .get("/api/report/count_by_type")
@@ -104,9 +100,7 @@ describe("GET /:reportType", () => {
                 done();
             });
     });
-});
 
-describe("GET /:reportType", () => {
     it("powinno zwrócić tablicę z liczbą ukończeń dzieł w danym dniu przez użytkownika", (done) => {
         chai.request(app)
             .get("/api/report/completions_by_date")
@@ -128,9 +122,7 @@ describe("GET /:reportType", () => {
                 done();
             });
     });
-});
 
-describe("GET /:reportType", () => {
     it("powinno zwrócić liczbę ukończonych dzieł użytkownika", (done) => {
         chai.request(app)
             .get("/api/report/finished_count")

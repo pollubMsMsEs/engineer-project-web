@@ -6,8 +6,15 @@ import { ExtendedValidator } from "../scripts/customValidator.js";
 const { param, body, validationResult } = ExtendedValidator();
 
 export async function getAll(req: Request, res: Response) {
-    const worksFromAPI = await WorkFromAPI.find({});
-    res.json(worksFromAPI);
+    try {
+        const worksFromAPI = await WorkFromAPI.find({});
+        res.json(worksFromAPI);
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export const getAllByType = [
@@ -19,8 +26,11 @@ export const getAllByType = [
                 type: req.params.type,
             }).exec();
             res.json({ data: worksFromAPI });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -42,8 +52,11 @@ export const getOne = [
             }
 
             res.json({ data: worksFromAPI });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -75,19 +88,26 @@ export const createOne = [
         })
         .withMessage("Type must be one of 'movie', 'book' or 'game'"),
     async function (req: Request | any, res: Response) {
-        const valResult = validationResult(req);
+        try {
+            const valResult = validationResult(req);
 
-        if (!valResult.isEmpty())
-            return res
-                .status(422)
-                .json({ acknowledged: false, errors: valResult.array() });
+            if (!valResult.isEmpty())
+                return res
+                    .status(422)
+                    .json({ acknowledged: false, errors: valResult.array() });
 
-        const workFromAPI = await WorkFromAPI.create({
-            ...req.body,
-        });
-        await workFromAPI.save();
+            const workFromAPI = await WorkFromAPI.create({
+                ...req.body,
+            });
+            await workFromAPI.save();
 
-        return res.json({ acknowledged: true, created: workFromAPI });
+            return res.json({ acknowledged: true, created: workFromAPI });
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
+        }
     },
 ];
 
@@ -130,7 +150,10 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: workFromAPI });
         } catch (error) {
-            next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -164,7 +187,10 @@ export const deleteOne = [
                 },
             });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];

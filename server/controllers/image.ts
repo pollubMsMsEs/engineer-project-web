@@ -14,8 +14,15 @@ const upload = multer({
 });
 
 export async function getCount(req: Request, res: Response) {
-    const count = await Image.count();
-    res.json({ count });
+    try {
+        const count = await Image.count();
+        res.json({ count });
+    } catch (error) {
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
+    }
 }
 
 export async function getAll(req: Request, res: Response) {
@@ -30,7 +37,10 @@ export async function getAll(req: Request, res: Response) {
 
         res.json(urls);
     } catch (error) {
-        res.status(500).send("Internal Server Error");
+        return res.status(500).json({
+            acknowledged: false,
+            errors: "Internal Server Error",
+        });
     }
 }
 
@@ -49,8 +59,11 @@ export const getOne = [
             }
 
             res.json({ data: images });
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -58,33 +71,42 @@ export const getOne = [
 export const createOne = [
     upload.single("image"),
     async function (req: Request | any, res: Response) {
-        if (!req.file)
-            return res
-                .status(400)
-                .json({ acknowledged: false, message: "No file uploaded" });
+        try {
+            if (!req.file)
+                return res
+                    .status(400)
+                    .json({ acknowledged: false, message: "No file uploaded" });
 
-        const mimetype = req.file.mimetype;
+            const mimetype = req.file.mimetype;
 
-        if (!mimetype.startsWith("image/") && mimetype !== "application/xml") {
-            return res.status(400).json({
-                acknowledged: false,
-                message: "Uploaded file is not an image",
-            });
-        }
-
-        if (mimetype === "application/xml" || mimetype === "image/svg+xml") {
-            const svgString = req.file.buffer.toString("utf-8");
-            if (!svgString.includes("<svg") || !svgString.includes("</svg>")) {
+            if (
+                !mimetype.startsWith("image/") &&
+                mimetype !== "application/xml"
+            ) {
                 return res.status(400).json({
                     acknowledged: false,
-                    message: "Uploaded XML file is not a valid SVG image",
+                    message: "Uploaded file is not an image",
                 });
             }
-        }
 
-        const base64Image = req.file.buffer.toString("base64");
+            if (
+                mimetype === "application/xml" ||
+                mimetype === "image/svg+xml"
+            ) {
+                const svgString = req.file.buffer.toString("utf-8");
+                if (
+                    !svgString.includes("<svg") ||
+                    !svgString.includes("</svg>")
+                ) {
+                    return res.status(400).json({
+                        acknowledged: false,
+                        message: "Uploaded XML file is not a valid SVG image",
+                    });
+                }
+            }
 
-        try {
+            const base64Image = req.file.buffer.toString("base64");
+
             const image = await Image.create({
                 image: base64Image,
                 type: mimetype,
@@ -98,9 +120,10 @@ export const createOne = [
                 created: `${protocol}://${host}/api/image/${image._id}`,
             });
         } catch (error) {
-            return res
-                .status(500)
-                .json({ acknowledged: false, message: "Server error" });
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
     function (error: any, req: Request, res: Response, next: NextFunction) {
@@ -179,8 +202,11 @@ export const updateOne = [
                 acknowledged: true,
                 updated: `${protocol}://${host}/api/image/${image._id}`,
             });
-        } catch (error: any) {
-            return next(error);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
     function (error: any, req: Request, res: Response, next: NextFunction) {
@@ -211,7 +237,10 @@ export const deleteOne = [
             const result = await Image.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return next(error);
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];
@@ -233,8 +262,11 @@ export const showOne = [
             } else {
                 return res.status(404).send("Base64 image does not exist");
             }
-        } catch (e: any) {
-            return next(e);
+        } catch (error) {
+            return res.status(500).json({
+                acknowledged: false,
+                errors: "Internal Server Error",
+            });
         }
     },
 ];

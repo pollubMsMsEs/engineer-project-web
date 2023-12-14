@@ -17,6 +17,7 @@ export async function createTestData() {
 
     const person1 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(user._id),
         name: "Name1",
         nick: "Nick1",
         surname: "Surname1",
@@ -24,6 +25,7 @@ export async function createTestData() {
 
     const person2 = new Person({
         _id: new mongoose.Types.ObjectId(),
+        created_by: new mongoose.Types.ObjectId(user._id),
         name: "Name2",
         nick: "Nick2",
         surname: "Surname2",
@@ -204,7 +206,7 @@ export async function createTestData() {
             user_id: new mongoose.Types.ObjectId(user._id),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 3,
             description: "",
             number_of_completions: 5,
             completions: [

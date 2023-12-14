@@ -70,7 +70,7 @@ export async function search(req: Request | any, res: Response): Promise<void> {
     } catch (error) {
         res.status(500).json({
             acknowledged: false,
-            errors: "Internal server error.",
+            errors: "Internal Server Error",
         });
     }
 }
