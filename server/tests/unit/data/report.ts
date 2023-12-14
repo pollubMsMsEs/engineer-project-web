@@ -204,7 +204,7 @@ export async function createTestData() {
             user_id: new mongoose.Types.ObjectId(user._id),
             work_id: new mongoose.Types.ObjectId(worksFromAPI[2]._id),
             onModel: "WorkFromAPI",
-            rating: 6,
+            rating: 3,
             description: "",
             number_of_completions: 5,
             completions: [

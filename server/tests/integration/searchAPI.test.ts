@@ -65,7 +65,7 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 
     it("powinno zwrócić filmy z API TMDB (do dwudziestu na stronie)", (done) => {
         chai.request(app)
@@ -94,7 +94,7 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 
     it("powinno zwrócić gry z API IGDB (do dwudziestu na stronie)", (done) => {
         chai.request(app)
@@ -123,5 +123,5 @@ describe("GET /:id", () => {
                 });
                 done();
             });
-    });
+    }, 30000);
 });
