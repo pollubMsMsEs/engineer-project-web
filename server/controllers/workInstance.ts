@@ -53,11 +53,8 @@ export const getAllForCurrentUser = [
                 })
                 .exec();
             res.json({ data: workInstances });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -97,11 +94,8 @@ export const getOne = [
             } else {
                 res.json({ data: workInstance });
             }
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -441,10 +435,7 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: workInstance });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            next(error);
         }
     },
 ];
@@ -482,10 +473,7 @@ export const deleteOne = [
 
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];

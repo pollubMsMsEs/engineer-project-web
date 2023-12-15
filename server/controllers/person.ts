@@ -85,11 +85,8 @@ export const getOne = [
             }
 
             res.json({ data: person });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -110,10 +107,7 @@ export const createOne = [
 
             return res.json({ acknowledged: true, created: person });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];
@@ -149,10 +143,7 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: person });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];
@@ -179,10 +170,7 @@ export const deleteOne = [
             const result = await Person.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];

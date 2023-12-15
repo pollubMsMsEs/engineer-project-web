@@ -26,11 +26,8 @@ export const getAllByType = [
                 type: req.params.type,
             }).exec();
             res.json({ data: worksFromAPI });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -52,11 +49,8 @@ export const getOne = [
             }
 
             res.json({ data: worksFromAPI });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -150,10 +144,7 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: workFromAPI });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            next(error);
         }
     },
 ];
@@ -187,10 +178,7 @@ export const deleteOne = [
                 },
             });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];

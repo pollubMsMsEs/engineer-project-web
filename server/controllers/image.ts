@@ -59,11 +59,8 @@ export const getOne = [
             }
 
             res.json({ data: images });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -202,11 +199,8 @@ export const updateOne = [
                 acknowledged: true,
                 updated: `${protocol}://${host}/api/image/${image._id}`,
             });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (error: any) {
+            return next(error);
         }
     },
     function (error: any, req: Request, res: Response, next: NextFunction) {
@@ -237,17 +231,16 @@ export const deleteOne = [
             const result = await Image.findByIdAndRemove(req.params.id);
             return res.json({ acknowledged: true, deleted: result });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];
 
 export const showOne = [
+    param("id").isMongoId().withMessage("URL contains incorrect id"),
     async function (req: Request, res: Response, next: NextFunction) {
         try {
+            validationResult(req).throw();
             const images = await Image.findById(req.params.id).exec();
 
             if (!images) {
@@ -262,11 +255,8 @@ export const showOne = [
             } else {
                 return res.status(404).send("Base64 image does not exist");
             }
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];

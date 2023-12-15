@@ -42,11 +42,8 @@ export const register = [
                 username: user.name,
                 message: "User created successfully",
             });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (error: any) {
+            return next(error);
         }
     },
 ];
@@ -95,10 +92,7 @@ export const login = [
                 message: "logged in successfully",
             });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];

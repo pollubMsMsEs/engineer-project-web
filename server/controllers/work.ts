@@ -51,11 +51,8 @@ export const getAllByType = [
             validationResult(req).throw();
             const works = await Work.find({ type: req.params.type }).exec();
             res.json({ data: works });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -77,11 +74,8 @@ export const getOne = [
             }
 
             res.json({ data: work });
-        } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+        } catch (e: any) {
+            return next(e);
         }
     },
 ];
@@ -246,10 +240,7 @@ export const updateOne = [
 
             return res.json({ acknowledged: true, updated: work });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            next(error);
         }
     },
 ];
@@ -281,10 +272,7 @@ export const deleteOne = [
                 },
             });
         } catch (error) {
-            return res.status(500).json({
-                acknowledged: false,
-                errors: "Internal Server Error",
-            });
+            return next(error);
         }
     },
 ];
