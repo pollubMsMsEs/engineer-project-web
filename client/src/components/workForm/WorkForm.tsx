@@ -140,7 +140,6 @@ export default function WorkForm({
     const [personFormKey, refreshPersonFormKey] = useReducer(() => {
         return Date.now();
     }, Date.now());
-    const [peopleToPick, setPeopleToPick] = useState<PersonWithID[]>([]);
 
     const roleSuggestions = people.reduce((roles: string[], person) => {
         if (
@@ -441,7 +440,6 @@ export default function WorkForm({
                             <PersonInWorkForm
                                 key={p.react_key}
                                 personInWork={p}
-                                peopleToPick={peopleToPick}
                                 index={index}
                                 editPersonCallback={editPersonCallback}
                                 deletePersonCallback={deletePersonCallback}
