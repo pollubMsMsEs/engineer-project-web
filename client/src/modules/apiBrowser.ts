@@ -10,9 +10,12 @@ export interface WorkFromAPIShort {
 
 export async function searchWorks(
     query: string,
-    type: WorkType
+    type: WorkType,
+    page = 1
 ): Promise<WorkFromAPIShort[] | false> {
-    const response = await fetch(`/api/search/${type}?query=${query}`);
+    const response = await fetch(
+        `/api/search/${type}?query=${query}&page=${page}`
+    );
 
     if (!response.ok) {
         try {
