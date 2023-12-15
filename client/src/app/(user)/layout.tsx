@@ -13,6 +13,7 @@ import {
     mdiChartBox,
     mdiChartDonut,
     mdiHome,
+    mdiInformation,
     mdiMagnify,
     mdiPlusThick,
 } from "@mdi/js";
@@ -40,6 +41,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
             href: "/me/reports",
             title: "Reports",
             icon: mdiChartBox,
+        },
+        {
+            href: "/about",
+            title: "About",
+            icon: mdiInformation,
         },
     ];
 
