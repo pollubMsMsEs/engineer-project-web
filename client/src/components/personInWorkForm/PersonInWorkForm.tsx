@@ -28,7 +28,6 @@ export type PersonInWorkFormType = PersonInWork & {
 
 export default function PersonInWorkForm({
     personInWork,
-    peopleToPick,
     index,
     editPersonCallback,
     deletePersonCallback,
@@ -37,7 +36,6 @@ export default function PersonInWorkForm({
 }: {
     personInWork: PersonInWorkFormType;
     index: number;
-    peopleToPick: PersonFromAPI[];
     editPersonCallback: (person: PersonInWorkFormType) => void;
     deletePersonCallback: (person: PersonInWorkFormType) => void;
     setEditedRoleCallback: (role: string) => void;

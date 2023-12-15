@@ -1,12 +1,25 @@
 .reports {
     display: grid;
     grid-template:
+        "query query" auto
         "c1 a1" 1fr
         "c1 a2" 1fr
         "c1 a3" 1fr
         "c2 c2" max-content / 1fr 1fr;
     gap: 30px;
-    margin: 25px 0;
+    margin: 0;
+
+    &__query {
+        z-index: 2;
+        display: flex;
+        grid-area: query;
+        gap: 10px;
+        align-items: center;
+        justify-self: center;
+        padding: 30px 5px 5px;
+        border-top: 0;
+        border-radius: 0 0 5px 5px;
+    }
 
     &__inline {
         display: flex;
