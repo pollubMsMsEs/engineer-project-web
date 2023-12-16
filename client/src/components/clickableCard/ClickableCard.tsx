@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LoadingDisplay from "../loadingDisplay/LoadingDisplay";
 import styles from "./clickableCard.module.scss";
-import { waitPromise } from "@/scripts/devUtils";
 
 export default function ClickableCard({
     children,
