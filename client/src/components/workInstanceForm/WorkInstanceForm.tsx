@@ -244,8 +244,8 @@ export default function WorkInstanceForm({
                         name="description"
                         id="description"
                         label="Notes"
-                        onChange={(e) => {
-                            setDescription(e.target.value);
+                        onChange={(value) => {
+                            setDescription(value);
                         }}
                         value={description}
                     />
