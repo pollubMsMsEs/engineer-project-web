@@ -9,8 +9,8 @@
         "start": "node ./bin/www.js",
         "dev": "nodemon",
         "test": "npm run test:unit && npm run test:integration",
-        "test:unit": "jest --verbose --detectOpenHandles --config ./jest.config.unit.ts",
-        "test:integration": "jest --verbose --detectOpenHandles --config ./jest.config.integration.ts"
+        "test:unit": "jest --detectOpenHandles --config ./jest.config.unit.ts",
+        "test:integration": "jest --detectOpenHandles --config ./jest.config.integration.ts"
     },
     "author": "Marcin Skic",
     "license": "ISC",

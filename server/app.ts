@@ -4,7 +4,6 @@ import express, { Express } from "express";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
 import apiRouter from "./routes/api.js";
 
 const app: Express = express();

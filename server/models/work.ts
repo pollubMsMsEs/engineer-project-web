@@ -29,7 +29,7 @@ const WorkSchema = new Schema(
         },
         people: [
             {
-                _id: false, //Mongoose by default creates id for subdocuments, this stops it from doing that
+                _id: false,
                 person_id: {
                     type: Schema.Types.ObjectId,
                     ref: "Person",
