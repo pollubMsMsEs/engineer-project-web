@@ -57,7 +57,7 @@ export default function WorkCollection({
                 <Select
                     id="typeQuery"
                     name="typeQuery"
-                    label="Type"
+                    label="Status"
                     labelDisplay="always"
                     value={statusQuery}
                     options={[
