@@ -47,7 +47,6 @@ export default function FindPerson({
                     personString: personToString(person),
                 })
             );
-            console.log(foundPeople);
 
             if (!foundPeople) {
                 toast.error("Couldn't find people");

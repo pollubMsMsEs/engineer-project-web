@@ -9,7 +9,6 @@ export default async function PersonDetails({
 }) {
     const response = await fetchAPIFromServerComponent(`/person/${params._id}`);
     const result = await response.json();
-    console.log(response, result);
 
     return <Person person={result.data} readOnly={false} />;
 }

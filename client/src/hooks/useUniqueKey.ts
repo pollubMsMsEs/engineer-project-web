@@ -5,7 +5,6 @@ export function useUniqueKey(startingNumber = 0) {
 
     function getUniqueKey() {
         uniqueKey.current++;
-        console.log(uniqueKey.current);
 
         return uniqueKey.current;
     }

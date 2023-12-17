@@ -27,7 +27,6 @@ export default function FilePicker({
                 accept={acceptedTypes}
                 multiple={multiple}
                 onChange={(e) => {
-                    console.log(e.target.files);
                     onChange(e.target.files);
                 }}
             />

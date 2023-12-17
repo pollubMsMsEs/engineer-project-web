@@ -39,7 +39,6 @@ export default function PersonForm({
 
     async function submitForm() {
         setFetchingState(true);
-        console.log("?");
         const submittedPerson: Person & { _id: string | undefined } = {
             _id: person?._id,
             name,

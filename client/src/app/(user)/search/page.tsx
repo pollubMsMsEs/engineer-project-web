@@ -93,7 +93,6 @@ export default function Search() {
                 setFoundWorks([...foundWorks, ...nextWorks]);
             }
 
-            console.log("scrolled");
             setIsFetching(false);
         }
 

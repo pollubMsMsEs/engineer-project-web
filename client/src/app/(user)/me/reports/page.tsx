@@ -95,8 +95,6 @@ export default function Reports() {
 
         query = query ? `?${query}` : "";
 
-        console.log(query);
-
         const [
             averageCompletionTime,
             averageRating,
