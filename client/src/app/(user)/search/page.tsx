@@ -105,7 +105,7 @@ export default function Search() {
             api_id: work.api_key.replace("/works/", ""),
             type: work.type,
             title: work.title,
-            cover: work.cover,
+            cover: work.cover !== "" ? work.cover : undefined,
         };
 
         const responseWorkFromAPI = await fetch("/api/workFromAPI/create", {
