@@ -95,7 +95,9 @@ export default function WorkForm({
     const [description, setDescription] = useState(work?.description ?? "");
     const [cover, setCover] = useState<string | undefined>(work?.cover);
     const [publishedAt, setPublishedAt] = useState(
-        work ? dayjs(work.published_at).format("YYYY-MM-DD") : undefined
+        work?.published_at
+            ? dayjs(work.published_at).format("YYYY-MM-DD")
+            : undefined
     );
     const [genres, setGenres] = useState<string[]>(work?.genres ?? []);
     const [metadata, setMetadata] = useState<MetadataInForm>(
@@ -223,7 +225,7 @@ export default function WorkForm({
             cover: newCover,
             dev: true,
             description,
-            published_at: new Date(publishedAt ?? ""),
+            published_at: publishedAt ? new Date(publishedAt) : undefined,
             genres,
             metadata: Object.entries(metadata).reduce<MetaObject>(
                 (acc, [, data]) => ({ ...acc, [data.key]: data.values }),
@@ -355,6 +357,7 @@ export default function WorkForm({
                             type="text"
                             name="title"
                             label="Title"
+                            required
                             value={title}
                             onChange={(value: any) => {
                                 setTitle(value);
