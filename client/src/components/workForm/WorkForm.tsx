@@ -389,12 +389,12 @@ export default function WorkForm({
                         id="genres"
                         type="text"
                         name="genres"
-                        label="Genres (space seperated)"
+                        label="Genres (space separated)"
                         value={genres.join(" ")}
                         onChange={(value: any, e) => {
                             if (value.includes(",")) {
                                 e.target.setCustomValidity(
-                                    "Seperate values with space, not colon"
+                                    "Separate values with space, not colon"
                                 );
                             } else {
                                 e.target.setCustomValidity("");
@@ -518,7 +518,7 @@ export default function WorkForm({
                                             onChange={(value, e) => {
                                                 if (value.includes(",")) {
                                                     e.target.setCustomValidity(
-                                                        "Seperate values with space, not colon"
+                                                        "Separate values with space, not colon"
                                                     );
                                                 } else {
                                                     e.target.setCustomValidity(

@@ -50,7 +50,7 @@ export default function PersonDetailForm({
                     onChange={(value, e) => {
                         if (value.includes(",")) {
                             e.target.setCustomValidity(
-                                "Seperate values with space, not colon"
+                                "Separate values with space, not colon"
                             );
                         } else {
                             e.target.setCustomValidity("");
