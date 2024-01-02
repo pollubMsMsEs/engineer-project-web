@@ -26,6 +26,7 @@ export default function Search() {
         []
     );
     const [isFetching, setIsFetching] = useState(false);
+    const [isAddingWork, setIsAddingWork] = useState(false);
     const [fetchedAll, setFetchedAll] = useState(false);
     const [worksPage, setWorksPage] = useState(2);
     const searchDebounce = useRef<NodeJS.Timeout>();
@@ -101,6 +102,7 @@ export default function Search() {
     }, [isFetching, fetchedAll, foundWorks, query, type, worksPage]);
 
     async function createWorkInstance(work: WorkFromAPIShort) {
+        setIsAddingWork(true);
         const newWorkFromAPI = {
             api_id: work.api_key.replace("/works/", ""),
             type: work.type,
@@ -118,6 +120,7 @@ export default function Search() {
 
         if (!responseWorkFromAPI.ok) {
             handleResponseErrorWithToast(responseWorkFromAPI);
+            setIsAddingWork(false);
             return false;
         }
 
@@ -139,6 +142,7 @@ export default function Search() {
 
         if (!responseInstance.ok) {
             handleResponseErrorWithToast(responseInstance);
+            setIsAddingWork(false);
             return false;
         }
 
@@ -205,6 +209,7 @@ export default function Search() {
                                       <ClickableWorkCard
                                           key={work.api_key}
                                           work={work}
+                                          disabled={isAddingWork}
                                           onClick={async () => {
                                               return {
                                                   success:

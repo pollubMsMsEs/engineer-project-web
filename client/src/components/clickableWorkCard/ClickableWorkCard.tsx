@@ -10,9 +10,11 @@ import { mdiCheckCircle } from "@mdi/js";
 
 export default function ClickableWorkCard({
     work,
+    disabled,
     onClick,
 }: {
     work: WorkFromAPIShort;
+    disabled?: boolean;
     onClick: () => Promise<{
         success: boolean;
         stopLoading: boolean;
@@ -20,7 +22,7 @@ export default function ClickableWorkCard({
 }) {
     return (
         <ClickableCard
-            disabled={work.has_instance}
+            disabled={work.has_instance || disabled}
             onClick={onClick}
             loadingDisplay={
                 <div className={styles["clickable-work-card__overlay"]}>
@@ -38,7 +40,9 @@ export default function ClickableWorkCard({
                         className={styles["clickable-work-card__owned"]}
                         style={{ aspectRatio: getAspectRatio(work.type) }}
                     >
-                        <Icon path={mdiCheckCircle} size={2} />
+                        {work.has_instance && (
+                            <Icon path={mdiCheckCircle} size={2} />
+                        )}
                     </div>
                 </div>
             }
